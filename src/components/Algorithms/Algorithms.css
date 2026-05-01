@@ -1,0 +1,203 @@
+.algo-category {
+  margin-bottom: 3rem;
+}
+
+.algo-category h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: var(--text-primary);
+}
+
+.algo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.algo-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.algo-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px -10px rgba(249, 115, 22, 0.2);
+  border-color: var(--primary);
+}
+
+.algo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.algo-header h4 {
+  font-size: 1.25rem;
+  color: var(--text-primary);
+}
+
+.algo-card > p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.algo-details {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* Sorting visualizer specific styles */
+.sort-visualizer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.sort-canvas-container {
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+  padding: 1rem;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  height: 300px;
+  position: relative;
+}
+
+.sort-canvas-container canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.sort-controls {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 1rem;
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+}
+
+.speed-control {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+}
+
+.speed-control input[type="range"] {
+  width: 100px;
+}
+
+/* Search visualizer styles */
+.search-visualizer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.search-canvas-container {
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+}
+
+.search-canvas-container canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.target-input {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.target-input input {
+  width: 80px;
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+/* Array bar visualization */
+.array-container {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 2px;
+  height: 250px;
+  padding: 1rem;
+}
+
+.array-bar {
+  flex: 1;
+  max-width: 30px;
+  background: var(--primary);
+  border-radius: 4px 4px 0 0;
+  transition: all 0.1s ease;
+}
+
+.array-bar.comparing {
+  background: #f59e0b;
+}
+
+.array-bar.swapping {
+  background: #ef4444;
+}
+
+.array-bar.sorted {
+  background: #22c55e;
+}
+
+.array-bar-value {
+  text-align: center;
+  font-size: 10px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+/* Algorithm steps log */
+.steps-log {
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+  padding: 1rem;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.steps-log h4 {
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+.steps-list {
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.step-item {
+  padding: 0.25rem 0;
+  border-bottom: 1px solid var(--border-color);
+}

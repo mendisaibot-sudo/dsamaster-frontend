@@ -1,0 +1,96 @@
+{
+  "sections": [
+    {
+      "icon": "code",
+      "title": "The Pattern Recognition Paradigm",
+      "content": [
+        "Every experienced engineer knows the secret: coding interviews are not about memorizing 200 LeetCode solutions. They are about pattern recognition. When you see a problem involving intervals, you immediately think merge or sweep line. When you hear k closest, your brain whispers heap or binary search on answer. This is not intuition. This is training.",
+        "Algorithm families are mental shortcuts. They are the difference between staring blankly at a problem and immediately sketching a solution. Just as chess masters recognize board patterns in milliseconds, top engineers recognize algorithmic patterns in problems.",
+        "The transformation from novice to expert is not measured in hours spent or problems solved. It is measured in the speed and accuracy of pattern matching. A junior approaches every new problem as a unique puzzle. A senior sees a familiar silhouette and reaches for the right tool.",
+        "Take the classic two-sum problem. A beginner writes a brute-force double loop. An intermediate might sort and use two pointers. An expert immediately recognizes the hash table pattern and writes linear time in under a minute. The difference is not coding speed, it is pattern access speed.",
+        "This is why grinding 500 random problems rarely works. Without explicit pattern tagging, you build isolated memories instead of connected knowledge. Each problem remains a disconnected island. The goal is to build a mental web where each new problem strengthens your understanding of an entire family."
+      ],
+      "quote": {
+        "text": "The best competitive programmers do not solve 1000 random problems. They master 20 patterns and apply them 1000 times.",
+        "cite": "Unknown, but widely believed"
+      }
+    },
+    {
+      "icon": "brain",
+      "title": "The Five Fundamental Families",
+      "content": [
+        "After analyzing thousands of interview problems across FAANG, fast-growing startups, and quant firms, five families emerge consistently. These are not arbitrary categories, they are clusters of problems that share structural similarities.",
+        "Understanding these families deeply means you can solve problems you have never seen before. Interviewers deliberately twist familiar patterns into novel shapes. The candidate who recognizes the underlying structure beneath the surface wins."
+      ],
+      "highlightBox": {
+        "title": "The Big Five Algorithm Families",
+        "items": [
+          { "bold": "Two Pointers / Sliding Window:", "text": " Subarray problems, palindromes, container with most water. If the problem asks about a contiguous subarray, think sliding window." },
+          { "bold": "Binary Search:", "text": " Anything with a sorted or sortable structure, or finding a threshold or cutoff point. Rotated arrays, search in matrix, kth smallest." },
+          { "bold": "Tree / Graph Traversal:", "text": " Hierarchical or network structures. BFS for shortest path in unweighted graphs. DFS for exploring all paths, backtracking, tree reconstruction." },
+          { "bold": "Dynamic Programming:", "text": " Optimal substructure plus overlapping subproblems. Knapsack variants, string edit distance, longest increasing subsequence. If brute force is exponential, think DP." },
+          { "bold": "Heap / Priority Queue:", "text": " K smallest or largest, median in stream, merging sorted lists. When you need efficient access to extremes, reach for a heap." }
+        ]
+      },
+      "contentAfter": [
+        "These five families cover roughly 80% of all standard interview problems. The remaining 20% involve specialized structures like tries, segment trees, union-find, or combinations of the above. Master the Big Five first. The rest follows naturally.",
+        "Here is the key insight: every family has a tell, a structural signal in the problem statement. Contiguous subarray usually means sliding window. Finding a threshold in a sorted array means binary search. Optimal substructure means DP. Build your catalog of tells and you build your interview advantage."
+      ]
+    },
+    {
+      "icon": "lightbulb",
+      "title": "From Pattern to Implementation",
+      "content": [
+        "Recognizing the family is half the battle. The other half is clean implementation. Here is a practical framework that separates successful candidates from struggling ones:",
+        "1. State the pattern explicitly. Say it out loud or write it as a comment. This is a classic two-pointer problem because we need to find a pair that sums to target. This forces clarity.",
+        "2. Write the boilerplate first. For sliding window, initialize left equals zero, iterate right over array, while invalid shrink window. For BFS, initialize queue, visited set, and level counter. Do not optimize before the basic structure is correct.",
+        "3. Handle edge cases immediately. Empty input, single element, all duplicates. Do not wait until after the core logic. Candidates who proactively mention edge cases score higher.",
+        "4. Trace through a small example by hand. Pick a simple array and walk through every variable update. This catches off-by-one errors before they cost you an interview.",
+        "5. Verify time and space complexity. State it clearly. This demonstrates analytical thinking and often reveals optimization opportunities.",
+        "6. If time permits, optimize. Can you reduce space? Can you remove sorting? Can you do it in a single pass? The interviewer evaluates both your initial solution and your ability to improve it."
+      ],
+      "quote": {
+        "text": "Slow is smooth, smooth is fast. A deliberate, traceable implementation beats a rushed, buggy one every time.",
+        "cite": "Navy SEAL Maxim, Applied to Code",
+        "accent": true
+      }
+    },
+    {
+      "icon": "rocket",
+      "title": "Building Your Pattern Library",
+      "content": [
+        "The most effective way to internalize patterns is deliberate practice, not blind repetition. For each problem you solve, follow this protocol:",
+        "Tag it with its primary family immediately after solving. Use a spreadsheet, Notion, or simple text file. The act of categorizing solidifies the pattern in memory.",
+        "Write a one-sentence pattern description in your own words. Not the editorial summary. YOUR understanding. If you cannot explain it simply, you do not understand it deeply.",
+        "If you looked up the solution, solve it again from scratch in 3 days, then in a week, then in a month. Spaced repetition works for code. The forgetting curve is real.",
+        "Build a personal cheat sheet. One page per family with three signature problems, time and space complexity, common gotchas, and a template implementation.",
+        "Teach someone else. Explaining a pattern to another person, even a rubber duck, forces you to clarify ambiguities and strengthen weak spots.",
+        "Over three months of consistent practice, the pattern recognition becomes automatic. Problems that once took 45 minutes now resolve in 10. Interviews shift from stressful puzzles to routine exercises."
+      ]
+    },
+    {
+      "icon": "rocket",
+      "title": "Common Mistakes and How to Avoid Them",
+      "content": [
+        "The most common mistake among beginner interviewees is pattern fixation. They identify a pattern, write the code, and then fail to handle edge cases. Two pointers works great, except when the array is empty. Binary search is elegant, except when the pivot is larger than all elements. Always test with boundary conditions.",
+        "Another classic mistake is premature optimization. Candidates spend half their time trying to reduce space complexity from order n to order one, only to introduce subtle bugs that take the remaining time to debug. Get a working solution first. Optimize only if you have time left and the interviewer asks for it.",
+        "A third trap is overcomplicating simple problems. If the problem explicitly says the input is sorted, do not reinvent the wheel. Use binary search. If the problem asks for a subarray sum, sliding window is likely the answer. Do not reach for segment trees when a simple two-pointer approach suffices."
+      ],
+      "quote": {
+        "text": "The difference between a good engineer and a great one is not in the solutions they know. It is in the patterns they recognize.",
+        "cite": "Adapted from software engineering folklore",
+        "accent": true
+      }
+    },
+    {
+      "icon": "rocket",
+      "title": "The Interview Advantage",
+      "conclusion": true,
+      "content": [
+        "Interviewers are not testing whether you can solve a specific problem. They are testing whether you can decompose novel problems into known patterns quickly. When you articulate the family confidently, sketch the approach cleanly, and implement with rigor, you signal senior-level thinking regardless of your actual title.",
+        "Pattern recognition is the meta-skill of technical interviewing. It separates candidates who memorize from candidates who understand. In the fast-paced world of software engineering interviews, understanding always wins. Invest in pattern recognition deliberately, practice consistently, and watch your interview performance transform.",
+        "The journey from pattern novice to pattern expert takes time, but the payoff is immense. Start today. Pick one family. Master it. Move to the next. Within weeks, you will see problems differently. Within months, you will solve them effortlessly."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,577 @@
+import { useState, useEffect, useRef } from 'react';
+import { useParams } from 'react-router-dom';
+import { sortingAlgorithms, searchingAlgorithms } from '../../data/algorithms';
+import { useProgress } from '../../contexts/ProgressContext';
+import './AlgorithmDetail.css';
+
+const codeSnippets = {
+  bubblesort: {
+    js: `function bubbleSort(arr) {
+  let n = arr.length;
+  for (let i = 0; i < n - 1; i++) {
+    for (let j = 0; j < n - i - 1; j++) {
+      if (arr[j] > arr[j + 1]) {
+        let temp = arr[j];
+        arr[j] = arr[j + 1];
+        arr[j + 1] = temp;
+        // visualize swap here
+      }
+    }
+  }
+  return arr;
+}`,
+    python: `def bubble_sort(arr):
+    n = len(arr)
+    for i in range(n - 1):
+        for j in range(n - i - 1):
+            if arr[j] > arr[j + 1]:
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+    return arr`,
+    cpp: `void bubbleSort(vector<int>& arr) {
+    int n = arr.size();
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
+                swap(arr[j], arr[j + 1]);
+            }
+        }
+    }
+}`
+  },
+  quicksort: {
+    js: `function quickSort(arr, low = 0, high = arr.length - 1) {
+  if (low < high) {
+    let pi = partition(arr, low, high);
+    quickSort(arr, low, pi - 1);
+    quickSort(arr, pi + 1, high);
+  }
+  return arr;
+}
+
+function partition(arr, low, high) {
+  let pivot = arr[high];
+  let i = low - 1;
+  for (let j = low; j < high; j++) {
+    if (arr[j] < pivot) {
+      i++;
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+  }
+  [arr[i + 1], arr[high]] = [arr[high], arr[i + 1]];
+  return i + 1;
+}`,
+    python: `def quick_sort(arr, low=0, high=None):
+    if high is None:
+        high = len(arr) - 1
+    if low < high:
+        pi = partition(arr, low, high)
+        quick_sort(arr, low, pi - 1)
+        quick_sort(arr, pi + 1, high)
+    return arr
+
+def partition(arr, low, high):
+    pivot = arr[high]
+    i = low - 1
+    for j in range(low, high):
+        if arr[j] < pivot:
+            i += 1
+            arr[i], arr[j] = arr[j], arr[i]
+    arr[i + 1], arr[high] = arr[high], arr[i + 1]
+    return i + 1`,
+    cpp: `void quickSort(vector<int>& arr, int low, int high) {
+    if (low < high) {
+        int pi = partition(arr, low, high);
+        quickSort(arr, low, pi - 1);
+        quickSort(arr, pi + 1, high);
+    }
+}
+
+int partition(vector<int>& arr, int low, int high) {
+    int pivot = arr[high];
+    int i = low - 1;
+    for (int j = low; j < high; j++) {
+        if (arr[j] < pivot) {
+            i++;
+            swap(arr[i], arr[j]);
+        }
+    }
+    swap(arr[i + 1], arr[high]);
+    return i + 1;
+}`
+  },
+  mergesort: {
+    js: `function mergeSort(arr) {
+  if (arr.length <= 1) return arr;
+  let mid = Math.floor(arr.length / 2);
+  let left = mergeSort(arr.slice(0, mid));
+  let right = mergeSort(arr.slice(mid));
+  return merge(left, right);
+}
+
+function merge(left, right) {
+  let result = [], i = 0, j = 0;
+  while (i < left.length && j < right.length) {
+    if (left[i] < right[j]) result.push(left[i++]);
+    else result.push(right[j++]);
+  }
+  return result.concat(left.slice(i)).concat(right.slice(j));
+}`,
+    python: `def merge_sort(arr):
+    if len(arr) <= 1:
+        return arr
+    mid = len(arr) // 2
+    left = merge_sort(arr[:mid])
+    right = merge_sort(arr[mid:])
+    return merge(left, right)
+
+def merge(left, right):
+    result = []
+    i = j = 0
+    while i < len(left) and j < len(right):
+        if left[i] < right[j]:
+            result.append(left[i])
+            i += 1
+        else:
+            result.append(right[j])
+            j += 1
+    result.extend(left[i:])
+    result.extend(right[j:])
+    return result`,
+    cpp: `void mergeSort(vector<int>& arr, int left, int right) {
+    if (left < right) {
+        int mid = left + (right - left) / 2;
+        mergeSort(arr, left, mid);
+        mergeSort(arr, mid + 1, right);
+        merge(arr, left, mid, right);
+    }
+}`
+  },
+  heapsort: {
+    js: `function heapSort(arr) {
+  let n = arr.length;
+  for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {
+    heapify(arr, n, i);
+  }
+  for (let i = n - 1; i > 0; i--) {
+    [arr[0], arr[i]] = [arr[i], arr[0]];
+    heapify(arr, i, 0);
+  }
+  return arr;
+}
+
+function heapify(arr, n, i) {
+  let largest = i, left = 2 * i + 1, right = 2 * i + 2;
+  if (left < n && arr[left] > arr[largest]) largest = left;
+  if (right < n && arr[right] > arr[largest]) largest = right;
+  if (largest !== i) {
+    [arr[i], arr[largest]] = [arr[largest], arr[i]];
+    heapify(arr, n, largest);
+  }
+}`,
+    python: `def heap_sort(arr):
+    n = len(arr)
+    for i in range(n // 2 - 1, -1, -1):
+        heapify(arr, n, i)
+    for i in range(n - 1, 0, -1):
+        arr[0], arr[i] = arr[i], arr[0]
+        heapify(arr, i, 0)
+    return arr
+
+def heapify(arr, n, i):
+    largest = i
+    left, right = 2 * i + 1, 2 * i + 2
+    if left < n and arr[left] > arr[largest]:
+        largest = left
+    if right < n and arr[right] > arr[largest]:
+        largest = right
+    if largest != i:
+        arr[i], arr[largest] = arr[largest], arr[i]
+        heapify(arr, n, largest)`,
+    cpp: `void heapSort(vector<int>& arr) {
+    int n = arr.size();
+    for (int i = n / 2 - 1; i >= 0; i--)
+        heapify(arr, n, i);
+    for (int i = n - 1; i > 0; i--) {
+        swap(arr[0], arr[i]);
+        heapify(arr, i, 0);
+    }
+}`
+  },
+  binarysearch: {
+    js: `function binarySearch(arr, target) {
+  let left = 0, right = arr.length - 1;
+  while (left <= right) {
+    let mid = Math.floor((left + right) / 2);
+    if (arr[mid] === target) return mid;
+    if (arr[mid] < target) left = mid + 1;
+    else right = mid - 1;
+  }
+  return -1;
+}`,
+    python: `def binary_search(arr, target):
+    left, right = 0, len(arr) - 1
+    while left <= right:
+        mid = (left + right) // 2
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    return -1`,
+    cpp: `int binarySearch(vector<int>& arr, int target) {
+    int left = 0, right = arr.size() - 1;
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        if (arr[mid] == target) return mid;
+        if (arr[mid] < target) left = mid + 1;
+        else right = mid - 1;
+    }
+    return -1;
+}`
+  },
+  linearsearch: {
+    js: `function linearSearch(arr, target) {
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i] === target) return i;
+  }
+  return -1;
+}`,
+    python: `def linear_search(arr, target):
+    for i in range(len(arr)):
+        if arr[i] == target:
+            return i
+    return -1`,
+    cpp: `int linearSearch(vector<int>& arr, int target) {
+    for (int i = 0; i < arr.size(); i++) {
+        if (arr[i] == target) return i;
+    }
+    return -1;
+}`
+  }
+};
+
+const pseudoCodes = {
+  bubblesort: `BEGIN BubbleSort(Arr, n)
+  FOR i = 0 TO n-2
+    FOR j = 0 TO n-i-2
+      IF Arr[j] > Arr[j+1]
+        SWAP Arr[j], Arr[j+1]
+      END IF
+    END FOR
+  END FOR
+END BubbleSort`,
+  quicksort: `BEGIN QuickSort(Arr, low, high)
+  IF low < high
+    pi = Partition(Arr, low, high)
+    QuickSort(Arr, low, pi-1)
+    QuickSort(Arr, pi+1, high)
+  END IF
+END QuickSort`,
+  mergesort: `BEGIN MergeSort(Arr, left, right)
+  IF left < right
+    mid = (left + right) // 2
+    MergeSort(Arr, left, mid)
+    MergeSort(Arr, mid+1, right)
+    Merge(Arr, left, mid, right)
+  END IF
+END MergeSort`,
+  heapsort: `BEGIN HeapSort(Arr, n)
+  FOR i = n//2 - 1 DOWNTO 0
+    Heapify(Arr, n, i)
+  END FOR
+  FOR i = n-1 DOWNTO 1
+    SWAP Arr[0], Arr[i]
+    Heapify(Arr, i, 0)
+  END FOR
+END HeapSort`,
+  binarysearch: `BEGIN BinarySearch(Arr, target)
+  left = 0, right = LENGTH(Arr) - 1
+  WHILE left <= right
+    mid = (left + right) // 2
+    IF Arr[mid] == target
+      RETURN mid
+    ELSE IF Arr[mid] < target
+      left = mid + 1
+    ELSE
+      right = mid - 1
+    END IF
+  END WHILE
+  RETURN -1
+END BinarySearch`,
+  linearsearch: `BEGIN LinearSearch(Arr, target)
+  FOR i = 0 TO LENGTH(Arr)-1
+    IF Arr[i] == target
+      RETURN i
+    END IF
+  END FOR
+  RETURN -1
+END LinearSearch`
+};
+
+export default function AlgorithmDetail() {
+  const { algorithmId } = useParams();
+  const [algo, setAlgo] = useState(null);
+  const [tab, setTab] = useState('overview');
+  const [lang, setLang] = useState('js');
+  const [customArr, setCustomArr] = useState([]);
+  const [arrSize, setArrSize] = useState(10);
+  const [arrType, setArrType] = useState('random');
+  const [highlightLine, setHighlightLine] = useState(-1);
+  const canvasRef = useRef(null);
+  const speedRef = useRef(100);
+  const [isSort, setIsSort] = useState(false);
+  const [comp, setComp] = useState([-1,-1]);
+  const { addTopic } = useProgress();
+
+  useEffect(() => {
+    const all = [...sortingAlgorithms, ...searchingAlgorithms];
+    const found = all.find(a => a.id === algorithmId);
+    if (found) { setAlgo(found); addTopic(found.name); }
+  }, [algorithmId, addTopic]);
+
+  useEffect(() => {
+    genArray();
+  }, [arrSize, arrType, algo]);
+
+  useEffect(() => {
+    drawBars();
+  }, [customArr, comp]);
+
+  function genArray() {
+    let arr = [];
+    const size = Math.max(5, Math.min(30, arrSize));
+    switch (arrType) {
+      case 'sorted':
+        arr = Array.from({ length: size }, (_, i) => i + 1);
+        break;
+      case 'reverse':
+        arr = Array.from({ length: size }, (_, i) => size - i);
+        break;
+      case 'duplicate':
+        arr = Array.from({ length: size }, () => Math.floor(Math.random() * 10) + 1);
+        break;
+      default:
+        arr = Array.from({ length: size }, () => Math.floor(Math.random() * 90) + 10);
+    }
+    setCustomArr(arr);
+    setComp([-1, -1]);
+  }
+
+  function drawBars() {
+    const c = canvasRef.current;
+    if (!c) return;
+    const ctx = c.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    const rect = c.getBoundingClientRect();
+    c.width = rect.width * dpr;
+    c.height = rect.height * dpr;
+    ctx.scale(dpr, dpr);
+    const w = rect.width, h = rect.height;
+
+    ctx.fillStyle = '#0f0e1c';
+    ctx.fillRect(0, 0, w, h);
+
+    if (!customArr.length) return;
+    const bw = (w - 40) / customArr.length;
+    const mv = Math.max(...customArr);
+
+    customArr.forEach((v, i) => {
+      const bh = (v / mv) * (h - 80);
+      const x = 20 + i * bw;
+      const y = h - bh - 40;
+      if (i === comp[0] || i === comp[1]) ctx.fillStyle = '#f59e0b';
+      else ctx.fillStyle = '#6366f1';
+      ctx.fillRect(x, y, bw - 2, bh);
+      ctx.fillStyle = '#fff';
+      ctx.font = '11px Inter';
+      ctx.textAlign = 'center';
+      ctx.fillText(v.toString(), x + bw / 2, y - 5);
+    });
+  }
+
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+  async function runBubbleSort() {
+    if (isSort) return;
+    setIsSort(true);
+    const arr = [...customArr];
+    const n = arr.length;
+    const pseudoLines = pseudoCodes.bubblesort.split('\n');
+    setHighlightLine(0);
+    for (let i = 0; i < n - 1; i++) {
+      setHighlightLine(2);
+      for (let j = 0; j < n - i - 1; j++) {
+        setHighlightLine(3);
+        setComp([j, j + 1]);
+        await sleep(speedRef.current);
+        setHighlightLine(4);
+        await sleep(speedRef.current);
+        if (arr[j] > arr[j + 1]) {
+          let t = arr[j]; arr[j] = arr[j + 1]; arr[j + 1] = t;
+          setCustomArr([...arr]);
+          await sleep(speedRef.current);
+        }
+        setHighlightLine(6);
+      }
+      setHighlightLine(0);
+    }
+    setHighlightLine(-1);
+    setComp([-1, -1]);
+    setIsSort(false);
+  }
+
+  async function runLinearSearch() {
+    if (isSort) return;
+    setIsSort(true);
+    const arr = [...customArr];
+    const target = arr[Math.floor(Math.random() * arr.length)];
+    const pseudoLines = pseudoCodes.linearsearch.split('\n');
+    for (let i = 0; i < arr.length; i++) {
+      setComp([i, -1]);
+      setHighlightLine(2);
+      await sleep(speedRef.current);
+      setHighlightLine(3);
+      await sleep(speedRef.current);
+      if (arr[i] === target) {
+        setHighlightLine(4);
+        await sleep(500);
+        break;
+      }
+      setHighlightLine(6);
+    }
+    setHighlightLine(-1);
+    setComp([-1, -1]);
+    setIsSort(false);
+  }
+
+  async function runBinarySearch() {
+    if (isSort) return;
+    setIsSort(true);
+    const arr = [...customArr].sort((a,b) => a-b);
+    setCustomArr(arr);
+    await sleep(300);
+    const target = arr[Math.floor(Math.random() * arr.length)];
+    let left = 0, right = arr.length - 1;
+    while (left <= right) {
+      const mid = Math.floor((left + right) / 2);
+      setComp([mid, -1]);
+      setHighlightLine(4);
+      await sleep(speedRef.current * 1.5);
+      if (arr[mid] === target) {
+        setHighlightLine(6);
+        await sleep(500);
+        break;
+      } else if (arr[mid] < target) {
+        setHighlightLine(8);
+        left = mid + 1;
+      } else {
+        setHighlightLine(10);
+        right = mid - 1;
+      }
+      await sleep(speedRef.current);
+      setHighlightLine(3);
+    }
+    setHighlightLine(-1);
+    setComp([-1, -1]);
+    setIsSort(false);
+  }
+
+  function runVisual() {
+    if (algo?.id === 'bubblesort') return runBubbleSort();
+    if (algo?.id === 'linearsearch') return runLinearSearch();
+    if (algo?.id === 'binarysearch') return runBinarySort();
+  }
+
+  function runBinarySort() { return runBinarySearch(); }
+
+  if (!algo) return <div className="detail-page"><div className="container"><h2>Not found</h2></div></div>;
+
+  const code = codeSnippets[algo.id];
+  const pseudo = pseudoCodes[algo.id] || '';
+  const pseudoLines = pseudo ? pseudo.split('\n') : [];
+
+  return (
+    <div className="detail-page">
+      <div className="container">
+        <button className="back-btn" onClick={() => window.history.back()}>← Back</button>
+        <h1>{algo.name}</h1>
+        <p className="detail-desc">{algo.details || algo.description}</p>
+
+        <div className="detail-grid">
+          <div className="detail-sidebar">
+            <div className="panel">
+              <h3>Complexity</h3>
+              <div className="stat-row"><span>Time</span><span className="badge">{algo.complexity}</span></div>
+              <div className="stat-row"><span>Best</span><span>{algo.bestCase || 'O(n)'}</span></div>
+              <div className="stat-row"><span>Worst</span><span>{algo.worstCase || algo.complexity}</span></div>
+            </div>
+
+            <div className="panel">
+              <h3>Array Generator</h3>
+              <label>Size: {arrSize}</label>
+              <input type="range" min="5" max="30" value={arrSize} onChange={e => setArrSize(parseInt(e.target.value))} disabled={isSort} />
+              <label>Type</label>
+              <select value={arrType} onChange={e => setArrType(e.target.value)} disabled={isSort}>
+                <option value="random">Random</option>
+                <option value="sorted">Sorted</option>
+                <option value="reverse">Reverse</option>
+                <option value="duplicate">Duplicates</option>
+              </select>
+              <button className="btn" onClick={genArray} disabled={isSort}>Generate</button>
+              <div className="arr-preview">[{customArr.join(', ')}]</div>
+            </div>
+          </div>
+
+          <div className="detail-main">
+            <div className="tabs">
+              <button className={tab === 'overview' ? 'active' : ''} onClick={() => setTab('overview')}>Overview</button>
+              <button className={tab === 'pseudocode' ? 'active' : ''} onClick={() => setTab('pseudocode')}>Pseudocode</button>
+              <button className={tab === 'code' ? 'active' : ''} onClick={() => setTab('code')}>Code</button>
+            </div>
+
+            {tab === 'overview' && (
+              <div className="tab-panel">
+                <h3>{algo.name} Visualization</h3>
+                <div style={{ height: '300px', borderRadius: '8px', overflow: 'hidden', background: '#0f0e1c' }}>
+                  <canvas ref={canvasRef} style={{ width: '100%', height: '100%' }} />
+                </div>
+                <div className="controls-row">
+                  <button className="btn btn-primary" onClick={runVisual} disabled={isSort}>Run {algo.name}</button>
+                  <button className="btn" onClick={genArray} disabled={isSort}>New Array</button>
+                  <label>Speed</label>
+                  <input type="range" min="20" max="300" defaultValue="150" onChange={e => speedRef.current = 320 - e.target.value} disabled={isSort} />
+                </div>
+              </div>
+            )}
+
+            {tab === 'pseudocode' && (
+              <div className="tab-panel">
+                <h3>Pseudocode</h3>
+                <div className="pseudo-block">
+                  {pseudoLines.map((line, idx) => (
+                    <div key={idx} className={highlightLine === idx ? 'pseudo-line highlight' : 'pseudo-line'}>
+                      <span className="line-num">{idx + 1}</span>
+                      <span className="line-txt">{line}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {tab === 'code' && (
+              <div className="tab-panel">
+                <div className="lang-tabs">
+                  <button className={lang === 'js' ? 'active' : ''} onClick={() => setLang('js')}>JavaScript</button>
+                  <button className={lang === 'python' ? 'active' : ''} onClick={() => setLang('python')}>Python</button>
+                  <button className={lang === 'cpp' ? 'active' : ''} onClick={() => setLang('cpp')}>C++</button>
+                </div>
+                <pre className="code-block">{code ? code[lang] : ''}</pre>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

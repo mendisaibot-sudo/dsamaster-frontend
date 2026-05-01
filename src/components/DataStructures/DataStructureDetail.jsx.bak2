@@ -1,0 +1,772 @@
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useParams } from 'react-router-dom';
+import { dataStructures, dsComplexity } from '../../data/dataStructures';
+import { dsOperations } from '../../data/dsOperations';
+import { useProgress } from '../../contexts/ProgressContext';
+import './DataStructureDetail.css';
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const dsCode = {
+  arrays: {
+    js: `class ArrayOps {
+  constructor() { this.arr = []; }
+  insert(val) { this.arr.push(val); }
+  search(val) {
+    for (let i = 0; i < this.arr.length; i++)
+      if (this.arr[i] === val) return i;
+    return -1;
+  }
+  delete(idx) { this.arr.splice(idx, 1); }
+}`,
+    python: `class ArrayOps:
+    def __init__(self):
+        self.arr = []
+    def insert(self, val):
+        self.arr.append(val)
+    def search(self, val):
+        for i, v in enumerate(self.arr):
+            if v == val: return i
+        return -1
+    def delete(self, idx):
+        self.arr.pop(idx)`,
+    cpp: `#include <vector>
+class ArrayOps {
+    std::vector<int> arr;
+public:
+    void insert(int val) { arr.push_back(val); }
+    int search(int val) {
+        for (int i = 0; i < arr.size(); i++)
+            if (arr[i] == val) return i;
+        return -1;
+    }
+    void deleteAt(int idx) { arr.erase(arr.begin() + idx); }
+};`
+  },
+  linkedlist: {
+    js: `class Node {
+  constructor(val) { this.val = val; this.next = null; }
+}
+class LinkedList {
+  constructor() { this.head = null; }
+  insert(val) {
+    const node = new Node(val);
+    node.next = this.head;
+    this.head = node;
+  }
+  delete() {
+    if (this.head) this.head = this.head.next;
+  }
+}`,
+    python: `class Node:
+    def __init__(self, val):
+        self.val = val
+        self.next = None
+
+class LinkedList:
+    def __init__(self):
+        self.head = None
+    def insert(self, val):
+        node = Node(val)
+        node.next = self.head
+        self.head = node
+    def delete(self):
+        if self.head:
+            self.head = self.head.next`,
+    cpp: `struct Node {
+    int val; Node* next;
+    Node(int v) : val(v), next(nullptr) {}
+};
+class LinkedList {
+    Node* head;
+public:
+    LinkedList() : head(nullptr) {}
+    void insert(int val) {
+        Node* node = new Node(val);
+        node->next = head; head = node;
+    }
+    void deleteHead() {
+        if (head) { Node* t = head; head = head->next; delete t; }
+    }
+};`
+  },
+  stack: {
+    js: `class Stack {
+  constructor() { this.items = []; }
+  push(val) { this.items.unshift(val); }
+  pop() { return this.items.shift(); }
+  peek() { return this.items[0]; }
+  isEmpty() { return this.items.length === 0; }
+}`,
+    python: `class Stack:
+    def __init__(self):
+        self.items = []
+    def push(self, val):
+        self.items.insert(0, val)
+    def pop(self):
+        return self.items.pop(0) if self.items else None
+    def peek(self):
+        return self.items[0] if self.items else None
+    def is_empty(self):
+        return len(self.items) == 0`,
+    cpp: `#include <vector>
+class Stack {
+    std::vector<int> items;
+public:
+    void push(int val) { items.insert(items.begin(), val); }
+    int pop() { int v = items[0]; items.erase(items.begin()); return v; }
+    int peek() { return items[0]; }
+    bool isEmpty() { return items.empty(); }
+};`
+  },
+  queue: {
+    js: `class Queue {
+  constructor() { this.items = []; }
+  enqueue(val) { this.items.push(val); }
+  dequeue() { return this.items.shift(); }
+  peek() { return this.items[0]; }
+  isEmpty() { return this.items.length === 0; }
+}`,
+    python: `class Queue:
+    def __init__(self):
+        self.items = []
+    def enqueue(self, val):
+        self.items.append(val)
+    def dequeue(self):
+        return self.items.pop(0) if self.items else None
+    def peek(self):
+        return self.items[0] if self.items else None
+    def is_empty(self):
+        return len(self.items) == 0`,
+    cpp: `#include <queue>
+class Queue {
+    std::queue<int> q;
+public:
+    void enqueue(int val) { q.push(val); }
+    int dequeue() { int v = q.front(); q.pop(); return v; }
+    int peek() { return q.front(); }
+    bool isEmpty() { return q.empty(); }
+};`
+  },
+  bst: {
+    js: `class BSTNode {
+  constructor(val) { this.val = val; this.left = this.right = null; }
+}
+class BST {
+  constructor() { this.root = null; }
+  insert(val, node = this.root) {
+    if (!node) return new BSTNode(val);
+    if (val < node.val) node.left = this.insert(val, node.left);
+    else node.right = this.insert(val, node.right);
+    return node;
+  }
+}`,
+    python: `class BSTNode:
+    def __init__(self, val):
+        self.val = val
+        self.left = self.right = None
+
+class BST:
+    def __init__(self):
+        self.root = None
+    def insert(self, val, node=None):
+        if node is None: node = self.root
+        if node is None: self.root = BSTNode(val); return
+        if val < node.val:
+            if node.left: self.insert(val, node.left)
+            else: node.left = BSTNode(val)
+        else:
+            if node.right: self.insert(val, node.right)
+            else: node.right = BSTNode(val)`,
+    cpp: `struct BSTNode {
+    int val; BSTNode *left, *right;
+    BSTNode(int v) : val(v), left(nullptr), right(nullptr) {}
+};
+class BST {
+    BSTNode* root;
+    BSTNode* insert(BSTNode* node, int val) {
+        if (!node) return new BSTNode(val);
+        if (val < node->val) node->left = insert(node->left, val);
+        else node->right = insert(node->right, val);
+        return node;
+    }
+public:
+    BST() : root(nullptr) {}
+    void insert(int val) { root = insert(root, val); }
+};`
+  },
+  avl: {
+    js: `class AVLNode {
+  constructor(val) { this.val = val; this.left = this.right = null; this.height = 1; }
+}
+class AVL {
+  height(node) { return node ? node.height : 0; }
+  rotateRight(y) {
+    const x = y.left, T2 = x.right;
+    x.right = y; y.left = T2;
+    y.height = 1 + Math.max(this.height(y.left), this.height(y.right));
+    x.height = 1 + Math.max(this.height(x.left), this.height(x.right));
+    return x;
+  }
+}`,
+    python: `class AVLNode:
+    def __init__(self, val):
+        self.val = val
+        self.left = self.right = None
+        self.height = 1
+
+class AVL:
+    def height(self, node):
+        return node.height if node else 0
+    def rotate_right(self, y):
+        x = y.left
+        T2 = x.right
+        x.right = y
+        y.left = T2
+        y.height = 1 + max(self.height(y.left), self.height(y.right))
+        x.height = 1 + max(self.height(x.left), self.height(x.right))
+        return x`,
+    cpp: `struct AVLNode {
+    int val, height;
+    AVLNode *left, *right;
+    AVLNode(int v) : val(v), height(1), left(nullptr), right(nullptr) {}
+};
+class AVL {
+    int height(AVLNode* n) { return n ? n->height : 0; }
+    AVLNode* rotateRight(AVLNode* y) {
+        AVLNode* x = y->left;
+        AVLNode* T2 = x->right;
+        x->right = y; y->left = T2;
+        y->height = 1 + std::max(height(y->left), height(y->right));
+        x->height = 1 + std::max(height(x->left), height(x->right));
+        return x;
+    }
+};`
+  },
+  heap: {
+    js: `class MaxHeap {
+  constructor() { this.arr = []; }
+  parent(i) { return Math.floor((i - 1) / 2); }
+  insert(val) {
+    this.arr.push(val);
+    let i = this.arr.length - 1;
+    while (i > 0 && this.arr[this.parent(i)] < this.arr[i]) {
+      [this.arr[i], this.arr[this.parent(i)]] = [this.arr[this.parent(i)], this.arr[i]];
+      i = this.parent(i);
+    }
+  }
+}`,
+    python: `class MaxHeap:
+    def __init__(self):
+        self.arr = []
+    def parent(self, i):
+        return (i - 1) // 2
+    def insert(self, val):
+        self.arr.append(val)
+        i = len(self.arr) - 1
+        while i > 0 and self.arr[self.parent(i)] < self.arr[i]:
+            self.arr[i], self.arr[self.parent(i)] = self.arr[self.parent(i)], self.arr[i]
+            i = self.parent(i)`,
+    cpp: `#include <vector>
+class MaxHeap {
+    std::vector<int> arr;
+    int parent(int i) { return (i - 1) / 2; }
+public:
+    void insert(int val) {
+        arr.push_back(val);
+        int i = arr.size() - 1;
+        while (i > 0 && arr[parent(i)] < arr[i]) {
+            std::swap(arr[i], arr[parent(i)]);
+            i = parent(i);
+        }
+    }
+};`
+  },
+  graph: {
+    js: `class Graph {
+  constructor() { this.adj = new Map(); }
+  addVertex(v) { if (!this.adj.has(v)) this.adj.set(v, []); }
+  addEdge(u, v) { this.adj.get(u).push(v); this.adj.get(v).push(u); }
+  bfs(start) {
+    const visited = new Set(), queue = [start];
+    visited.add(start);
+    while (queue.length) {
+      const v = queue.shift();
+      for (const n of this.adj.get(v))
+        if (!visited.has(n)) { visited.add(n); queue.push(n); }
+    }
+  }
+}`,
+    python: `from collections import deque
+
+class Graph:
+    def __init__(self):
+        self.adj = {}
+    def add_vertex(self, v):
+        if v not in self.adj: self.adj[v] = []
+    def add_edge(self, u, v):
+        self.adj[u].append(v)
+        self.adj[v].append(u)
+    def bfs(self, start):
+        visited = set()
+        queue = deque([start])
+        visited.add(start)
+        while queue:
+            v = queue.popleft()
+            for n in self.adj[v]:
+                if n not in visited:
+                    visited.add(n)
+                    queue.append(n)`,
+    cpp: `#include <unordered_map>
+#include <vector>
+#include <queue>
+class Graph {
+    std::unordered_map<int, std::vector<int>> adj;
+public:
+    void addVertex(int v) { adj[v]; }
+    void addEdge(int u, int v) { adj[u].push_back(v); adj[v].push_back(u); }
+    void bfs(int start) {
+        std::vector<bool> visited(1000, false);
+        std::queue<int> q;
+        q.push(start); visited[start] = true;
+        while (!q.empty()) {
+            int v = q.front(); q.pop();
+            for (int n : adj[v])
+                if (!visited[n]) { visited[n] = true; q.push(n); }
+        }
+    }
+};`
+  }
+};
+export default function DataStructureDetail() {
+  const { dsId } = useParams();
+  const [ds, setDs] = useState(null);
+  const [tab, setTab] = useState('overview');
+  const [lang, setLang] = useState('js');
+  const [msg, setMsg] = useState('');
+  const [isRunning, setIsRunning] = useState(false);
+  const canvasRef = useRef(null);
+  const speedRef = useRef(150);
+  const animState = useRef({});
+  const { addTopic } = useProgress();
+
+  const [selectedOp, setSelectedOp] = useState(null);
+  const [status, setStatus] = useState('IDLE');
+  const [highlightedLines, setHighlightedLines] = useState([]);
+
+  const ops = ds ? Object.keys(getOperationsForDS(ds.id)) : [];
+  const activeOp = selectedOp ? getOperationsForDS(ds.id)[selectedOp] : null;
+
+  useEffect(() => {
+    const found = dataStructures.find(d => d.id === dsId);
+    if (found) { setDs(found); addTopic(found.name); }
+    setSelectedOp(null);
+    setStatus('IDLE');
+    setHighlightedLines([]);
+  }, [dsId, addTopic]);
+
+  const draw = useCallback(() => {
+    const c = canvasRef.current;
+    if (!c || !ds) return;
+    const ctx = c.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    const rect = c.getBoundingClientRect();
+    c.width = rect.width * dpr;
+    c.height = rect.height * dpr;
+    ctx.scale(dpr, dpr);
+    const w = rect.width, h = rect.height;
+    ctx.fillStyle = '#0f0e1c';
+    ctx.fillRect(0, 0, w, h);
+    const st = animState.current;
+    switch (ds.id) {
+      case 'arrays': drawArray(ctx, w, h, st); break;
+      case 'linkedlist': drawLinkedList(ctx, w, h, st); break;
+      case 'stack': drawStack(ctx, w, h, st); break;
+      case 'queue': drawQueue(ctx, w, h, st); break;
+      case 'bst': drawTree(ctx, w, h, st); break;
+      case 'avl': drawAVL(ctx, w, h, st); break;
+      case 'heap': drawHeap(ctx, w, h, st); break;
+      case 'graph': drawGraph(ctx, w, h, st); break;
+    }
+  }, [ds]);
+
+  useEffect(() => { draw(); }, [draw]);
+function drawArray(ctx, w, h, st) {
+    const arr = st.arr || [10, 25, 5, 30, 15, 20, 8];
+    const bw = Math.min(60, (w - 40) / arr.length);
+    const totalW = arr.length * bw;
+    const startX = (w - totalW) / 2;
+    const y = h / 2 - 30;
+    arr.forEach((v, i) => {
+      const x = startX + i * bw;
+      ctx.fillStyle = (i === st.highlight) ? '#f59e0b' : '#6366f1';
+      ctx.fillRect(x, y, bw - 2, 50);
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 16px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(v, x + bw / 2 - 1, y + 32);
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '12px Inter, sans-serif';
+      ctx.fillText(i, x + bw / 2 - 1, y - 10);
+    });
+  }
+
+  function drawLinkedList(ctx, w, h, st) {
+    const nodes = st.nodes || [{v:10},{v:25},{v:5},{v:30}];
+    const nw = 50, nh = 40, gap = 60;
+    const totalW = nodes.length * nw + (nodes.length - 1) * gap;
+    let x = (w - totalW) / 2;
+    const y = h / 2 - 20;
+    nodes.forEach((n, i) => {
+      ctx.fillStyle = (i === st.highlight) ? '#f59e0b' : '#ec4899';
+      ctx.fillRect(x, y, nw, nh);
+      ctx.strokeStyle = '#fff'; ctx.strokeRect(x, y, nw, nh);
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 14px Inter'; ctx.textAlign = 'center';
+      ctx.fillText(n.v, x + nw / 2, y + 26);
+      if (i < nodes.length - 1) {
+        ctx.strokeStyle = '#64748b';
+        ctx.beginPath(); ctx.moveTo(x + nw, y + nh / 2); ctx.lineTo(x + nw + gap, y + nh / 2); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(x + nw + gap - 8, y + nh / 2 - 4); ctx.lineTo(x + nw + gap, y + nh / 2); ctx.lineTo(x + nw + gap - 8, y + nh / 2 + 4); ctx.stroke();
+      }
+      x += nw + gap;
+    });
+  }
+
+  function drawStack(ctx, w, h, st) {
+    const items = st.items || [40, 30, 20, 10];
+    const bw = 80, bh = 35;
+    const startX = (w - bw) / 2;
+    const startY = h - 60;
+    ctx.strokeStyle = '#22c55e'; ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(startX, startY + 10); ctx.lineTo(startX, startY - items.length * bh - 10);
+    ctx.moveTo(startX + bw, startY + 10); ctx.lineTo(startX + bw, startY - items.length * bh - 10);
+    ctx.moveTo(startX, startY + 10); ctx.lineTo(startX + bw, startY + 10); ctx.stroke();
+    items.forEach((v, i) => {
+      const y = startY - (items.length - i) * bh;
+      ctx.fillStyle = (i === st.highlight) ? '#f59e0b' : '#22c55e';
+      ctx.fillRect(startX + 1, y, bw - 2, bh - 2);
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 14px Inter'; ctx.textAlign = 'center';
+      ctx.fillText(v, startX + bw / 2, y + 23);
+    });
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 12px Inter';
+    ctx.fillText('TOP', startX + bw / 2, h - 32);
+  }
+
+  function drawQueue(ctx, w, h, st) {
+    const items = st.items || [10, 20, 30, 40];
+    const bw = 70, bh = 40;
+    const totalW = items.length * bw;
+    const startX = (w - totalW) / 2;
+    const y = h / 2 - 20;
+    items.forEach((v, i) => {
+      const x = startX + i * bw;
+      ctx.fillStyle = (i === st.highlight) ? '#f59e0b' : '#f97316';
+      ctx.globalAlpha = 0.85; ctx.fillRect(x, y, bw - 2, bh); ctx.globalAlpha = 1;
+      ctx.strokeStyle = '#fff'; ctx.strokeRect(x, y, bw - 2, bh);
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 14px Inter'; ctx.textAlign = 'center';
+      ctx.fillText(v, x + bw / 2 - 1, y + 26);
+    });
+    if (items.length > 0) {
+      ctx.fillStyle = '#f97316'; ctx.font = 'bold 13px Inter';
+      ctx.fillText('FRONT', startX - 45, y + bh + 20);
+      ctx.fillText('REAR', startX + totalW - 30, y + bh + 20);
+    }
+  }
+
+  function drawTreeNode(ctx, node, x, y, dx, dy, st) {
+    if (!node) return;
+    const r = 22;
+    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fillStyle = (node === st.highlight) ? '#f59e0b' : '#3b82f6';
+    ctx.fill(); ctx.strokeStyle = '#fff'; ctx.stroke();
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 13px Inter'; ctx.textAlign = 'center';
+    ctx.fillText(node.v, x, y + 5);
+    if (node.bf !== undefined) { ctx.fillStyle = '#94a3b8'; ctx.font = '10px Inter'; ctx.fillText('bf:' + node.bf, x, y + r + 14); }
+    if (node.l) { ctx.strokeStyle = '#64748b'; ctx.beginPath(); ctx.moveTo(x, y + r); ctx.lineTo(x - dx, y + dy - r); ctx.stroke(); drawTreeNode(ctx, node.l, x - dx, y + dy, dx / 2, dy, st); }
+    if (node.r) { ctx.strokeStyle = '#64748b'; ctx.beginPath(); ctx.moveTo(x, y + r); ctx.lineTo(x + dx, y + dy - r); ctx.stroke(); drawTreeNode(ctx, node.r, x + dx, y + dy, dx / 2, dy, st); }
+  }
+
+  function drawTree(ctx, w, h, st) {
+    const tree = st.tree || { v: 25, l: { v: 15, l: { v: 10 }, r: { v: 20 } }, r: { v: 35, l: { v: 30 }, r: { v: 40 } } };
+    drawTreeNode(ctx, tree, w / 2, 50, w / 4, 60, st);
+  }
+
+  function drawAVL(ctx, w, h, st) {
+    const tree = st.tree || { v: 30, l: { v: 20, l: { v: 10 } }, r: { v: 40, r: { v: 50 } } };
+    drawTreeNode(ctx, tree, w / 2, 50, w / 4, 60, st);
+  }
+
+  function drawHeap(ctx, w, h, st) {
+    const arr = st.arr || [50, 30, 20, 15, 10, 8, 16];
+    const levelH = 70;
+    function getPos(i, w2) {
+      const level = Math.floor(Math.log2(i + 1));
+      const posInLevel = i - (Math.pow(2, level) - 1);
+      const nodesInLevel = Math.pow(2, level);
+      return { x: (w2 / (nodesInLevel + 1)) * (posInLevel + 1), y: 40 + level * levelH };
+    }
+    arr.forEach((v, i) => {
+      if (i > 0) {
+        const p = getPos(Math.floor((i - 1) / 2), w);
+        const c = getPos(i, w);
+        ctx.strokeStyle = '#64748b'; ctx.beginPath(); ctx.moveTo(p.x, p.y + 22); ctx.lineTo(c.x, c.y - 22); ctx.stroke();
+      }
+    });
+    arr.forEach((v, i) => {
+      const pos = getPos(i, w);
+      ctx.beginPath(); ctx.arc(pos.x, pos.y, 22, 0, Math.PI * 2);
+      ctx.fillStyle = (i === st.highlight) ? '#f59e0b' : '#ef4444';
+      ctx.fill(); ctx.strokeStyle = '#fff'; ctx.stroke();
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 13px Inter'; ctx.textAlign = 'center';
+      ctx.fillText(v, pos.x, pos.y + 5);
+    });
+  }
+
+  function drawGraph(ctx, w, h, st) {
+    const nodes = st.nodes || [{x:w*0.2,y:h*0.3,v:'A'},{x:w*0.5,y:h*0.2,v:'B'},{x:w*0.8,y:h*0.3,v:'C'},{x:w*0.35,y:h*0.6,v:'D'},{x:w*0.65,y:h*0.6,v:'E'}];
+    const edges = st.edges || [[0,1],[1,2],[0,3],[3,4],[1,4],[2,4]];
+    edges.forEach(([u,v]) => {
+      ctx.strokeStyle = '#64748b'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(nodes[u].x, nodes[u].y); ctx.lineTo(nodes[v].x, nodes[v].y); ctx.stroke();
+    });
+    nodes.forEach((n, i) => {
+      ctx.beginPath(); ctx.arc(n.x, n.y, 22, 0, Math.PI * 2);
+      ctx.fillStyle = (i === st.highlight) ? '#f59e0b' : '#14b8a6';
+      ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 14px Inter'; ctx.textAlign = 'center';
+      ctx.fillText(n.v, n.x, n.y + 5);
+    });
+  }
+
+  
+  async function highlightLine(stepIndex) {
+    if (!activeOp || !activeOp.steps) return;
+    const lineIdx = activeOp.steps[stepIndex];
+    if (lineIdx === undefined) return;
+    setHighlightedLines([lineIdx]);
+    await sleep(speedRef.current);
+  }
+async function runAnim(type) {
+    if (isRunning) return;
+    setIsRunning(true);
+    const st = animState.current;
+    const sp = speedRef.current;
+    try {
+      switch (ds.id + '_' + type) {
+        case 'arrays_search': {
+          st.arr = [...(st.arr || [10,25,5,30,15,20,8])];
+          const target = st.arr[Math.floor(Math.random() * st.arr.length)];
+          setMsg('Searching for: ' + target);
+          for (let i = 0; i < st.arr.length; i++) {
+            st.highlight = i; draw(); await sleep(sp);
+            if (st.arr[i] === target) { setMsg('Found ' + target + ' at index ' + i); break; }
+          }
+          await sleep(500); st.highlight = -1; break;
+        }
+        case 'arrays_insert': {
+          st.arr = [...(st.arr || [10,25,5,30,15,20,8])];
+          const val = Math.floor(Math.random() * 90) + 10;
+          st.arr.push(val);
+          setMsg('Inserted: ' + val);
+          draw(); await sleep(500); break;
+        }
+        case 'linkedlist_insert': {
+          st.nodes = [...(st.nodes || [{v:10},{v:25},{v:5}])];
+          const val = Math.floor(Math.random() * 90) + 10;
+          st.nodes.unshift({v:val});
+          setMsg('Inserted ' + val + ' at head');
+          st.highlight = 0; draw(); await sleep(500); st.highlight = -1; break;
+        }
+        case 'linkedlist_delete': {
+          st.nodes = [...(st.nodes || [{v:10},{v:25},{v:5}])];
+          if (st.nodes.length > 0) {
+            const removed = st.nodes.pop();
+            setMsg('Deleted: ' + removed.v);
+          }
+          draw(); await sleep(500); break;
+        }
+        case 'stack_push': {
+          st.items = [...(st.items || [40,30,20])];
+          const val = Math.floor(Math.random() * 90) + 10;
+          st.items.unshift(val);
+          setMsg('Pushed: ' + val);
+          st.highlight = 0; draw(); await sleep(500); st.highlight = -1; break;
+        }
+        case 'stack_pop': {
+          st.items = [...(st.items || [40,30,20,10])];
+          if (st.items.length > 0) {
+            const val = st.items.shift();
+            setMsg('Popped: ' + val);
+          }
+          draw(); await sleep(500); break;
+        }
+        case 'queue_enqueue': {
+          st.items = [...(st.items || [10,20,30])];
+          const val = Math.floor(Math.random() * 90) + 10;
+          st.items.push(val);
+          setMsg('Enqueued: ' + val);
+          st.highlight = st.items.length - 1; draw(); await sleep(500); st.highlight = -1; break;
+        }
+        case 'queue_dequeue': {
+          st.items = [...(st.items || [10,20,30,40])];
+          if (st.items.length > 0) {
+            const val = st.items.shift();
+            setMsg('Dequeued: ' + val);
+          }
+          draw(); await sleep(500); break;
+        }
+        case 'bst_insert': {
+          const val = Math.floor(Math.random() * 90) + 10;
+          setMsg('BST Insert: ' + val + ' (visualized)');
+          st.tree = st.tree || {v:25,l:{v:15,l:{v:10},r:{v:20}},r:{v:35,l:{v:30},r:{v:40}}};
+          st.highlight = {v:25}; draw(); await sleep(500); st.highlight = null; break;
+        }
+        case 'heap_insert': {
+          st.arr = [...(st.arr || [50,30,20,15,10,8])];
+          const val = Math.floor(Math.random() * 90) + 10;
+          st.arr.push(val);
+          setMsg('Heap Insert: ' + val);
+          draw(); await sleep(500); break;
+        }
+        case 'graph_bfs': {
+          st.nodes = [{x:100,y:80,v:'A'},{x:250,y:50,v:'B'},{x:400,y:80,v:'C'},{x:175,y:180,v:'D'},{x:325,y:180,v:'E'}];
+          setMsg('BFS Traversal: A B D C E');
+          for (let i = 0; i < 5; i++) { st.highlight = i; draw(); await sleep(sp + 300); }
+          st.highlight = -1; break;
+        }
+        default:
+          setMsg('Demo animation');
+      }
+    } catch(e) { console.error(e); }
+    setIsRunning(false);
+    draw();
+  }
+
+  
+  function reset() {
+    animState.current = {};
+    setMsg('');
+    setStatus('IDLE');
+    setHighlightedLines([]);
+    setSelectedOp(null);
+    draw();
+  }
+
+  if (!ds) return <div className="detail-page"><div className="container"><h2>Not found</h2></div></div>;
+
+  const complexity = dsComplexity[ds.id] || {};
+  const code = dsCode[ds.id];
+
+  return (
+    <div className="detail-page">
+      <div className="container">
+        <button className="back-btn" onClick={() => window.history.back()}>&larr; Back</button>
+        <h1>{ds.name}</h1>
+        <p className="detail-desc">{ds.details || ds.description}</p>
+
+        <div className="detail-grid">
+          <div className="detail-sidebar">
+            <div className="panel">
+              <h3>Complexity</h3>
+              {Object.entries(complexity).map(([k,v]) => (
+                <div className="stat-row" key={k}><span>{k.charAt(0).toUpperCase() + k.slice(1)}</span><span className="badge">{v}</span></div>
+              ))}
+            </div>
+            <div className="panel">
+              <h3>Operations</h3>
+              <div className="op-selector">
+                {ops.map(op => (
+                  <button
+                    key={op}
+                    className={selectedOp === op ? 'op-btn selected' : 'op-btn'}
+                    onClick={() => {
+                      if (isRunning) return;
+                      setSelectedOp(op);
+                      setHighlightedLines([]);
+                      setMsg('');
+                    }}
+                    disabled={isRunning}
+                  >
+                    {op.replace(/([A-Z])/g, ' $1').trim()}
+                  </button>
+                ))}
+              </div>
+              <div className="msg-display">{msg}</div>
+            </div>
+            {activeOp && (
+              <div className="panel">
+                <h3>Run: {activeOp.name}</h3>
+                <div className="btn-row" style={{marginTop:8}}>
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => runAnim(selectedOp)}
+                    disabled={isRunning}
+                  >
+                    {isRunning ? 'Running...' : status === 'FINISHED' ? 'Run Again' : 'Run'}
+                  </button>
+                  <button className="btn" onClick={reset} disabled={isRunning}>Reset</button>
+                </div>
+                {activeOp.maxElements !== undefined && (
+                  <div className="hint-text">Max {activeOp.maxElements} elements for insert</div>
+                )}
+                <label style={{fontSize:'0.8rem',color:'#64748b',marginTop:8,display:'block'}}>Speed</label>
+                <input type="range" min="20" max="300" defaultValue="150" onChange={e => speedRef.current = 320 - e.target.value} disabled={isRunning} />
+              </div>
+            )}
+          </div>
+
+          <div className="detail-main">
+            <div className="tabs">
+              <button className={tab === 'overview' ? 'active' : ''} onClick={() => setTab('overview')}>Overview</button>
+              <button className={tab === 'code' ? 'active' : ''} onClick={() => setTab('code')}>Code</button>
+            </div>
+
+            {tab === 'overview' && (
+              <div className="tab-panel">
+                <h3>{ds.name} Visualization</h3>
+                <div style={{ height: '320px', borderRadius: '8px', overflow: 'hidden', background: '#0f0e1c' }}>
+                  <canvas ref={canvasRef} style={{ width: '100%', height: '100%' }} />
+                </div>
+                <p style={{marginTop:12,color:'#64748b',fontSize:'0.9rem'}}>
+                  Use the operation selector on the left to interact with the {ds.name.toLowerCase()}.
+                </p>
+
+                {activeOp && activeOp.pseudocode && (
+                  <div className="pseudocode-section" style={{ marginTop: 20 }}>
+                    <h4>Pseudocode: {activeOp.name}</h4>
+                    <div className="pseudo-block">
+                      {activeOp.pseudocode.map((line, idx) => (
+                        <div
+                          key={idx}
+                          className={highlightedLines.includes(idx) ? 'pseudo-line highlight' : 'pseudo-line'}
+                        >
+                          <span className="line-num">{idx + 1}</span>
+                          <span className="line-txt">{line}</span>
+                        </div>
+                      ))}
+                    </div>
+                    {status === 'RUNNING' && <span className="status-badge running">Running</span>}
+                    {status === 'FINISHED' && <span className="status-badge finished">Finished</span>}
+                    {status === 'IDLE' && <span className="status-badge idle">Idle</span>}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {tab === 'code' && (
+              <div className="tab-panel">
+                <div className="lang-tabs">
+                  <button className={lang === 'js' ? 'active' : ''} onClick={() => setLang('js')}>JavaScript</button>
+                  <button className={lang === 'python' ? 'active' : ''} onClick={() => setLang('python')}>Python</button>
+                  <button className={lang === 'cpp' ? 'active' : ''} onClick={() => setLang('cpp')}>C++</button>
+                </div>
+                <pre className="code-block">{code ? code[lang] : '// Code coming soon...'}</pre>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

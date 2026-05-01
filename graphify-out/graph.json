@@ -1,0 +1,1084 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "label": "vite.config.js",
+      "file_type": "code",
+      "source_file": "vite.config.js",
+      "source_location": "L1",
+      "id": "vite_config_js",
+      "community": 20,
+      "norm_label": "vite.config.js"
+    },
+    {
+      "label": "App.jsx",
+      "file_type": "code",
+      "source_file": "src/App.jsx",
+      "source_location": "L1",
+      "id": "src_app_jsx",
+      "community": 4,
+      "norm_label": "app.jsx"
+    },
+    {
+      "label": "Home()",
+      "file_type": "code",
+      "source_file": "src/App.jsx",
+      "source_location": "L15",
+      "id": "src_app_home",
+      "community": 4,
+      "norm_label": "home()"
+    },
+    {
+      "label": "App()",
+      "file_type": "code",
+      "source_file": "src/App.jsx",
+      "source_location": "L27",
+      "id": "src_app_app",
+      "community": 4,
+      "norm_label": "app()"
+    },
+    {
+      "label": "main.jsx",
+      "file_type": "code",
+      "source_file": "src/main.jsx",
+      "source_location": "L1",
+      "id": "src_main_jsx",
+      "community": 21,
+      "norm_label": "main.jsx"
+    },
+    {
+      "label": "ProgressContext.jsx",
+      "file_type": "code",
+      "source_file": "src/contexts/ProgressContext.jsx",
+      "source_location": "L1",
+      "id": "src_contexts_progresscontext_jsx",
+      "community": 0,
+      "norm_label": "progresscontext.jsx"
+    },
+    {
+      "label": "ProgressProvider()",
+      "file_type": "code",
+      "source_file": "src/contexts/ProgressContext.jsx",
+      "source_location": "L13",
+      "id": "contexts_progresscontext_progressprovider",
+      "community": 0,
+      "norm_label": "progressprovider()"
+    },
+    {
+      "label": "useProgress()",
+      "file_type": "code",
+      "source_file": "src/contexts/ProgressContext.jsx",
+      "source_location": "L107",
+      "id": "contexts_progresscontext_useprogress",
+      "community": 0,
+      "norm_label": "useprogress()"
+    },
+    {
+      "label": "ThemeContext.jsx",
+      "file_type": "code",
+      "source_file": "src/contexts/ThemeContext.jsx",
+      "source_location": "L1",
+      "id": "src_contexts_themecontext_jsx",
+      "community": 1,
+      "norm_label": "themecontext.jsx"
+    },
+    {
+      "label": "ThemeProvider()",
+      "file_type": "code",
+      "source_file": "src/contexts/ThemeContext.jsx",
+      "source_location": "L5",
+      "id": "contexts_themecontext_themeprovider",
+      "community": 1,
+      "norm_label": "themeprovider()"
+    },
+    {
+      "label": "useTheme()",
+      "file_type": "code",
+      "source_file": "src/contexts/ThemeContext.jsx",
+      "source_location": "L27",
+      "id": "contexts_themecontext_usetheme",
+      "community": 1,
+      "norm_label": "usetheme()"
+    },
+    {
+      "label": "Hero.jsx",
+      "file_type": "code",
+      "source_file": "src/components/Hero.jsx",
+      "source_location": "L1",
+      "id": "src_components_hero_jsx",
+      "community": 5,
+      "norm_label": "hero.jsx"
+    },
+    {
+      "label": "Hero()",
+      "file_type": "code",
+      "source_file": "src/components/Hero.jsx",
+      "source_location": "L5",
+      "id": "components_hero_hero",
+      "community": 5,
+      "norm_label": "hero()"
+    },
+    {
+      "label": "Navbar.jsx",
+      "file_type": "code",
+      "source_file": "src/components/Navbar.jsx",
+      "source_location": "L1",
+      "id": "src_components_navbar_jsx",
+      "community": 1,
+      "norm_label": "navbar.jsx"
+    },
+    {
+      "label": "Navbar()",
+      "file_type": "code",
+      "source_file": "src/components/Navbar.jsx",
+      "source_location": "L16",
+      "id": "components_navbar_navbar",
+      "community": 1,
+      "norm_label": "navbar()"
+    },
+    {
+      "label": "Footer.jsx",
+      "file_type": "code",
+      "source_file": "src/components/Footer.jsx",
+      "source_location": "L1",
+      "id": "src_components_footer_jsx",
+      "community": 6,
+      "norm_label": "footer.jsx"
+    },
+    {
+      "label": "Footer()",
+      "file_type": "code",
+      "source_file": "src/components/Footer.jsx",
+      "source_location": "L5",
+      "id": "components_footer_footer",
+      "community": 6,
+      "norm_label": "footer()"
+    },
+    {
+      "label": "Problems.jsx",
+      "file_type": "code",
+      "source_file": "src/components/Problems/Problems.jsx",
+      "source_location": "L1",
+      "id": "src_components_problems_problems_jsx",
+      "community": 0,
+      "norm_label": "problems.jsx"
+    },
+    {
+      "label": "Problems()",
+      "file_type": "code",
+      "source_file": "src/components/Problems/Problems.jsx",
+      "source_location": "L7",
+      "id": "problems_problems_problems",
+      "community": 0,
+      "norm_label": "problems()"
+    },
+    {
+      "label": "DataStructures.jsx",
+      "file_type": "code",
+      "source_file": "src/components/DataStructures/DataStructures.jsx",
+      "source_location": "L1",
+      "id": "src_components_datastructures_datastructures_jsx",
+      "community": 7,
+      "norm_label": "datastructures.jsx"
+    },
+    {
+      "label": "DataStructures()",
+      "file_type": "code",
+      "source_file": "src/components/DataStructures/DataStructures.jsx",
+      "source_location": "L5",
+      "id": "datastructures_datastructures_datastructures",
+      "community": 7,
+      "norm_label": "datastructures()"
+    },
+    {
+      "label": "TreeVisualizer.jsx",
+      "file_type": "code",
+      "source_file": "src/components/DataStructures/TreeVisualizer.jsx",
+      "source_location": "L1",
+      "id": "src_components_datastructures_treevisualizer_jsx",
+      "community": 2,
+      "norm_label": "treevisualizer.jsx"
+    },
+    {
+      "label": "TreeNode",
+      "file_type": "code",
+      "source_file": "src/components/DataStructures/TreeVisualizer.jsx",
+      "source_location": "L153",
+      "id": "datastructures_treevisualizer_treenode",
+      "community": 2,
+      "norm_label": "treenode"
+    },
+    {
+      "label": ".constructor()",
+      "file_type": "code",
+      "source_file": "src/components/DataStructures/TreeVisualizer.jsx",
+      "source_location": "L154",
+      "id": "datastructures_treevisualizer_treenode_constructor",
+      "community": 2,
+      "norm_label": ".constructor()"
+    },
+    {
+      "label": "TreeVisualizer()",
+      "file_type": "code",
+      "source_file": "src/components/DataStructures/TreeVisualizer.jsx",
+      "source_location": "L163",
+      "id": "datastructures_treevisualizer_treevisualizer",
+      "community": 2,
+      "norm_label": "treevisualizer()"
+    },
+    {
+      "label": "LinkedListVisualizer.jsx",
+      "file_type": "code",
+      "source_file": "src/components/DataStructures/LinkedListVisualizer.jsx",
+      "source_location": "L1",
+      "id": "src_components_datastructures_linkedlistvisualizer_jsx",
+      "community": 3,
+      "norm_label": "linkedlistvisualizer.jsx"
+    },
+    {
+      "label": "ListNode",
+      "file_type": "code",
+      "source_file": "src/components/DataStructures/LinkedListVisualizer.jsx",
+      "source_location": "L65",
+      "id": "datastructures_linkedlistvisualizer_listnode",
+      "community": 3,
+      "norm_label": "listnode"
+    },
+    {
+      "label": ".constructor()",
+      "file_type": "code",
+      "source_file": "src/components/DataStructures/LinkedListVisualizer.jsx",
+      "source_location": "L66",
+      "id": "datastructures_linkedlistvisualizer_listnode_constructor",
+      "community": 3,
+      "norm_label": ".constructor()"
+    },
+    {
+      "label": "LinkedListVisualizer()",
+      "file_type": "code",
+      "source_file": "src/components/DataStructures/LinkedListVisualizer.jsx",
+      "source_location": "L72",
+      "id": "datastructures_linkedlistvisualizer_linkedlistvisualizer",
+      "community": 3,
+      "norm_label": "linkedlistvisualizer()"
+    },
+    {
+      "label": "StackVisualizer.jsx",
+      "file_type": "code",
+      "source_file": "src/components/DataStructures/StackVisualizer.jsx",
+      "source_location": "L1",
+      "id": "src_components_datastructures_stackvisualizer_jsx",
+      "community": 8,
+      "norm_label": "stackvisualizer.jsx"
+    },
+    {
+      "label": "StackVisualizer()",
+      "file_type": "code",
+      "source_file": "src/components/DataStructures/StackVisualizer.jsx",
+      "source_location": "L76",
+      "id": "datastructures_stackvisualizer_stackvisualizer",
+      "community": 8,
+      "norm_label": "stackvisualizer()"
+    },
+    {
+      "label": "ArrayVisualizer.jsx",
+      "file_type": "code",
+      "source_file": "src/components/DataStructures/ArrayVisualizer.jsx",
+      "source_location": "L1",
+      "id": "src_components_datastructures_arrayvisualizer_jsx",
+      "community": 9,
+      "norm_label": "arrayvisualizer.jsx"
+    },
+    {
+      "label": "ArrayVisualizer()",
+      "file_type": "code",
+      "source_file": "src/components/DataStructures/ArrayVisualizer.jsx",
+      "source_location": "L55",
+      "id": "datastructures_arrayvisualizer_arrayvisualizer",
+      "community": 9,
+      "norm_label": "arrayvisualizer()"
+    },
+    {
+      "label": "GraphVisualizer.jsx",
+      "file_type": "code",
+      "source_file": "src/components/DataStructures/GraphVisualizer.jsx",
+      "source_location": "L1",
+      "id": "src_components_datastructures_graphvisualizer_jsx",
+      "community": 10,
+      "norm_label": "graphvisualizer.jsx"
+    },
+    {
+      "label": "GraphVisualizer()",
+      "file_type": "code",
+      "source_file": "src/components/DataStructures/GraphVisualizer.jsx",
+      "source_location": "L186",
+      "id": "datastructures_graphvisualizer_graphvisualizer",
+      "community": 10,
+      "norm_label": "graphvisualizer()"
+    },
+    {
+      "label": "DataStructureDetail.jsx",
+      "file_type": "code",
+      "source_file": "src/components/DataStructures/DataStructureDetail.jsx",
+      "source_location": "L1",
+      "id": "src_components_datastructures_datastructuredetail_jsx",
+      "community": 0,
+      "norm_label": "datastructuredetail.jsx"
+    },
+    {
+      "label": "sleep()",
+      "file_type": "code",
+      "source_file": "src/components/DataStructures/DataStructureDetail.jsx",
+      "source_location": "L8",
+      "id": "datastructures_datastructuredetail_sleep",
+      "community": 0,
+      "norm_label": "sleep()"
+    },
+    {
+      "label": "DataStructureDetail()",
+      "file_type": "code",
+      "source_file": "src/components/DataStructures/DataStructureDetail.jsx",
+      "source_location": "L340",
+      "id": "datastructures_datastructuredetail_datastructuredetail",
+      "community": 0,
+      "norm_label": "datastructuredetail()"
+    },
+    {
+      "label": "QueueVisualizer.jsx",
+      "file_type": "code",
+      "source_file": "src/components/DataStructures/QueueVisualizer.jsx",
+      "source_location": "L1",
+      "id": "src_components_datastructures_queuevisualizer_jsx",
+      "community": 11,
+      "norm_label": "queuevisualizer.jsx"
+    },
+    {
+      "label": "QueueVisualizer()",
+      "file_type": "code",
+      "source_file": "src/components/DataStructures/QueueVisualizer.jsx",
+      "source_location": "L59",
+      "id": "datastructures_queuevisualizer_queuevisualizer",
+      "community": 11,
+      "norm_label": "queuevisualizer()"
+    },
+    {
+      "label": "QuickSortVisualizer.jsx",
+      "file_type": "code",
+      "source_file": "src/components/Algorithms/QuickSortVisualizer.jsx",
+      "source_location": "L1",
+      "id": "src_components_algorithms_quicksortvisualizer_jsx",
+      "community": 12,
+      "norm_label": "quicksortvisualizer.jsx"
+    },
+    {
+      "label": "QuickSortVisualizer()",
+      "file_type": "code",
+      "source_file": "src/components/Algorithms/QuickSortVisualizer.jsx",
+      "source_location": "L92",
+      "id": "algorithms_quicksortvisualizer_quicksortvisualizer",
+      "community": 12,
+      "norm_label": "quicksortvisualizer()"
+    },
+    {
+      "label": "MergeSortVisualizer.jsx",
+      "file_type": "code",
+      "source_file": "src/components/Algorithms/MergeSortVisualizer.jsx",
+      "source_location": "L1",
+      "id": "src_components_algorithms_mergesortvisualizer_jsx",
+      "community": 13,
+      "norm_label": "mergesortvisualizer.jsx"
+    },
+    {
+      "label": "MergeSortVisualizer()",
+      "file_type": "code",
+      "source_file": "src/components/Algorithms/MergeSortVisualizer.jsx",
+      "source_location": "L48",
+      "id": "algorithms_mergesortvisualizer_mergesortvisualizer",
+      "community": 13,
+      "norm_label": "mergesortvisualizer()"
+    },
+    {
+      "label": "LinearSearchVisualizer.jsx",
+      "file_type": "code",
+      "source_file": "src/components/Algorithms/LinearSearchVisualizer.jsx",
+      "source_location": "L1",
+      "id": "src_components_algorithms_linearsearchvisualizer_jsx",
+      "community": 14,
+      "norm_label": "linearsearchvisualizer.jsx"
+    },
+    {
+      "label": "LinearSearchVisualizer()",
+      "file_type": "code",
+      "source_file": "src/components/Algorithms/LinearSearchVisualizer.jsx",
+      "source_location": "L18",
+      "id": "algorithms_linearsearchvisualizer_linearsearchvisualizer",
+      "community": 14,
+      "norm_label": "linearsearchvisualizer()"
+    },
+    {
+      "label": "BubbleSortVisualizer.jsx",
+      "file_type": "code",
+      "source_file": "src/components/Algorithms/BubbleSortVisualizer.jsx",
+      "source_location": "L1",
+      "id": "src_components_algorithms_bubblesortvisualizer_jsx",
+      "community": 15,
+      "norm_label": "bubblesortvisualizer.jsx"
+    },
+    {
+      "label": "BubbleSortVisualizer()",
+      "file_type": "code",
+      "source_file": "src/components/Algorithms/BubbleSortVisualizer.jsx",
+      "source_location": "L62",
+      "id": "algorithms_bubblesortvisualizer_bubblesortvisualizer",
+      "community": 15,
+      "norm_label": "bubblesortvisualizer()"
+    },
+    {
+      "label": "HeapSortVisualizer.jsx",
+      "file_type": "code",
+      "source_file": "src/components/Algorithms/HeapSortVisualizer.jsx",
+      "source_location": "L1",
+      "id": "src_components_algorithms_heapsortvisualizer_jsx",
+      "community": 16,
+      "norm_label": "heapsortvisualizer.jsx"
+    },
+    {
+      "label": "HeapSortVisualizer()",
+      "file_type": "code",
+      "source_file": "src/components/Algorithms/HeapSortVisualizer.jsx",
+      "source_location": "L26",
+      "id": "algorithms_heapsortvisualizer_heapsortvisualizer",
+      "community": 16,
+      "norm_label": "heapsortvisualizer()"
+    },
+    {
+      "label": "BinarySearchVisualizer.jsx",
+      "file_type": "code",
+      "source_file": "src/components/Algorithms/BinarySearchVisualizer.jsx",
+      "source_location": "L1",
+      "id": "src_components_algorithms_binarysearchvisualizer_jsx",
+      "community": 17,
+      "norm_label": "binarysearchvisualizer.jsx"
+    },
+    {
+      "label": "BinarySearchVisualizer()",
+      "file_type": "code",
+      "source_file": "src/components/Algorithms/BinarySearchVisualizer.jsx",
+      "source_location": "L28",
+      "id": "algorithms_binarysearchvisualizer_binarysearchvisualizer",
+      "community": 17,
+      "norm_label": "binarysearchvisualizer()"
+    },
+    {
+      "label": "Algorithms.jsx",
+      "file_type": "code",
+      "source_file": "src/components/Algorithms/Algorithms.jsx",
+      "source_location": "L1",
+      "id": "src_components_algorithms_algorithms_jsx",
+      "community": 18,
+      "norm_label": "algorithms.jsx"
+    },
+    {
+      "label": "Algorithms()",
+      "file_type": "code",
+      "source_file": "src/components/Algorithms/Algorithms.jsx",
+      "source_location": "L5",
+      "id": "algorithms_algorithms_algorithms",
+      "community": 18,
+      "norm_label": "algorithms()"
+    },
+    {
+      "label": "AlgorithmDetail.jsx",
+      "file_type": "code",
+      "source_file": "src/components/Algorithms/AlgorithmDetail.jsx",
+      "source_location": "L1",
+      "id": "src_components_algorithms_algorithmdetail_jsx",
+      "community": 0,
+      "norm_label": "algorithmdetail.jsx"
+    },
+    {
+      "label": "AlgorithmDetail()",
+      "file_type": "code",
+      "source_file": "src/components/Algorithms/AlgorithmDetail.jsx",
+      "source_location": "L425",
+      "id": "algorithms_algorithmdetail_algorithmdetail",
+      "community": 0,
+      "norm_label": "algorithmdetail()"
+    },
+    {
+      "label": "Progress.jsx",
+      "file_type": "code",
+      "source_file": "src/components/Progress/Progress.jsx",
+      "source_location": "L1",
+      "id": "src_components_progress_progress_jsx",
+      "community": 0,
+      "norm_label": "progress.jsx"
+    },
+    {
+      "label": "Progress()",
+      "file_type": "code",
+      "source_file": "src/components/Progress/Progress.jsx",
+      "source_location": "L5",
+      "id": "progress_progress_progress",
+      "community": 0,
+      "norm_label": "progress()"
+    },
+    {
+      "label": "useScrollspy.js",
+      "file_type": "code",
+      "source_file": "src/hooks/useScrollspy.js",
+      "source_location": "L1",
+      "id": "src_hooks_usescrollspy_js",
+      "community": 1,
+      "norm_label": "usescrollspy.js"
+    },
+    {
+      "label": "useScrollspy()",
+      "file_type": "code",
+      "source_file": "src/hooks/useScrollspy.js",
+      "source_location": "L3",
+      "id": "hooks_usescrollspy_usescrollspy",
+      "community": 1,
+      "norm_label": "usescrollspy()"
+    },
+    {
+      "label": "useLocalStorage.js",
+      "file_type": "code",
+      "source_file": "src/hooks/useLocalStorage.js",
+      "source_location": "L1",
+      "id": "src_hooks_uselocalstorage_js",
+      "community": 19,
+      "norm_label": "uselocalstorage.js"
+    },
+    {
+      "label": "useLocalStorage()",
+      "file_type": "code",
+      "source_file": "src/hooks/useLocalStorage.js",
+      "source_location": "L3",
+      "id": "hooks_uselocalstorage_uselocalstorage",
+      "community": 19,
+      "norm_label": "uselocalstorage()"
+    },
+    {
+      "label": "dsOperations.js",
+      "file_type": "code",
+      "source_file": "src/data/dsOperations.js",
+      "source_location": "L1",
+      "id": "src_data_dsoperations_js",
+      "community": 22,
+      "norm_label": "dsoperations.js"
+    },
+    {
+      "label": "problems.js",
+      "file_type": "code",
+      "source_file": "src/data/problems.js",
+      "source_location": "L1",
+      "id": "src_data_problems_js",
+      "community": 23,
+      "norm_label": "problems.js"
+    },
+    {
+      "label": "algorithms.js",
+      "file_type": "code",
+      "source_file": "src/data/algorithms.js",
+      "source_location": "L1",
+      "id": "src_data_algorithms_js",
+      "community": 24,
+      "norm_label": "algorithms.js"
+    },
+    {
+      "label": "dataStructures.js",
+      "file_type": "code",
+      "source_file": "src/data/dataStructures.js",
+      "source_location": "L1",
+      "id": "src_data_datastructures_js",
+      "community": 25,
+      "norm_label": "datastructures.js"
+    }
+  ],
+  "links": [
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L15",
+      "weight": 1.0,
+      "_src": "src_app_jsx",
+      "_tgt": "src_app_home",
+      "source": "src_app_jsx",
+      "target": "src_app_home",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L27",
+      "weight": 1.0,
+      "_src": "src_app_jsx",
+      "_tgt": "src_app_app",
+      "source": "src_app_jsx",
+      "target": "src_app_app",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/contexts/ProgressContext.jsx",
+      "source_location": "L13",
+      "weight": 1.0,
+      "_src": "src_contexts_progresscontext_jsx",
+      "_tgt": "contexts_progresscontext_progressprovider",
+      "source": "src_contexts_progresscontext_jsx",
+      "target": "contexts_progresscontext_progressprovider",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/contexts/ProgressContext.jsx",
+      "source_location": "L107",
+      "weight": 1.0,
+      "_src": "src_contexts_progresscontext_jsx",
+      "_tgt": "contexts_progresscontext_useprogress",
+      "source": "src_contexts_progresscontext_jsx",
+      "target": "contexts_progresscontext_useprogress",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/components/Problems/Problems.jsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "_src": "contexts_progresscontext_useprogress",
+      "_tgt": "problems_problems_problems",
+      "source": "contexts_progresscontext_useprogress",
+      "target": "problems_problems_problems"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/components/DataStructures/DataStructureDetail.jsx",
+      "source_location": "L350",
+      "weight": 1.0,
+      "_src": "contexts_progresscontext_useprogress",
+      "_tgt": "datastructures_datastructuredetail_datastructuredetail",
+      "source": "contexts_progresscontext_useprogress",
+      "target": "datastructures_datastructuredetail_datastructuredetail"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/components/Algorithms/AlgorithmDetail.jsx",
+      "source_location": "L440",
+      "weight": 1.0,
+      "_src": "contexts_progresscontext_useprogress",
+      "_tgt": "algorithms_algorithmdetail_algorithmdetail",
+      "source": "contexts_progresscontext_useprogress",
+      "target": "algorithms_algorithmdetail_algorithmdetail"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/components/Progress/Progress.jsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_src": "contexts_progresscontext_useprogress",
+      "_tgt": "progress_progress_progress",
+      "source": "contexts_progresscontext_useprogress",
+      "target": "progress_progress_progress"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/contexts/ThemeContext.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_src": "src_contexts_themecontext_jsx",
+      "_tgt": "contexts_themecontext_themeprovider",
+      "source": "src_contexts_themecontext_jsx",
+      "target": "contexts_themecontext_themeprovider",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/contexts/ThemeContext.jsx",
+      "source_location": "L27",
+      "weight": 1.0,
+      "_src": "src_contexts_themecontext_jsx",
+      "_tgt": "contexts_themecontext_usetheme",
+      "source": "src_contexts_themecontext_jsx",
+      "target": "contexts_themecontext_usetheme",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/components/Navbar.jsx",
+      "source_location": "L18",
+      "weight": 1.0,
+      "_src": "contexts_themecontext_usetheme",
+      "_tgt": "components_navbar_navbar",
+      "source": "contexts_themecontext_usetheme",
+      "target": "components_navbar_navbar"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/Hero.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_src": "src_components_hero_jsx",
+      "_tgt": "components_hero_hero",
+      "source": "src_components_hero_jsx",
+      "target": "components_hero_hero",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/Navbar.jsx",
+      "source_location": "L16",
+      "weight": 1.0,
+      "_src": "src_components_navbar_jsx",
+      "_tgt": "components_navbar_navbar",
+      "source": "src_components_navbar_jsx",
+      "target": "components_navbar_navbar",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/components/Navbar.jsx",
+      "source_location": "L20",
+      "weight": 1.0,
+      "_src": "components_navbar_navbar",
+      "_tgt": "hooks_usescrollspy_usescrollspy",
+      "source": "components_navbar_navbar",
+      "target": "hooks_usescrollspy_usescrollspy"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/Footer.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_src": "src_components_footer_jsx",
+      "_tgt": "components_footer_footer",
+      "source": "src_components_footer_jsx",
+      "target": "components_footer_footer",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/Problems/Problems.jsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "_src": "src_components_problems_problems_jsx",
+      "_tgt": "problems_problems_problems",
+      "source": "src_components_problems_problems_jsx",
+      "target": "problems_problems_problems",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/DataStructures/DataStructures.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_src": "src_components_datastructures_datastructures_jsx",
+      "_tgt": "datastructures_datastructures_datastructures",
+      "source": "src_components_datastructures_datastructures_jsx",
+      "target": "datastructures_datastructures_datastructures",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/DataStructures/TreeVisualizer.jsx",
+      "source_location": "L153",
+      "weight": 1.0,
+      "_src": "src_components_datastructures_treevisualizer_jsx",
+      "_tgt": "datastructures_treevisualizer_treenode",
+      "source": "src_components_datastructures_treevisualizer_jsx",
+      "target": "datastructures_treevisualizer_treenode",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/DataStructures/TreeVisualizer.jsx",
+      "source_location": "L163",
+      "weight": 1.0,
+      "_src": "src_components_datastructures_treevisualizer_jsx",
+      "_tgt": "datastructures_treevisualizer_treevisualizer",
+      "source": "src_components_datastructures_treevisualizer_jsx",
+      "target": "datastructures_treevisualizer_treevisualizer",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/DataStructures/TreeVisualizer.jsx",
+      "source_location": "L154",
+      "weight": 1.0,
+      "_src": "datastructures_treevisualizer_treenode",
+      "_tgt": "datastructures_treevisualizer_treenode_constructor",
+      "source": "datastructures_treevisualizer_treenode",
+      "target": "datastructures_treevisualizer_treenode_constructor",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/DataStructures/LinkedListVisualizer.jsx",
+      "source_location": "L65",
+      "weight": 1.0,
+      "_src": "src_components_datastructures_linkedlistvisualizer_jsx",
+      "_tgt": "datastructures_linkedlistvisualizer_listnode",
+      "source": "src_components_datastructures_linkedlistvisualizer_jsx",
+      "target": "datastructures_linkedlistvisualizer_listnode",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/DataStructures/LinkedListVisualizer.jsx",
+      "source_location": "L72",
+      "weight": 1.0,
+      "_src": "src_components_datastructures_linkedlistvisualizer_jsx",
+      "_tgt": "datastructures_linkedlistvisualizer_linkedlistvisualizer",
+      "source": "src_components_datastructures_linkedlistvisualizer_jsx",
+      "target": "datastructures_linkedlistvisualizer_linkedlistvisualizer",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/DataStructures/LinkedListVisualizer.jsx",
+      "source_location": "L66",
+      "weight": 1.0,
+      "_src": "datastructures_linkedlistvisualizer_listnode",
+      "_tgt": "datastructures_linkedlistvisualizer_listnode_constructor",
+      "source": "datastructures_linkedlistvisualizer_listnode",
+      "target": "datastructures_linkedlistvisualizer_listnode_constructor",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/DataStructures/StackVisualizer.jsx",
+      "source_location": "L76",
+      "weight": 1.0,
+      "_src": "src_components_datastructures_stackvisualizer_jsx",
+      "_tgt": "datastructures_stackvisualizer_stackvisualizer",
+      "source": "src_components_datastructures_stackvisualizer_jsx",
+      "target": "datastructures_stackvisualizer_stackvisualizer",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/DataStructures/ArrayVisualizer.jsx",
+      "source_location": "L55",
+      "weight": 1.0,
+      "_src": "src_components_datastructures_arrayvisualizer_jsx",
+      "_tgt": "datastructures_arrayvisualizer_arrayvisualizer",
+      "source": "src_components_datastructures_arrayvisualizer_jsx",
+      "target": "datastructures_arrayvisualizer_arrayvisualizer",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/DataStructures/GraphVisualizer.jsx",
+      "source_location": "L186",
+      "weight": 1.0,
+      "_src": "src_components_datastructures_graphvisualizer_jsx",
+      "_tgt": "datastructures_graphvisualizer_graphvisualizer",
+      "source": "src_components_datastructures_graphvisualizer_jsx",
+      "target": "datastructures_graphvisualizer_graphvisualizer",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/DataStructures/DataStructureDetail.jsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "_src": "src_components_datastructures_datastructuredetail_jsx",
+      "_tgt": "datastructures_datastructuredetail_sleep",
+      "source": "src_components_datastructures_datastructuredetail_jsx",
+      "target": "datastructures_datastructuredetail_sleep",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/DataStructures/DataStructureDetail.jsx",
+      "source_location": "L340",
+      "weight": 1.0,
+      "_src": "src_components_datastructures_datastructuredetail_jsx",
+      "_tgt": "datastructures_datastructuredetail_datastructuredetail",
+      "source": "src_components_datastructures_datastructuredetail_jsx",
+      "target": "datastructures_datastructuredetail_datastructuredetail",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/DataStructures/QueueVisualizer.jsx",
+      "source_location": "L59",
+      "weight": 1.0,
+      "_src": "src_components_datastructures_queuevisualizer_jsx",
+      "_tgt": "datastructures_queuevisualizer_queuevisualizer",
+      "source": "src_components_datastructures_queuevisualizer_jsx",
+      "target": "datastructures_queuevisualizer_queuevisualizer",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/Algorithms/QuickSortVisualizer.jsx",
+      "source_location": "L92",
+      "weight": 1.0,
+      "_src": "src_components_algorithms_quicksortvisualizer_jsx",
+      "_tgt": "algorithms_quicksortvisualizer_quicksortvisualizer",
+      "source": "src_components_algorithms_quicksortvisualizer_jsx",
+      "target": "algorithms_quicksortvisualizer_quicksortvisualizer",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/Algorithms/MergeSortVisualizer.jsx",
+      "source_location": "L48",
+      "weight": 1.0,
+      "_src": "src_components_algorithms_mergesortvisualizer_jsx",
+      "_tgt": "algorithms_mergesortvisualizer_mergesortvisualizer",
+      "source": "src_components_algorithms_mergesortvisualizer_jsx",
+      "target": "algorithms_mergesortvisualizer_mergesortvisualizer",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/Algorithms/LinearSearchVisualizer.jsx",
+      "source_location": "L18",
+      "weight": 1.0,
+      "_src": "src_components_algorithms_linearsearchvisualizer_jsx",
+      "_tgt": "algorithms_linearsearchvisualizer_linearsearchvisualizer",
+      "source": "src_components_algorithms_linearsearchvisualizer_jsx",
+      "target": "algorithms_linearsearchvisualizer_linearsearchvisualizer",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/Algorithms/BubbleSortVisualizer.jsx",
+      "source_location": "L62",
+      "weight": 1.0,
+      "_src": "src_components_algorithms_bubblesortvisualizer_jsx",
+      "_tgt": "algorithms_bubblesortvisualizer_bubblesortvisualizer",
+      "source": "src_components_algorithms_bubblesortvisualizer_jsx",
+      "target": "algorithms_bubblesortvisualizer_bubblesortvisualizer",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/Algorithms/HeapSortVisualizer.jsx",
+      "source_location": "L26",
+      "weight": 1.0,
+      "_src": "src_components_algorithms_heapsortvisualizer_jsx",
+      "_tgt": "algorithms_heapsortvisualizer_heapsortvisualizer",
+      "source": "src_components_algorithms_heapsortvisualizer_jsx",
+      "target": "algorithms_heapsortvisualizer_heapsortvisualizer",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/Algorithms/BinarySearchVisualizer.jsx",
+      "source_location": "L28",
+      "weight": 1.0,
+      "_src": "src_components_algorithms_binarysearchvisualizer_jsx",
+      "_tgt": "algorithms_binarysearchvisualizer_binarysearchvisualizer",
+      "source": "src_components_algorithms_binarysearchvisualizer_jsx",
+      "target": "algorithms_binarysearchvisualizer_binarysearchvisualizer",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/Algorithms/Algorithms.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_src": "src_components_algorithms_algorithms_jsx",
+      "_tgt": "algorithms_algorithms_algorithms",
+      "source": "src_components_algorithms_algorithms_jsx",
+      "target": "algorithms_algorithms_algorithms",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/Algorithms/AlgorithmDetail.jsx",
+      "source_location": "L425",
+      "weight": 1.0,
+      "_src": "src_components_algorithms_algorithmdetail_jsx",
+      "_tgt": "algorithms_algorithmdetail_algorithmdetail",
+      "source": "src_components_algorithms_algorithmdetail_jsx",
+      "target": "algorithms_algorithmdetail_algorithmdetail",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/Progress/Progress.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_src": "src_components_progress_progress_jsx",
+      "_tgt": "progress_progress_progress",
+      "source": "src_components_progress_progress_jsx",
+      "target": "progress_progress_progress",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hooks/useScrollspy.js",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_src": "src_hooks_usescrollspy_js",
+      "_tgt": "hooks_usescrollspy_usescrollspy",
+      "source": "src_hooks_usescrollspy_js",
+      "target": "hooks_usescrollspy_usescrollspy",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hooks/useLocalStorage.js",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_src": "src_hooks_uselocalstorage_js",
+      "_tgt": "hooks_uselocalstorage_uselocalstorage",
+      "source": "src_hooks_uselocalstorage_js",
+      "target": "hooks_uselocalstorage_uselocalstorage",
+      "confidence_score": 1.0
+    }
+  ],
+  "hyperedges": []
+}

@@ -1,0 +1,149 @@
+.problems-tabs {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.problems-tabs button {
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.problems-tabs button:hover {
+  border-color: var(--tab-color);
+  color: var(--text-primary);
+}
+
+.problems-tabs button.active {
+  background: var(--tab-color);
+  color: white;
+  border-color: var(--tab-color);
+}
+
+.problems-tabs .count {
+  background: rgba(255,255,255,0.2);
+  padding: 0.1rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+}
+
+.problems-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.problem-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.problem-card:hover {
+  transform: translateX(5px);
+  border-color: var(--primary);
+}
+
+.problem-card.solved {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.problem-status {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.check-icon {
+  color: #22c55e;
+  font-size: 1.2rem;
+}
+
+.circle-icon {
+  color: var(--border-color);
+  font-size: 0.8rem;
+}
+
+.problem-info {
+  flex: 1;
+}
+
+.problem-info h4 {
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.problem-info .category {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.difficulty-badge-problems {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.problem-modal .modal-content {
+  max-width: 600px;
+}
+
+.problem-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.problem-description {
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.suggested-approach {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+}
+
+.suggested-approach h4 {
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+}
+
+.suggested-approach ul {
+  color: var(--text-secondary);
+  padding-left: 1.5rem;
+}
+
+.suggested-approach li {
+  margin-bottom: 0.5rem;
+}
+
+.category-tag {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+}

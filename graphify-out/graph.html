@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>graphify - graphify-out/graph.html</title>
+<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0f0f1a; color: #e0e0e0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; display: flex; height: 100vh; overflow: hidden; }
+  #graph { flex: 1; }
+  #sidebar { width: 280px; background: #1a1a2e; border-left: 1px solid #2a2a4e; display: flex; flex-direction: column; overflow: hidden; }
+  #search-wrap { padding: 12px; border-bottom: 1px solid #2a2a4e; }
+  #search { width: 100%; background: #0f0f1a; border: 1px solid #3a3a5e; color: #e0e0e0; padding: 7px 10px; border-radius: 6px; font-size: 13px; outline: none; }
+  #search:focus { border-color: #4E79A7; }
+  #search-results { max-height: 140px; overflow-y: auto; padding: 4px 12px; border-bottom: 1px solid #2a2a4e; display: none; }
+  .search-item { padding: 4px 6px; cursor: pointer; border-radius: 4px; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .search-item:hover { background: #2a2a4e; }
+  #info-panel { padding: 14px; border-bottom: 1px solid #2a2a4e; min-height: 140px; }
+  #info-panel h3 { font-size: 13px; color: #aaa; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+  #info-content { font-size: 13px; color: #ccc; line-height: 1.6; }
+  #info-content .field { margin-bottom: 5px; }
+  #info-content .field b { color: #e0e0e0; }
+  #info-content .empty { color: #555; font-style: italic; }
+  .neighbor-link { display: block; padding: 2px 6px; margin: 2px 0; border-radius: 3px; cursor: pointer; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-left: 3px solid #333; }
+  .neighbor-link:hover { background: #2a2a4e; }
+  #neighbors-list { max-height: 160px; overflow-y: auto; margin-top: 4px; }
+  #legend-wrap { flex: 1; overflow-y: auto; padding: 12px; }
+  #legend-wrap h3 { font-size: 13px; color: #aaa; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .legend-item { display: flex; align-items: center; gap: 8px; padding: 4px 0; cursor: pointer; border-radius: 4px; font-size: 12px; }
+  .legend-item:hover { background: #2a2a4e; padding-left: 4px; }
+  .legend-item.dimmed { opacity: 0.35; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+  .legend-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .legend-count { color: #666; font-size: 11px; }
+  #stats { padding: 10px 14px; border-top: 1px solid #2a2a4e; font-size: 11px; color: #555; }
+  #legend-controls { display: flex; gap: 6px; margin-bottom: 8px; }
+  #legend-controls button { flex: 1; background: #0f0f1a; border: 1px solid #3a3a5e; color: #aaa; padding: 4px 0; border-radius: 4px; font-size: 11px; cursor: pointer; }
+  #legend-controls button:hover { border-color: #4E79A7; color: #e0e0e0; }
+</style>
+</head>
+<body>
+<div id="graph"></div>
+<div id="sidebar">
+  <div id="search-wrap">
+    <input id="search" type="text" placeholder="Search nodes..." autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+  <div id="info-panel">
+    <h3>Node Info</h3>
+    <div id="info-content"><span class="empty">Click a node to inspect it</span></div>
+  </div>
+  <div id="legend-wrap">
+    <h3>Communities</h3>
+    <div id="legend-controls">
+      <button onclick="toggleAllCommunities(false)">Show All</button>
+      <button onclick="toggleAllCommunities(true)">Hide All</button>
+    </div>
+    <div id="legend"></div>
+  </div>
+  <div id="stats">66 nodes &middot; 40 edges &middot; 26 communities</div>
+</div>
+<script>
+const RAW_NODES = [{"id": "vite_config_js", "label": "vite.config.js", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 10.0, "font": {"size": 0, "color": "#ffffff"}, "title": "vite.config.js", "community": 20, "community_name": "Community 20", "source_file": "vite.config.js", "file_type": "code", "degree": 0}, {"id": "src_app_jsx", "label": "App.jsx", "color": {"background": "#59A14F", "border": "#59A14F", "highlight": {"background": "#ffffff", "border": "#59A14F"}}, "size": 22.0, "font": {"size": 12, "color": "#ffffff"}, "title": "App.jsx", "community": 4, "community_name": "Community 4", "source_file": "src/App.jsx", "file_type": "code", "degree": 2}, {"id": "src_app_home", "label": "Home()", "color": {"background": "#59A14F", "border": "#59A14F", "highlight": {"background": "#ffffff", "border": "#59A14F"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Home()", "community": 4, "community_name": "Community 4", "source_file": "src/App.jsx", "file_type": "code", "degree": 1}, {"id": "src_app_app", "label": "App()", "color": {"background": "#59A14F", "border": "#59A14F", "highlight": {"background": "#ffffff", "border": "#59A14F"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "App()", "community": 4, "community_name": "Community 4", "source_file": "src/App.jsx", "file_type": "code", "degree": 1}, {"id": "src_main_jsx", "label": "main.jsx", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 10.0, "font": {"size": 0, "color": "#ffffff"}, "title": "main.jsx", "community": 21, "community_name": "Community 21", "source_file": "src/main.jsx", "file_type": "code", "degree": 0}, {"id": "src_contexts_progresscontext_jsx", "label": "ProgressContext.jsx", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 22.0, "font": {"size": 12, "color": "#ffffff"}, "title": "ProgressContext.jsx", "community": 0, "community_name": "Community 0", "source_file": "src/contexts/ProgressContext.jsx", "file_type": "code", "degree": 2}, {"id": "contexts_progresscontext_progressprovider", "label": "ProgressProvider()", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "ProgressProvider()", "community": 0, "community_name": "Community 0", "source_file": "src/contexts/ProgressContext.jsx", "file_type": "code", "degree": 1}, {"id": "contexts_progresscontext_useprogress", "label": "useProgress()", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 40.0, "font": {"size": 12, "color": "#ffffff"}, "title": "useProgress()", "community": 0, "community_name": "Community 0", "source_file": "src/contexts/ProgressContext.jsx", "file_type": "code", "degree": 5}, {"id": "src_contexts_themecontext_jsx", "label": "ThemeContext.jsx", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 22.0, "font": {"size": 12, "color": "#ffffff"}, "title": "ThemeContext.jsx", "community": 1, "community_name": "Community 1", "source_file": "src/contexts/ThemeContext.jsx", "file_type": "code", "degree": 2}, {"id": "contexts_themecontext_themeprovider", "label": "ThemeProvider()", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "ThemeProvider()", "community": 1, "community_name": "Community 1", "source_file": "src/contexts/ThemeContext.jsx", "file_type": "code", "degree": 1}, {"id": "contexts_themecontext_usetheme", "label": "useTheme()", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 22.0, "font": {"size": 12, "color": "#ffffff"}, "title": "useTheme()", "community": 1, "community_name": "Community 1", "source_file": "src/contexts/ThemeContext.jsx", "file_type": "code", "degree": 2}, {"id": "src_components_hero_jsx", "label": "Hero.jsx", "color": {"background": "#EDC948", "border": "#EDC948", "highlight": {"background": "#ffffff", "border": "#EDC948"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Hero.jsx", "community": 5, "community_name": "Community 5", "source_file": "src/components/Hero.jsx", "file_type": "code", "degree": 1}, {"id": "components_hero_hero", "label": "Hero()", "color": {"background": "#EDC948", "border": "#EDC948", "highlight": {"background": "#ffffff", "border": "#EDC948"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Hero()", "community": 5, "community_name": "Community 5", "source_file": "src/components/Hero.jsx", "file_type": "code", "degree": 1}, {"id": "src_components_navbar_jsx", "label": "Navbar.jsx", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Navbar.jsx", "community": 1, "community_name": "Community 1", "source_file": "src/components/Navbar.jsx", "file_type": "code", "degree": 1}, {"id": "components_navbar_navbar", "label": "Navbar()", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 28.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Navbar()", "community": 1, "community_name": "Community 1", "source_file": "src/components/Navbar.jsx", "file_type": "code", "degree": 3}, {"id": "src_components_footer_jsx", "label": "Footer.jsx", "color": {"background": "#B07AA1", "border": "#B07AA1", "highlight": {"background": "#ffffff", "border": "#B07AA1"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Footer.jsx", "community": 6, "community_name": "Community 6", "source_file": "src/components/Footer.jsx", "file_type": "code", "degree": 1}, {"id": "components_footer_footer", "label": "Footer()", "color": {"background": "#B07AA1", "border": "#B07AA1", "highlight": {"background": "#ffffff", "border": "#B07AA1"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Footer()", "community": 6, "community_name": "Community 6", "source_file": "src/components/Footer.jsx", "file_type": "code", "degree": 1}, {"id": "src_components_problems_problems_jsx", "label": "Problems.jsx", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Problems.jsx", "community": 0, "community_name": "Community 0", "source_file": "src/components/Problems/Problems.jsx", "file_type": "code", "degree": 1}, {"id": "problems_problems_problems", "label": "Problems()", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 22.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Problems()", "community": 0, "community_name": "Community 0", "source_file": "src/components/Problems/Problems.jsx", "file_type": "code", "degree": 2}, {"id": "src_components_datastructures_datastructures_jsx", "label": "DataStructures.jsx", "color": {"background": "#FF9DA7", "border": "#FF9DA7", "highlight": {"background": "#ffffff", "border": "#FF9DA7"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "DataStructures.jsx", "community": 7, "community_name": "Community 7", "source_file": "src/components/DataStructures/DataStructures.jsx", "file_type": "code", "degree": 1}, {"id": "datastructures_datastructures_datastructures", "label": "DataStructures()", "color": {"background": "#FF9DA7", "border": "#FF9DA7", "highlight": {"background": "#ffffff", "border": "#FF9DA7"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "DataStructures()", "community": 7, "community_name": "Community 7", "source_file": "src/components/DataStructures/DataStructures.jsx", "file_type": "code", "degree": 1}, {"id": "src_components_datastructures_treevisualizer_jsx", "label": "TreeVisualizer.jsx", "color": {"background": "#E15759", "border": "#E15759", "highlight": {"background": "#ffffff", "border": "#E15759"}}, "size": 22.0, "font": {"size": 12, "color": "#ffffff"}, "title": "TreeVisualizer.jsx", "community": 2, "community_name": "Community 2", "source_file": "src/components/DataStructures/TreeVisualizer.jsx", "file_type": "code", "degree": 2}, {"id": "datastructures_treevisualizer_treenode", "label": "TreeNode", "color": {"background": "#E15759", "border": "#E15759", "highlight": {"background": "#ffffff", "border": "#E15759"}}, "size": 22.0, "font": {"size": 12, "color": "#ffffff"}, "title": "TreeNode", "community": 2, "community_name": "Community 2", "source_file": "src/components/DataStructures/TreeVisualizer.jsx", "file_type": "code", "degree": 2}, {"id": "datastructures_treevisualizer_treenode_constructor", "label": ".constructor()", "color": {"background": "#E15759", "border": "#E15759", "highlight": {"background": "#ffffff", "border": "#E15759"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": ".constructor()", "community": 2, "community_name": "Community 2", "source_file": "src/components/DataStructures/TreeVisualizer.jsx", "file_type": "code", "degree": 1}, {"id": "datastructures_treevisualizer_treevisualizer", "label": "TreeVisualizer()", "color": {"background": "#E15759", "border": "#E15759", "highlight": {"background": "#ffffff", "border": "#E15759"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "TreeVisualizer()", "community": 2, "community_name": "Community 2", "source_file": "src/components/DataStructures/TreeVisualizer.jsx", "file_type": "code", "degree": 1}, {"id": "src_components_datastructures_linkedlistvisualizer_jsx", "label": "LinkedListVisualizer.jsx", "color": {"background": "#76B7B2", "border": "#76B7B2", "highlight": {"background": "#ffffff", "border": "#76B7B2"}}, "size": 22.0, "font": {"size": 12, "color": "#ffffff"}, "title": "LinkedListVisualizer.jsx", "community": 3, "community_name": "Community 3", "source_file": "src/components/DataStructures/LinkedListVisualizer.jsx", "file_type": "code", "degree": 2}, {"id": "datastructures_linkedlistvisualizer_listnode", "label": "ListNode", "color": {"background": "#76B7B2", "border": "#76B7B2", "highlight": {"background": "#ffffff", "border": "#76B7B2"}}, "size": 22.0, "font": {"size": 12, "color": "#ffffff"}, "title": "ListNode", "community": 3, "community_name": "Community 3", "source_file": "src/components/DataStructures/LinkedListVisualizer.jsx", "file_type": "code", "degree": 2}, {"id": "datastructures_linkedlistvisualizer_listnode_constructor", "label": ".constructor()", "color": {"background": "#76B7B2", "border": "#76B7B2", "highlight": {"background": "#ffffff", "border": "#76B7B2"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": ".constructor()", "community": 3, "community_name": "Community 3", "source_file": "src/components/DataStructures/LinkedListVisualizer.jsx", "file_type": "code", "degree": 1}, {"id": "datastructures_linkedlistvisualizer_linkedlistvisualizer", "label": "LinkedListVisualizer()", "color": {"background": "#76B7B2", "border": "#76B7B2", "highlight": {"background": "#ffffff", "border": "#76B7B2"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "LinkedListVisualizer()", "community": 3, "community_name": "Community 3", "source_file": "src/components/DataStructures/LinkedListVisualizer.jsx", "file_type": "code", "degree": 1}, {"id": "src_components_datastructures_stackvisualizer_jsx", "label": "StackVisualizer.jsx", "color": {"background": "#9C755F", "border": "#9C755F", "highlight": {"background": "#ffffff", "border": "#9C755F"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "StackVisualizer.jsx", "community": 8, "community_name": "Community 8", "source_file": "src/components/DataStructures/StackVisualizer.jsx", "file_type": "code", "degree": 1}, {"id": "datastructures_stackvisualizer_stackvisualizer", "label": "StackVisualizer()", "color": {"background": "#9C755F", "border": "#9C755F", "highlight": {"background": "#ffffff", "border": "#9C755F"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "StackVisualizer()", "community": 8, "community_name": "Community 8", "source_file": "src/components/DataStructures/StackVisualizer.jsx", "file_type": "code", "degree": 1}, {"id": "src_components_datastructures_arrayvisualizer_jsx", "label": "ArrayVisualizer.jsx", "color": {"background": "#BAB0AC", "border": "#BAB0AC", "highlight": {"background": "#ffffff", "border": "#BAB0AC"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "ArrayVisualizer.jsx", "community": 9, "community_name": "Community 9", "source_file": "src/components/DataStructures/ArrayVisualizer.jsx", "file_type": "code", "degree": 1}, {"id": "datastructures_arrayvisualizer_arrayvisualizer", "label": "ArrayVisualizer()", "color": {"background": "#BAB0AC", "border": "#BAB0AC", "highlight": {"background": "#ffffff", "border": "#BAB0AC"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "ArrayVisualizer()", "community": 9, "community_name": "Community 9", "source_file": "src/components/DataStructures/ArrayVisualizer.jsx", "file_type": "code", "degree": 1}, {"id": "src_components_datastructures_graphvisualizer_jsx", "label": "GraphVisualizer.jsx", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "GraphVisualizer.jsx", "community": 10, "community_name": "Community 10", "source_file": "src/components/DataStructures/GraphVisualizer.jsx", "file_type": "code", "degree": 1}, {"id": "datastructures_graphvisualizer_graphvisualizer", "label": "GraphVisualizer()", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "GraphVisualizer()", "community": 10, "community_name": "Community 10", "source_file": "src/components/DataStructures/GraphVisualizer.jsx", "file_type": "code", "degree": 1}, {"id": "src_components_datastructures_datastructuredetail_jsx", "label": "DataStructureDetail.jsx", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 22.0, "font": {"size": 12, "color": "#ffffff"}, "title": "DataStructureDetail.jsx", "community": 0, "community_name": "Community 0", "source_file": "src/components/DataStructures/DataStructureDetail.jsx", "file_type": "code", "degree": 2}, {"id": "datastructures_datastructuredetail_sleep", "label": "sleep()", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "sleep()", "community": 0, "community_name": "Community 0", "source_file": "src/components/DataStructures/DataStructureDetail.jsx", "file_type": "code", "degree": 1}, {"id": "datastructures_datastructuredetail_datastructuredetail", "label": "DataStructureDetail()", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 22.0, "font": {"size": 12, "color": "#ffffff"}, "title": "DataStructureDetail()", "community": 0, "community_name": "Community 0", "source_file": "src/components/DataStructures/DataStructureDetail.jsx", "file_type": "code", "degree": 2}, {"id": "src_components_datastructures_queuevisualizer_jsx", "label": "QueueVisualizer.jsx", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "QueueVisualizer.jsx", "community": 11, "community_name": "Community 11", "source_file": "src/components/DataStructures/QueueVisualizer.jsx", "file_type": "code", "degree": 1}, {"id": "datastructures_queuevisualizer_queuevisualizer", "label": "QueueVisualizer()", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "QueueVisualizer()", "community": 11, "community_name": "Community 11", "source_file": "src/components/DataStructures/QueueVisualizer.jsx", "file_type": "code", "degree": 1}, {"id": "src_components_algorithms_quicksortvisualizer_jsx", "label": "QuickSortVisualizer.jsx", "color": {"background": "#E15759", "border": "#E15759", "highlight": {"background": "#ffffff", "border": "#E15759"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "QuickSortVisualizer.jsx", "community": 12, "community_name": "Community 12", "source_file": "src/components/Algorithms/QuickSortVisualizer.jsx", "file_type": "code", "degree": 1}, {"id": "algorithms_quicksortvisualizer_quicksortvisualizer", "label": "QuickSortVisualizer()", "color": {"background": "#E15759", "border": "#E15759", "highlight": {"background": "#ffffff", "border": "#E15759"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "QuickSortVisualizer()", "community": 12, "community_name": "Community 12", "source_file": "src/components/Algorithms/QuickSortVisualizer.jsx", "file_type": "code", "degree": 1}, {"id": "src_components_algorithms_mergesortvisualizer_jsx", "label": "MergeSortVisualizer.jsx", "color": {"background": "#76B7B2", "border": "#76B7B2", "highlight": {"background": "#ffffff", "border": "#76B7B2"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "MergeSortVisualizer.jsx", "community": 13, "community_name": "Community 13", "source_file": "src/components/Algorithms/MergeSortVisualizer.jsx", "file_type": "code", "degree": 1}, {"id": "algorithms_mergesortvisualizer_mergesortvisualizer", "label": "MergeSortVisualizer()", "color": {"background": "#76B7B2", "border": "#76B7B2", "highlight": {"background": "#ffffff", "border": "#76B7B2"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "MergeSortVisualizer()", "community": 13, "community_name": "Community 13", "source_file": "src/components/Algorithms/MergeSortVisualizer.jsx", "file_type": "code", "degree": 1}, {"id": "src_components_algorithms_linearsearchvisualizer_jsx", "label": "LinearSearchVisualizer.jsx", "color": {"background": "#59A14F", "border": "#59A14F", "highlight": {"background": "#ffffff", "border": "#59A14F"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "LinearSearchVisualizer.jsx", "community": 14, "community_name": "Community 14", "source_file": "src/components/Algorithms/LinearSearchVisualizer.jsx", "file_type": "code", "degree": 1}, {"id": "algorithms_linearsearchvisualizer_linearsearchvisualizer", "label": "LinearSearchVisualizer()", "color": {"background": "#59A14F", "border": "#59A14F", "highlight": {"background": "#ffffff", "border": "#59A14F"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "LinearSearchVisualizer()", "community": 14, "community_name": "Community 14", "source_file": "src/components/Algorithms/LinearSearchVisualizer.jsx", "file_type": "code", "degree": 1}, {"id": "src_components_algorithms_bubblesortvisualizer_jsx", "label": "BubbleSortVisualizer.jsx", "color": {"background": "#EDC948", "border": "#EDC948", "highlight": {"background": "#ffffff", "border": "#EDC948"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "BubbleSortVisualizer.jsx", "community": 15, "community_name": "Community 15", "source_file": "src/components/Algorithms/BubbleSortVisualizer.jsx", "file_type": "code", "degree": 1}, {"id": "algorithms_bubblesortvisualizer_bubblesortvisualizer", "label": "BubbleSortVisualizer()", "color": {"background": "#EDC948", "border": "#EDC948", "highlight": {"background": "#ffffff", "border": "#EDC948"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "BubbleSortVisualizer()", "community": 15, "community_name": "Community 15", "source_file": "src/components/Algorithms/BubbleSortVisualizer.jsx", "file_type": "code", "degree": 1}, {"id": "src_components_algorithms_heapsortvisualizer_jsx", "label": "HeapSortVisualizer.jsx", "color": {"background": "#B07AA1", "border": "#B07AA1", "highlight": {"background": "#ffffff", "border": "#B07AA1"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "HeapSortVisualizer.jsx", "community": 16, "community_name": "Community 16", "source_file": "src/components/Algorithms/HeapSortVisualizer.jsx", "file_type": "code", "degree": 1}, {"id": "algorithms_heapsortvisualizer_heapsortvisualizer", "label": "HeapSortVisualizer()", "color": {"background": "#B07AA1", "border": "#B07AA1", "highlight": {"background": "#ffffff", "border": "#B07AA1"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "HeapSortVisualizer()", "community": 16, "community_name": "Community 16", "source_file": "src/components/Algorithms/HeapSortVisualizer.jsx", "file_type": "code", "degree": 1}, {"id": "src_components_algorithms_binarysearchvisualizer_jsx", "label": "BinarySearchVisualizer.jsx", "color": {"background": "#FF9DA7", "border": "#FF9DA7", "highlight": {"background": "#ffffff", "border": "#FF9DA7"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "BinarySearchVisualizer.jsx", "community": 17, "community_name": "Community 17", "source_file": "src/components/Algorithms/BinarySearchVisualizer.jsx", "file_type": "code", "degree": 1}, {"id": "algorithms_binarysearchvisualizer_binarysearchvisualizer", "label": "BinarySearchVisualizer()", "color": {"background": "#FF9DA7", "border": "#FF9DA7", "highlight": {"background": "#ffffff", "border": "#FF9DA7"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "BinarySearchVisualizer()", "community": 17, "community_name": "Community 17", "source_file": "src/components/Algorithms/BinarySearchVisualizer.jsx", "file_type": "code", "degree": 1}, {"id": "src_components_algorithms_algorithms_jsx", "label": "Algorithms.jsx", "color": {"background": "#9C755F", "border": "#9C755F", "highlight": {"background": "#ffffff", "border": "#9C755F"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Algorithms.jsx", "community": 18, "community_name": "Community 18", "source_file": "src/components/Algorithms/Algorithms.jsx", "file_type": "code", "degree": 1}, {"id": "algorithms_algorithms_algorithms", "label": "Algorithms()", "color": {"background": "#9C755F", "border": "#9C755F", "highlight": {"background": "#ffffff", "border": "#9C755F"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Algorithms()", "community": 18, "community_name": "Community 18", "source_file": "src/components/Algorithms/Algorithms.jsx", "file_type": "code", "degree": 1}, {"id": "src_components_algorithms_algorithmdetail_jsx", "label": "AlgorithmDetail.jsx", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "AlgorithmDetail.jsx", "community": 0, "community_name": "Community 0", "source_file": "src/components/Algorithms/AlgorithmDetail.jsx", "file_type": "code", "degree": 1}, {"id": "algorithms_algorithmdetail_algorithmdetail", "label": "AlgorithmDetail()", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 22.0, "font": {"size": 12, "color": "#ffffff"}, "title": "AlgorithmDetail()", "community": 0, "community_name": "Community 0", "source_file": "src/components/Algorithms/AlgorithmDetail.jsx", "file_type": "code", "degree": 2}, {"id": "src_components_progress_progress_jsx", "label": "Progress.jsx", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Progress.jsx", "community": 0, "community_name": "Community 0", "source_file": "src/components/Progress/Progress.jsx", "file_type": "code", "degree": 1}, {"id": "progress_progress_progress", "label": "Progress()", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 22.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Progress()", "community": 0, "community_name": "Community 0", "source_file": "src/components/Progress/Progress.jsx", "file_type": "code", "degree": 2}, {"id": "src_hooks_usescrollspy_js", "label": "useScrollspy.js", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "useScrollspy.js", "community": 1, "community_name": "Community 1", "source_file": "src/hooks/useScrollspy.js", "file_type": "code", "degree": 1}, {"id": "hooks_usescrollspy_usescrollspy", "label": "useScrollspy()", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 22.0, "font": {"size": 12, "color": "#ffffff"}, "title": "useScrollspy()", "community": 1, "community_name": "Community 1", "source_file": "src/hooks/useScrollspy.js", "file_type": "code", "degree": 2}, {"id": "src_hooks_uselocalstorage_js", "label": "useLocalStorage.js", "color": {"background": "#BAB0AC", "border": "#BAB0AC", "highlight": {"background": "#ffffff", "border": "#BAB0AC"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "useLocalStorage.js", "community": 19, "community_name": "Community 19", "source_file": "src/hooks/useLocalStorage.js", "file_type": "code", "degree": 1}, {"id": "hooks_uselocalstorage_uselocalstorage", "label": "useLocalStorage()", "color": {"background": "#BAB0AC", "border": "#BAB0AC", "highlight": {"background": "#ffffff", "border": "#BAB0AC"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "useLocalStorage()", "community": 19, "community_name": "Community 19", "source_file": "src/hooks/useLocalStorage.js", "file_type": "code", "degree": 1}, {"id": "src_data_dsoperations_js", "label": "dsOperations.js", "color": {"background": "#E15759", "border": "#E15759", "highlight": {"background": "#ffffff", "border": "#E15759"}}, "size": 10.0, "font": {"size": 0, "color": "#ffffff"}, "title": "dsOperations.js", "community": 22, "community_name": "Community 22", "source_file": "src/data/dsOperations.js", "file_type": "code", "degree": 0}, {"id": "src_data_problems_js", "label": "problems.js", "color": {"background": "#76B7B2", "border": "#76B7B2", "highlight": {"background": "#ffffff", "border": "#76B7B2"}}, "size": 10.0, "font": {"size": 0, "color": "#ffffff"}, "title": "problems.js", "community": 23, "community_name": "Community 23", "source_file": "src/data/problems.js", "file_type": "code", "degree": 0}, {"id": "src_data_algorithms_js", "label": "algorithms.js", "color": {"background": "#59A14F", "border": "#59A14F", "highlight": {"background": "#ffffff", "border": "#59A14F"}}, "size": 10.0, "font": {"size": 0, "color": "#ffffff"}, "title": "algorithms.js", "community": 24, "community_name": "Community 24", "source_file": "src/data/algorithms.js", "file_type": "code", "degree": 0}, {"id": "src_data_datastructures_js", "label": "dataStructures.js", "color": {"background": "#EDC948", "border": "#EDC948", "highlight": {"background": "#ffffff", "border": "#EDC948"}}, "size": 10.0, "font": {"size": 0, "color": "#ffffff"}, "title": "dataStructures.js", "community": 25, "community_name": "Community 25", "source_file": "src/data/dataStructures.js", "file_type": "code", "degree": 0}];
+const RAW_EDGES = [{"from": "src_app_jsx", "to": "src_app_home", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "src_app_jsx", "to": "src_app_app", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "src_contexts_progresscontext_jsx", "to": "contexts_progresscontext_progressprovider", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "src_contexts_progresscontext_jsx", "to": "contexts_progresscontext_useprogress", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "contexts_progresscontext_useprogress", "to": "problems_problems_problems", "label": "calls", "title": "calls [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "contexts_progresscontext_useprogress", "to": "datastructures_datastructuredetail_datastructuredetail", "label": "calls", "title": "calls [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "contexts_progresscontext_useprogress", "to": "algorithms_algorithmdetail_algorithmdetail", "label": "calls", "title": "calls [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "contexts_progresscontext_useprogress", "to": "progress_progress_progress", "label": "calls", "title": "calls [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "src_contexts_themecontext_jsx", "to": "contexts_themecontext_themeprovider", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "src_contexts_themecontext_jsx", "to": "contexts_themecontext_usetheme", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "contexts_themecontext_usetheme", "to": "components_navbar_navbar", "label": "calls", "title": "calls [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "src_components_hero_jsx", "to": "components_hero_hero", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "src_components_navbar_jsx", "to": "components_navbar_navbar", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "components_navbar_navbar", "to": "hooks_usescrollspy_usescrollspy", "label": "calls", "title": "calls [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "src_components_footer_jsx", "to": "components_footer_footer", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "src_components_problems_problems_jsx", "to": "problems_problems_problems", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "src_components_datastructures_datastructures_jsx", "to": "datastructures_datastructures_datastructures", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "src_components_datastructures_treevisualizer_jsx", "to": "datastructures_treevisualizer_treenode", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "src_components_datastructures_treevisualizer_jsx", "to": "datastructures_treevisualizer_treevisualizer", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "datastructures_treevisualizer_treenode", "to": "datastructures_treevisualizer_treenode_constructor", "label": "method", "title": "method [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "src_components_datastructures_linkedlistvisualizer_jsx", "to": "datastructures_linkedlistvisualizer_listnode", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "src_components_datastructures_linkedlistvisualizer_jsx", "to": "datastructures_linkedlistvisualizer_linkedlistvisualizer", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "datastructures_linkedlistvisualizer_listnode", "to": "datastructures_linkedlistvisualizer_listnode_constructor", "label": "method", "title": "method [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "src_components_datastructures_stackvisualizer_jsx", "to": "datastructures_stackvisualizer_stackvisualizer", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "src_components_datastructures_arrayvisualizer_jsx", "to": "datastructures_arrayvisualizer_arrayvisualizer", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "src_components_datastructures_graphvisualizer_jsx", "to": "datastructures_graphvisualizer_graphvisualizer", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "src_components_datastructures_datastructuredetail_jsx", "to": "datastructures_datastructuredetail_sleep", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "src_components_datastructures_datastructuredetail_jsx", "to": "datastructures_datastructuredetail_datastructuredetail", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "src_components_datastructures_queuevisualizer_jsx", "to": "datastructures_queuevisualizer_queuevisualizer", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "src_components_algorithms_quicksortvisualizer_jsx", "to": "algorithms_quicksortvisualizer_quicksortvisualizer", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "src_components_algorithms_mergesortvisualizer_jsx", "to": "algorithms_mergesortvisualizer_mergesortvisualizer", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "src_components_algorithms_linearsearchvisualizer_jsx", "to": "algorithms_linearsearchvisualizer_linearsearchvisualizer", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "src_components_algorithms_bubblesortvisualizer_jsx", "to": "algorithms_bubblesortvisualizer_bubblesortvisualizer", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "src_components_algorithms_heapsortvisualizer_jsx", "to": "algorithms_heapsortvisualizer_heapsortvisualizer", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "src_components_algorithms_binarysearchvisualizer_jsx", "to": "algorithms_binarysearchvisualizer_binarysearchvisualizer", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "src_components_algorithms_algorithms_jsx", "to": "algorithms_algorithms_algorithms", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "src_components_algorithms_algorithmdetail_jsx", "to": "algorithms_algorithmdetail_algorithmdetail", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "src_components_progress_progress_jsx", "to": "progress_progress_progress", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "src_hooks_usescrollspy_js", "to": "hooks_usescrollspy_usescrollspy", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "src_hooks_uselocalstorage_js", "to": "hooks_uselocalstorage_uselocalstorage", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}];
+const LEGEND = [{"cid": 0, "color": "#4E79A7", "label": "Community 0", "count": 12}, {"cid": 1, "color": "#F28E2B", "label": "Community 1", "count": 7}, {"cid": 2, "color": "#E15759", "label": "Community 2", "count": 4}, {"cid": 3, "color": "#76B7B2", "label": "Community 3", "count": 4}, {"cid": 4, "color": "#59A14F", "label": "Community 4", "count": 3}, {"cid": 5, "color": "#EDC948", "label": "Community 5", "count": 2}, {"cid": 6, "color": "#B07AA1", "label": "Community 6", "count": 2}, {"cid": 7, "color": "#FF9DA7", "label": "Community 7", "count": 2}, {"cid": 8, "color": "#9C755F", "label": "Community 8", "count": 2}, {"cid": 9, "color": "#BAB0AC", "label": "Community 9", "count": 2}, {"cid": 10, "color": "#4E79A7", "label": "Community 10", "count": 2}, {"cid": 11, "color": "#F28E2B", "label": "Community 11", "count": 2}, {"cid": 12, "color": "#E15759", "label": "Community 12", "count": 2}, {"cid": 13, "color": "#76B7B2", "label": "Community 13", "count": 2}, {"cid": 14, "color": "#59A14F", "label": "Community 14", "count": 2}, {"cid": 15, "color": "#EDC948", "label": "Community 15", "count": 2}, {"cid": 16, "color": "#B07AA1", "label": "Community 16", "count": 2}, {"cid": 17, "color": "#FF9DA7", "label": "Community 17", "count": 2}, {"cid": 18, "color": "#9C755F", "label": "Community 18", "count": 2}, {"cid": 19, "color": "#BAB0AC", "label": "Community 19", "count": 2}, {"cid": 20, "color": "#4E79A7", "label": "Community 20", "count": 1}, {"cid": 21, "color": "#F28E2B", "label": "Community 21", "count": 1}, {"cid": 22, "color": "#E15759", "label": "Community 22", "count": 1}, {"cid": 23, "color": "#76B7B2", "label": "Community 23", "count": 1}, {"cid": 24, "color": "#59A14F", "label": "Community 24", "count": 1}, {"cid": 25, "color": "#EDC948", "label": "Community 25", "count": 1}];
+
+// HTML-escape helper — prevents XSS when injecting graph data into innerHTML
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// Build vis datasets
+const nodesDS = new vis.DataSet(RAW_NODES.map(n => ({
+  id: n.id, label: n.label, color: n.color, size: n.size,
+  font: n.font, title: n.title,
+  _community: n.community, _community_name: n.community_name,
+  _source_file: n.source_file, _file_type: n.file_type, _degree: n.degree,
+})));
+
+const edgesDS = new vis.DataSet(RAW_EDGES.map((e, i) => ({
+  id: i, from: e.from, to: e.to,
+  label: '',
+  title: e.title,
+  dashes: e.dashes,
+  width: e.width,
+  color: e.color,
+  arrows: { to: { enabled: true, scaleFactor: 0.5 } },
+})));
+
+const container = document.getElementById('graph');
+const network = new vis.Network(container, { nodes: nodesDS, edges: edgesDS }, {
+  physics: {
+    enabled: true,
+    solver: 'forceAtlas2Based',
+    forceAtlas2Based: {
+      gravitationalConstant: -60,
+      centralGravity: 0.005,
+      springLength: 120,
+      springConstant: 0.08,
+      damping: 0.4,
+      avoidOverlap: 0.8,
+    },
+    stabilization: { iterations: 200, fit: true },
+  },
+  interaction: {
+    hover: true,
+    tooltipDelay: 100,
+    hideEdgesOnDrag: true,
+    navigationButtons: false,
+    keyboard: false,
+  },
+  nodes: { shape: 'dot', borderWidth: 1.5 },
+  edges: { smooth: { type: 'continuous', roundness: 0.2 }, selectionWidth: 3 },
+});
+
+network.once('stabilizationIterationsDone', () => {
+  network.setOptions({ physics: { enabled: false } });
+});
+
+function showInfo(nodeId) {
+  const n = nodesDS.get(nodeId);
+  if (!n) return;
+  const neighborIds = network.getConnectedNodes(nodeId);
+  const neighborItems = neighborIds.map(nid => {
+    const nb = nodesDS.get(nid);
+    const color = nb ? nb.color.background : '#555';
+    return `<span class="neighbor-link" style="border-left-color:${esc(color)}" onclick="focusNode(${JSON.stringify(nid)})">${esc(nb ? nb.label : nid)}</span>`;
+  }).join('');
+  document.getElementById('info-content').innerHTML = `
+    <div class="field"><b>${esc(n.label)}</b></div>
+    <div class="field">Type: ${esc(n._file_type || 'unknown')}</div>
+    <div class="field">Community: ${esc(n._community_name)}</div>
+    <div class="field">Source: ${esc(n._source_file || '-')}</div>
+    <div class="field">Degree: ${n._degree}</div>
+    ${neighborIds.length ? `<div class="field" style="margin-top:8px;color:#aaa;font-size:11px">Neighbors (${neighborIds.length})</div><div id="neighbors-list">${neighborItems}</div>` : ''}
+  `;
+}
+
+function focusNode(nodeId) {
+  network.focus(nodeId, { scale: 1.4, animation: true });
+  network.selectNodes([nodeId]);
+  showInfo(nodeId);
+}
+
+// Track hovered node — hover detection is more reliable than click params
+let hoveredNodeId = null;
+network.on('hoverNode', params => {
+  hoveredNodeId = params.node;
+  container.style.cursor = 'pointer';
+});
+network.on('blurNode', () => {
+  hoveredNodeId = null;
+  container.style.cursor = 'default';
+});
+container.addEventListener('click', () => {
+  if (hoveredNodeId !== null) {
+    showInfo(hoveredNodeId);
+    network.selectNodes([hoveredNodeId]);
+  }
+});
+network.on('click', params => {
+  if (params.nodes.length > 0) {
+    showInfo(params.nodes[0]);
+  } else if (hoveredNodeId === null) {
+    document.getElementById('info-content').innerHTML = '<span class="empty">Click a node to inspect it</span>';
+  }
+});
+
+const searchInput = document.getElementById('search');
+const searchResults = document.getElementById('search-results');
+searchInput.addEventListener('input', () => {
+  const q = searchInput.value.toLowerCase().trim();
+  searchResults.innerHTML = '';
+  if (!q) { searchResults.style.display = 'none'; return; }
+  const matches = RAW_NODES.filter(n => n.label.toLowerCase().includes(q)).slice(0, 20);
+  if (!matches.length) { searchResults.style.display = 'none'; return; }
+  searchResults.style.display = 'block';
+  matches.forEach(n => {
+    const el = document.createElement('div');
+    el.className = 'search-item';
+    el.textContent = n.label;
+    el.style.borderLeft = `3px solid ${n.color.background}`;
+    el.style.paddingLeft = '8px';
+    el.onclick = () => {
+      network.focus(n.id, { scale: 1.5, animation: true });
+      network.selectNodes([n.id]);
+      showInfo(n.id);
+      searchResults.style.display = 'none';
+      searchInput.value = '';
+    };
+    searchResults.appendChild(el);
+  });
+});
+document.addEventListener('click', e => {
+  if (!searchResults.contains(e.target) && e.target !== searchInput)
+    searchResults.style.display = 'none';
+});
+
+const hiddenCommunities = new Set();
+
+function toggleAllCommunities(hide) {
+  document.querySelectorAll('.legend-item').forEach(item => {
+    hide ? item.classList.add('dimmed') : item.classList.remove('dimmed');
+  });
+  LEGEND.forEach(c => {
+    if (hide) hiddenCommunities.add(c.cid); else hiddenCommunities.delete(c.cid);
+  });
+  const updates = RAW_NODES.map(n => ({ id: n.id, hidden: hide }));
+  nodesDS.update(updates);
+}
+
+const legendEl = document.getElementById('legend');
+LEGEND.forEach(c => {
+  const item = document.createElement('div');
+  item.className = 'legend-item';
+  item.innerHTML = `<div class="legend-dot" style="background:${c.color}"></div>
+    <span class="legend-label">${c.label}</span>
+    <span class="legend-count">${c.count}</span>`;
+  item.onclick = () => {
+    if (hiddenCommunities.has(c.cid)) {
+      hiddenCommunities.delete(c.cid);
+      item.classList.remove('dimmed');
+    } else {
+      hiddenCommunities.add(c.cid);
+      item.classList.add('dimmed');
+    }
+    const updates = RAW_NODES
+      .filter(n => n.community === c.cid)
+      .map(n => ({ id: n.id, hidden: hiddenCommunities.has(c.cid) }));
+    nodesDS.update(updates);
+  };
+  legendEl.appendChild(item);
+});
+</script>
+<script>
+// Render hyperedges as shaded regions
+const hyperedges = [];
+// afterDrawing passes ctx already transformed to network coordinate space.
+// Draw node positions raw — no manual pan/zoom/DPR math needed.
+network.on('afterDrawing', function(ctx) {
+    hyperedges.forEach(h => {
+        const positions = h.nodes
+            .map(nid => network.getPositions([nid])[nid])
+            .filter(p => p !== undefined);
+        if (positions.length < 2) return;
+        ctx.save();
+        ctx.globalAlpha = 0.12;
+        ctx.fillStyle = '#6366f1';
+        ctx.strokeStyle = '#6366f1';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        // Centroid and expanded hull in network coordinates
+        const cx = positions.reduce((s, p) => s + p.x, 0) / positions.length;
+        const cy = positions.reduce((s, p) => s + p.y, 0) / positions.length;
+        const expanded = positions.map(p => ({
+            x: cx + (p.x - cx) * 1.15,
+            y: cy + (p.y - cy) * 1.15
+        }));
+        ctx.moveTo(expanded[0].x, expanded[0].y);
+        expanded.slice(1).forEach(p => ctx.lineTo(p.x, p.y));
+        ctx.closePath();
+        ctx.fill();
+        ctx.globalAlpha = 0.4;
+        ctx.stroke();
+        // Label
+        ctx.globalAlpha = 0.8;
+        ctx.fillStyle = '#4f46e5';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(h.label, cx, cy - 5);
+        ctx.restore();
+    });
+});
+</script>
+</body>
+</html>
