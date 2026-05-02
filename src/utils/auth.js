@@ -58,9 +58,11 @@ export const login = async (username, password) => {
   }
 
   const data = await res.json();
-  if (data.token) {
-    setToken(data.token);
-    return data;
+  // Backend returns: {success: true, data: {token: "...", user: {...}}}
+  const token = data.data?.token ?? data.token;
+  if (token) {
+    setToken(token);
+    return { ...data, token };
   }
   throw new Error('Login failed');
 };
