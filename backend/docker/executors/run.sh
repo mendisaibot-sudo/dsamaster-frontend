@@ -1,33 +1,57 @@
-#!/bin/bash
-# Docker executor script for DSAMaster
-# Usage: run.sh <language> <code_file> <input_file>
-
-set -e
+#!/bin/sh
+# Generic executor for sandboxed code execution
+# Usage: ./run.sh <language> <code_file> <input_file>
 
 LANGUAGE="$1"
 CODE_FILE="$2"
 INPUT_FILE="$3"
 
-# Read input
-cat "$INPUT_FILE" > /tmp/input.json
+TIMEOUT_SECS=2
+MEMORY_LIMIT_MB=128
 
-# Execute based on language
+cd /sandbox || exit 1
+
 case "$LANGUAGE" in
-    python)
-        python3 "$CODE_FILE" < /tmp/input.json
-        ;;
-    java)
-        # Compile and run
-        javac "$CODE_FILE"
-        java -cp "$(dirname "$CODE_FILE")" Main < /tmp/input.json
-        ;;
-    cpp)
-        # Compile and run
-        g++ "$CODE_FILE" -o /tmp/solution
-        /tmp/solution < /tmp/input.json
-        ;;
-    *)
-        echo "ERROR: Unsupported language: $LANGUAGE"
-        exit 1
-        ;;
+  python)
+    # Python execution
+    timeout -t "$TIMEOUT_SECS" -m "$MEMORY_LIMIT_MB"000 python3 "$CODE_FILE" < "$INPUT_FILE" 2>&1
+    EXIT_CODE=$?
+    ;;
+
+  java)
+    # Java compilation and execution
+    cp "$CODE_FILE" "/sandbox/Main.java"
+    javac -encoding UTF-8 "/sandbox/Main.java" 2>&1
+    if [ $? -ne 0 ]; then
+      exit 1
+    fi
+    timeout -t "$TIMEOUT_SECS" -m "$MEMORY_LIMIT_MB"000 \
+      java -XX:+UseSerialGC -Xmx64m -cp /sandbox Main < "$INPUT_FILE" 2>&1
+    EXIT_CODE=$?
+    rm -f "/sandbox/Main.java" "/sandbox/Main.class"
+    ;;
+
+  cpp)
+    # C++ compilation and execution
+    BINARY="/sandbox/solution"
+    g++ -std=c++17 -O2 -o "$BINARY" "$CODE_FILE" 2>&1
+    if [ $? -ne 0 ]; then
+      exit 1
+    fi
+    timeout -t "$TIMEOUT_SECS" -m "$MEMORY_LIMIT_MB"000 "$BINARY" < "$INPUT_FILE" 2>&1
+    EXIT_CODE=$?
+    rm -f "$BINARY"
+    ;;
+
+  *)
+    echo "Unsupported language: $LANGUAGE" >&2
+    exit 1
+    ;;
 esac
+
+if [ $EXIT_CODE -eq 124 ] || [ $EXIT_CODE -eq 137 ]; then
+  echo "EXECUTION_TIMEOUT" >&2
+  exit 124
+fi
+
+exit $EXIT_CODE

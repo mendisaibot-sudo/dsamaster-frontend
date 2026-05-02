@@ -1,7 +1,7 @@
 """
 DSAMaster Code Execution API - FastAPI Backend
 
-Sanboxed code execution for Python, Java, C++
+Sandboxed code execution for Python, Java, C++
 """
 
 import json
@@ -35,16 +35,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Request/Response models
+# ---------------------------------------------------------------------------
+# Request / Response models
+# ---------------------------------------------------------------------------
+
 class TestCase(BaseModel):
     input: Any
     expected: Any
+
 
 class RunRequest(BaseModel):
     language: str  # python, java, cpp
     code: str
     test_cases: List[TestCase]
     function_name: str
+
 
 class TestResult(BaseModel):
     input: Any
@@ -54,12 +59,17 @@ class TestResult(BaseModel):
     execution_time_ms: int
     error: str | None
 
+
 class RunResponse(BaseModel):
     results: List[TestResult]
     all_passed: bool
     language: str
     function_name: str
 
+
+# ---------------------------------------------------------------------------
+# Endpoints
+# ---------------------------------------------------------------------------
 
 @app.get("/health")
 async def health():
@@ -76,26 +86,21 @@ async def run_code(request: RunRequest):
     """
     Execute code against test cases in a Docker sandbox.
     """
-    logger.info(f"Run request: {request.language}/{request.function_name}")
-    
-    # Validate language
     supported = ["python", "java", "cpp"]
     if request.language not in supported:
         raise HTTPException(
             status_code=400,
             detail=f"Unsupported language: {request.language}. Supported: {supported}"
         )
-    
-    # Security check
+
     try:
         sanitize_code(request.code, request.language)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
-    
-    # Run tests
+
     results = []
     all_passed = True
-    
+
     for test_case in request.test_cases:
         execution = await execute_in_sandbox(
             request.code,
@@ -103,17 +108,17 @@ async def run_code(request: RunRequest):
             request.function_name,
             test_case.input
         )
-        
+
         passed = (
             not execution["timed_out"]
             and not execution["error"]
             and not execution["parse_error"]
             and json.dumps(execution["result"]) == json.dumps(test_case.expected)
         )
-        
+
         if not passed:
             all_passed = False
-        
+
         results.append(TestResult(
             input=test_case.input,
             expected=test_case.expected,
@@ -122,7 +127,7 @@ async def run_code(request: RunRequest):
             execution_time_ms=execution["execution_time_ms"],
             error=execution["error"] or execution["parse_error"] or None
         ))
-    
+
     return RunResponse(
         results=results,
         all_passed=all_passed,

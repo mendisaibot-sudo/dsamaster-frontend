@@ -1,16 +1,16 @@
 """
 Docker-sandboxed code execution for DSAMaster.
-Supports Python, Java, C++ with resource limits.
+Supports Python, Java, C++ with resource limits and security checks.
 """
 
 import asyncio
 import json
 import os
+import re
 import shutil
 import tempfile
-import uuid
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 import docker
 from docker.errors import DockerException
@@ -27,43 +27,65 @@ TIMEOUT_SECONDS = int(os.getenv("EXECUTOR_TIMEOUT", "10"))
 MEMORY_LIMIT = os.getenv("EXECUTOR_MEMORY", "128m")
 CPU_LIMIT = os.getenv("EXECUTOR_CPU", "1.0")
 
+# ---------------------------------------------------------------------------
+# Security
+# ---------------------------------------------------------------------------
+
+BANNED_PYTHON_MODULES = {
+    "os", "subprocess", "sys", "socket", "ctypes",
+    "shutil", "urllib", "urllib2", "http", "ftplib", "telnetlib",
+    "trace", "multiprocessing", "threading", "_thread", "concurrent",
+    "importlib", "imp", "pathlib", "builtins", "__builtin__",
+    "platform", "getpass", "tempfile", "pipes", "pty", "pickle",
+    "marshal", "shelve", "dbm", "sqlite3", "commands", "popen2",
+}
+
+
+def _check_py_imports(code: str) -> None:
+    for line in code.splitlines():
+        stripped = line.strip()
+        for m in BANNED_PYTHON_MODULES:
+            if stripped.startswith(f"import {m}") or stripped.startswith(f"from {m} "):
+                raise ValueError(f"Security violation: banned import '{m}' detected")
+
 
 def sanitize_code(code: str, language: str) -> str:
     """Check for dangerous patterns in code."""
     dangerous = [
-        # Python
-        r"import\s+os\b",
-        r"import\s+subprocess",
-        r"import\s+sys",
-        r"__import__",
-        r"os\.",
-        r"subprocess\.",
-        # Java
+        r"__import__\s*\(",
+        r"importlib\.import_module",
+        r"compile\s*\(",
+        r"exec\s*\(",
+        r"eval\s*\(",
         r"Runtime\.getRuntime",
         r"ProcessBuilder",
         r"System\.exit",
-        # C++
-        r"system\s*\(",
-        r"popen\s*\(",
-        r"exec\s*\(",
-        # Common
-        r"fork\s*\(",
+        r"System\.exec",
+        r"\bsystem\s*\(",
+        r"\bpopen\s*\(",
+        r"\bexec\s*\(",
+        r"\bfork\s*\(",
+        r"while\s*\(\s*1\s*\)",
         r"while\s*\(\s*true\s*\)",
         r"while\s+True\b",
+        r"for\s+\(;\s*;\s*\)",
     ]
-    
-    import re
     for pattern in dangerous:
         if re.search(pattern, code, re.IGNORECASE):
-            raise ValueError(f"Security violation: dangerous pattern '{pattern}' detected")
-    
+            raise ValueError("Security violation: dangerous pattern detected")
+    if language == "python":
+        _check_py_imports(code)
     return code
 
+
+# ---------------------------------------------------------------------------
+# Wrapper Generation
+# ---------------------------------------------------------------------------
 
 def generate_wrapper(code: str, language: str, function_name: str, test_input: Any) -> str:
     """Generate executable wrapper code that calls the user's function."""
     serialized = json.dumps(test_input)
-    
+
     if language == "python":
         return f"""{code}
 
@@ -77,43 +99,105 @@ if __name__ == "__main__":
         result = {function_name}(test_input)
     print(json.dumps(result, separators=(',', ':')))
 """
-    
+
     elif language == "java":
+        esc = serialized.replace('"', '\\"')
         return f"""import java.util.*;
-import com.google.gson.*;
 
 {code}
 
 public class Main {{
-    public static void main(String[] args) {{
-        Gson gson = new Gson();
-        String inputJson = "{serialized.replace('"', '\\"')}";
-        // Parse input
-        Object input = gson.fromJson(inputJson, Object.class);
-        // Call solution
-        try {{
-            Object result;
-            if (input instanceof List) {{
-                List<?> list = (List<?>) input;
-                // Simplified: call with first element for single-arg
-                if (list.size() == 1) {{
-                    result = Solution.{function_name}(list.get(0));
-                }} else if (list.size() == 2) {{
-                    result = Solution.{function_name}(list.get(0), list.get(1));
-                }} else {{
-                    result = Solution.{function_name}(list.toArray());
-                }}
-            }} else {{
-                result = Solution.{function_name}(input);
-            }}
-            System.out.println(gson.toJson(result));
-        }} catch (Exception e) {{
-            System.out.println("ERROR: " + e.getMessage());
+    private static String toJson(Object o) {{
+        if (o == null) return "null";
+        if (o instanceof String) return "\\"" + o + "\\"";
+        if (o.getClass().isArray()) {{
+            if (o instanceof int[])    return Arrays.toString((int[])o);
+            if (o instanceof long[])   return Arrays.toString((long[])o);
+            if (o instanceof double[]) return Arrays.toString((double[])o);
+            if (o instanceof Object[]) return Arrays.deepToString((Object[])o);
         }}
+        return o.toString();
+    }}
+
+    public static void main(String[] args) {{
+        String inputJson = "{esc}";
+
+        try {{
+            int single = Integer.parseInt(inputJson.trim());
+            System.out.println(toJson(Solution.{function_name}(single)));
+            return;
+        }} catch (Exception ignored) {{}}
+
+        try {{
+            if (inputJson.trim().startsWith("[[")) {{
+                String inner = inputJson.trim();
+                inner = inner.substring(1, inner.length() - 1).trim();
+                List<int[]> list = new ArrayList<>();
+                if (inner.length() > 0) {{
+                    String[] parts = inner.split("\\],\\s*\\[");
+                    for (String p : parts) {{
+                        p = p.replace("[", "").replace("]", "").trim();
+                        if (p.isEmpty()) continue;
+                        String[] nums = p.split(",");
+                        int[] arr = new int[nums.length];
+                        for (int i = 0; i < nums.length; i++)
+                            arr[i] = Integer.parseInt(nums[i].trim());
+                        list.add(arr);
+                    }}
+                }}
+                System.out.println(toJson(Solution.{function_name}(list.toArray(new int[0][]))));
+                return;
+            }}
+        }} catch (Exception ignored) {{}}
+
+        try {{
+            if (inputJson.trim().startsWith("[") && !inputJson.trim().startsWith("[[")) {{
+                String inner = inputJson.trim();
+                inner = inner.substring(1, inner.length() - 1).trim();
+                String[] nums = inner.split(",");
+                int[] arr = new int[nums.length];
+                for (int i = 0; i < nums.length; i++)
+                    arr[i] = Integer.parseInt(nums[i].trim());
+                System.out.println(toJson(Solution.{function_name}(arr)));
+                return;
+            }}
+        }} catch (Exception ignored) {{}}
+
+        try {{
+            if (inputJson.trim().startsWith("[") && !inputJson.trim().startsWith("[[")) {{
+                String trimmed = inputJson.trim();
+                String inner = trimmed.substring(1, trimmed.length() - 1).trim();
+                int bracketDepth = 0;
+                int splitAt = -1;
+                for (int i = inner.length() - 1; i >= 0; i--) {{
+                    char c = inner.charAt(i);
+                    if (c == ']') bracketDepth++;
+                    else if (c == '[') bracketDepth--;
+                    else if (c == ',' && bracketDepth == 0) {{
+                        splitAt = i;
+                        break;
+                    }}
+                }}
+                if (splitAt > 0) {{
+                    String first  = inner.substring(0, splitAt).trim();
+                    String second = inner.substring(splitAt + 1).trim();
+                    String fInner = first.substring(1, first.length() - 1).trim();
+                    String[] nums = fInner.split(",");
+                    int[] arr = new int[nums.length];
+                    for (int i = 0; i < nums.length; i++)
+                        arr[i] = Integer.parseInt(nums[i].trim());
+                    int target = Integer.parseInt(second);
+                    System.out.println(toJson(Solution.{function_name}(arr, target)));
+                    return;
+                }}
+            }}
+        }} catch (Exception ignored) {{}}
+
+        System.out.println(toJson(Solution.{function_name}(inputJson.replace("\\"", ""))));
     }}
 }}
 """
-    
+
     elif language == "cpp":
         return f"""{code}
 
@@ -121,23 +205,48 @@ public class Main {{
 using namespace std;
 
 int main() {{
-    // Read JSON input
     string inputJson = R"({serialized})";
-    
-    // Parse (simplified - would need proper JSON lib)
     try {{
-        auto result = {function_name}();
+        int single = stoi(inputJson);
+        auto result = {function_name}(single);
         cout << result << endl;
-    }} catch (exception& e) {{
-        cout << "ERROR: " << e.what() << endl;
-    }}
+        return 0;
+    }} catch (...) {{}}
+    try {{
+        if (inputJson.front() == '[' && inputJson.back() == ']' && inputJson.find("[[") == string::npos) {{
+            string inner = inputJson.substr(1, inputJson.size()-2);
+            vector<int> arr;
+            stringstream ss(inner);
+            string token;
+            while (getline(ss, token, ',')) {{
+                arr.push_back(stoi(token));
+            }}
+            auto result = {function_name}(arr);
+            if constexpr (is_same<decltype(result), vector<int>>::value) {{
+                cout << "[";
+                for (size_t i = 0; i < result.size(); ++i) {{
+                    if (i) cout << ",";
+                    cout << result[i];
+                }}
+                cout << "]" << endl;
+            }} else {{
+                cout << result << endl;
+            }}
+            return 0;
+        }}
+    }} catch (...) {{}}
+    cout << {function_name}() << endl;
     return 0;
 }}
 """
-    
+
     else:
         raise ValueError(f"Unsupported language: {language}")
 
+
+# ---------------------------------------------------------------------------
+# Execution
+# ---------------------------------------------------------------------------
 
 async def execute_in_sandbox(
     code: str,
@@ -146,18 +255,15 @@ async def execute_in_sandbox(
     test_input: Any
 ) -> Dict[str, Any]:
     """Execute code in a Docker sandbox with resource limits."""
-    
+
     if not docker_client:
         raise RuntimeError("Docker is not available")
-    
-    # Create temp directory
+
     temp_dir = Path(tempfile.mkdtemp(prefix="dsa-exec-"))
-    
+
     try:
-        # Generate wrapped code
         wrapped_code = generate_wrapper(code, language, function_name, test_input)
-        
-        # Determine file names
+
         if language == "python":
             code_file = "solution.py"
         elif language == "java":
@@ -166,15 +272,13 @@ async def execute_in_sandbox(
             code_file = "solution.cpp"
         else:
             raise ValueError(f"Unsupported language: {language}")
-        
-        # Write files
+
         code_path = temp_dir / code_file
         code_path.write_text(wrapped_code, encoding="utf-8")
-        
+
         input_path = temp_dir / "input.txt"
         input_path.write_text(json.dumps(test_input), encoding="utf-8")
-        
-        # Build Docker command
+
         docker_cmd = [
             "docker", "run",
             "--rm",
@@ -192,16 +296,15 @@ async def execute_in_sandbox(
             f"/sandbox/{code_file}",
             "/sandbox/input.txt"
         ]
-        
-        # Run container
+
         start_time = asyncio.get_event_loop().time()
-        
+
         process = await asyncio.create_subprocess_exec(
             *docker_cmd,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
         )
-        
+
         try:
             stdout, stderr = await asyncio.wait_for(
                 process.communicate(),
@@ -212,17 +315,18 @@ async def execute_in_sandbox(
             process.kill()
             stdout, stderr = b"", b"TIMEOUT"
             timed_out = True
-        
-        execution_time = int((asyncio.get_event_loop().time() - start_time) * 1000)
-        
+
+        execution_time = int(
+            (asyncio.get_event_loop().time() - start_time) * 1000
+        )
+
         stdout_str = stdout.decode("utf-8", errors="replace").strip()
         stderr_str = stderr.decode("utf-8", errors="replace").strip()
-        
-        # Parse result
+
         result = None
         parse_error = None
         error = None
-        
+
         if timed_out:
             error = "Execution timed out"
         elif stderr_str and "ERROR" in stderr_str:
@@ -232,9 +336,9 @@ async def execute_in_sandbox(
         elif stdout_str:
             try:
                 result = json.loads(stdout_str)
-            except json.JSONDecodeError as e:
+            except json.JSONDecodeError:
                 parse_error = f"Failed to parse output: {stdout_str}"
-        
+
         return {
             "stdout": stdout_str,
             "stderr": stderr_str,
@@ -244,7 +348,6 @@ async def execute_in_sandbox(
             "execution_time_ms": execution_time,
             "timed_out": timed_out,
         }
-        
+
     finally:
-        # Cleanup
         shutil.rmtree(temp_dir, ignore_errors=True)

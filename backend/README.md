@@ -1,32 +1,41 @@
 # DSAMaster Code Execution Backend
 
-Docker-sandboxed code execution service supporting Python 3, Java, and C++.
+Production-ready Docker-sandboxed code execution service supporting **Python 3**, **Java 17**, and **C++17**.
 
 ## Quick Start
 
 ### Prerequisites
 - Docker installed and running
-- Node.js 18+
+- Python 3.11+
 
-### Build and Run
+### 1. Build the Sandbox Image
 
 ```bash
 cd backend
-
-# 1. Build executor Docker image
-npm run docker:build
-
-# 2. Install dependencies
-npm install
-
-# 3. Start server
-npm start
+docker build -f docker/Dockerfile -t dsamaster-executor:latest .
 ```
 
-### Docker Compose (Recommended)
+### 2. Run with Docker Compose (Recommended)
 
 ```bash
+cd backend
 docker-compose up --build -d
+```
+
+Or run the FastAPI server directly:
+
+```bash
+cd backend
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+uvicorn app.main:app --host 0.0.0.0 --port 3001 --reload
+```
+
+### 3. Verify Health
+
+```bash
+curl http://localhost:3001/health
 ```
 
 ## API
@@ -39,14 +48,15 @@ Execute code with test cases:
 {
   "language": "python",
   "code": "def twoSum(nums, target):\n    seen = {}\n    for i, num in enumerate(nums):\n        complement = target - num\n        if complement in seen:\n            return [seen[complement], i]\n        seen[num] = i\n    return []",
-  "testCases": [
+  "test_cases": [
     { "input": [[2, 7, 11, 15], 9], "expected": [0, 1] }
   ],
-  "functionName": "twoSum"
+  "function_name": "twoSum"
 }
 ```
 
 Response:
+
 ```json
 {
   "results": [
@@ -55,14 +65,13 @@ Response:
       "expected": [0, 1],
       "actual": [0, 1],
       "passed": true,
-      "executionTime": 45,
-      "timedOut": false,
+      "execution_time_ms": 45,
       "error": null
     }
   ],
-  "allPassed": true,
+  "all_passed": true,
   "language": "python",
-  "functionName": "twoSum"
+  "function_name": "twoSum"
 }
 ```
 
@@ -72,34 +81,47 @@ Health check endpoint.
 
 ## Environment Variables
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `PORT` | 3001 | Server port |
-| `FRONTEND_URL` | * | CORS origin |
-| `DOCKER_IMAGE` | dsa-executor:latest | Executor Docker image |
+| Variable           | Default                     | Description                          |
+|--------------------|-----------------------------|--------------------------------------|
+| `PORT`             | 3001                        | Server port                          |
+| `ALLOWED_ORIGINS`  | `*`                         | CORS origins (comma-separated)       |
+| `EXECUTOR_IMAGE`   | `dsamaster-executor:latest` | Docker image for code execution      |
+| `EXECUTOR_TIMEOUT` | `10`                        | Timeout per test case (seconds)      |
+| `EXECUTOR_MEMORY`  | `128m`                      | Container memory limit               |
+| `EXECUTOR_CPU`     | `1.0`                       | Container CPU limit                  |
 
 ## Security Features
 
-- Docker containers with `--network none` (no network)
+- Docker containers with `--network=none` (no network access)
+- Read-only filesystem (`--read-only`)
 - Memory limit: 128MB
 - CPU limit: 1 core
 - PIDs limit: 50
-- 2-second execution timeout
-- Read-only filesystem
-- No new privileges
-- Code pattern sanitization
+- 2-second execution timeout per test case
+- No new privileges (`--security-opt=no-new-privileges:true`)
+- Code pattern sanitization (bans dangerous imports and system calls)
+- Automatic temp directory cleanup
 
 ## Supported Languages
 
-- **Python 3** (.py files)
-- **Java 17** (.java files)  
-- **C++17** (.cpp files)
+- **Python 3** — single-arg and multi-arg via `*test_input`
+- **Java 17** — defaults to `Solution` class with static method
+- **C++17** — single int, int array, and (array, int) signatures
 
-## Architecture
+## Project Structure
 
 ```
-Frontend (React) → API Server (Express) → Docker Executor (Alpine)
-                                               ↓
-                                         Separate container per run
-                                         Resource-limited sandbox
+backend/
+├── app/
+│   ├── __init__.py
+│   ├── main.py          # FastAPI app & routes
+│   └── executor.py      # Docker sandbox logic
+├── docker/
+│   ├── Dockerfile           # Executor sandbox image
+│   ├── Dockerfile.api       # FastAPI service image
+│   └── executors/
+│       └── run.sh           # Compilation & execution script
+├── docker-compose.yml
+├── requirements.txt
+└── README.md
 ```

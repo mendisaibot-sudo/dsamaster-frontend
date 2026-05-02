@@ -1,26 +1,26 @@
-FROM python:3.11-slim
+FROM alpine:3.19
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    openjdk-17-jdk \
+# Install runtimes
+RUN apk add --no-cache \
+    python3 py3-pip \
+    openjdk17-jdk \
     g++ \
-    gcc \
+    musl-dev \
+    linux-headers \
     bash \
-    && rm -rf /var/lib/apt/lists/*
+    coreutils
 
 # Create sandbox user
-RUN useradd -m -s /bin/bash sandbox
+RUN adduser -D -s /bin/sh sandbox
 
 # Create working directory
 WORKDIR /sandbox
 RUN chown sandbox:sandbox /sandbox
 
 # Copy executor scripts
-COPY docker/executors/run.sh /executors/run.sh
-RUN chmod +x /executors/run.sh
+COPY --chown=sandbox:sandbox executors/ /executors/
 
-# Switch to sandbox user
 USER sandbox
 
 # Default command
-CMD ["bash"]
+CMD ["sh"]
