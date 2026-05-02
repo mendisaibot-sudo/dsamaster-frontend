@@ -1,5 +1,6 @@
 import { useRef, useEffect } from 'react';
 import { EditorView, basicSetup } from 'codemirror';
+import { EditorState } from '@codemirror/state';
 import { javascript } from '@codemirror/lang-javascript';
 import { oneDark } from '@codemirror/theme-one-dark';
 
@@ -10,7 +11,7 @@ const CodeEditor = ({ code, onChange, readOnly = false }) => {
   useEffect(() => {
     if (!editorRef.current) return;
 
-    const startState = EditorView.state({
+    const startState = EditorState.create({
       doc: code,
       extensions: [
         basicSetup,
