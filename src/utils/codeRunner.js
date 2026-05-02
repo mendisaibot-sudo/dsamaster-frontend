@@ -1,3 +1,6 @@
+// Backend API configuration
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+
 function serializeInput(input) {
   if (input === undefined) return 'undefined';
   if (input === null) return 'null';
@@ -33,18 +36,59 @@ function compareResult(actual, expected) {
   return false;
 }
 
-export async function runTests(userCode, testCases, functionName, timeoutMs = 2000, language = 'javascript') {
-  // For now, only JavaScript can run in the browser
-  if (language !== 'javascript') {
+export async function runTestsBackend(userCode, testCases, functionName, language) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/run`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        language,
+        code: userCode,
+        test_cases: testCases.map(tc => ({ input: tc.input, expected: tc.expected })),
+        function_name: functionName || 'solution'
+      })
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Backend execution failed');
+    }
+
+    const data = await response.json();
+    
+    // Transform backend response to match existing frontend format
+    const results = data.results.map(r => ({
+      input: r.input,
+      expected: r.expected,
+      actual: r.actual,
+      passed: r.passed,
+      runtime: r.execution_time_ms,
+      error: r.error
+    }));
+
+    return {
+      results,
+      allPassed: data.all_passed
+    };
+  } catch (error) {
+    // If backend is unavailable, show error
     const results = testCases.map((tc) => ({
       input: tc.input,
       expected: deepClone(tc.expected),
       actual: null,
       passed: false,
-      language,
-      error: `Code execution for ${language} is coming soon. The code editor supports syntax highlighting for ${language}, but running tests is currently only available for JavaScript.`
+      error: `Backend error: ${error.message}. Make sure the server is running.`
     }));
     return { results, allPassed: false };
+  }
+}
+
+export async function runTests(userCode, testCases, functionName, timeoutMs = 2000, language = 'javascript') {
+  // For now, only JavaScript can run in the browser
+  if (language !== 'javascript') {
+    return runTestsBackend(userCode, testCases, functionName, language);
   }
 
   const results = [];

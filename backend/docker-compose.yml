@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - EXECUTOR_IMAGE=dsamaster-executor:latest
+      - EXECUTOR_TIMEOUT=10
+      - EXECUTOR_MEMORY=128m
+      - EXECUTOR_CPU=1.0
+      - ALLOWED_ORIGINS=http://localhost:5173,https://dsamaster.de
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - .:/app
+    working_dir: /app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 3001
+    restart: unless-stopped
+
+  executor:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: dsamaster-executor:latest
+    command: ["echo", "Executor image built"]
+    deploy:
+      replicas: 0
