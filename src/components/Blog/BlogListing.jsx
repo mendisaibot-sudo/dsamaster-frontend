@@ -1,9 +1,39 @@
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { FaClock, FaCalendarAlt, FaArrowRight, FaRocket } from "react-icons/fa";
 import { allPosts } from "./blogData";
+import { API_BASE } from "../../utils/auth";
 import "./Blog.css";
 
 const BlogListing = () => {
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`${API_BASE}/blogs`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        const apiPosts = data?.data || [];
+        if (apiPosts.length > 0) setPosts(apiPosts);
+        else setPosts(allPosts);
+      })
+      .catch(() => setPosts(allPosts))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return (
+    <div className="blog-page">
+      <section className="blog-listing-hero">
+        <div className="hero-gradient-overlay" />
+        <div className="blog-listing-content">
+          <span className="blog-category-badge large"><FaRocket /> Mendis Blog</span>
+          <h1 className="blog-title">Latest <span className="gradient-text">Articles</span></h1>
+          <p className="blog-subtitle">Thoughts on AI, algorithms, software engineering, and building the future.</p>
+        </div>
+      </section>
+      <div className="blog-loading" style={{ textAlign: "center", padding: "3rem", color: "var(--text-secondary)" }}>Loading articles...</div>
+    </div>
+  );
   return (
     <div className="blog-page">
       <section className="blog-listing-hero">
@@ -20,7 +50,7 @@ const BlogListing = () => {
       </section>
 
       <section className="blog-listing-grid">
-        {allPosts.map((post, i) => (
+        {posts.map((post, i) => (
           <Link to={`/blog/${post.slug}`} key={post.slug} className="blog-card-link">
             <article className="blog-card" style={{ animationDelay: `${i * 0.1}s` }}>
               <div className="blog-card-image-wrapper">

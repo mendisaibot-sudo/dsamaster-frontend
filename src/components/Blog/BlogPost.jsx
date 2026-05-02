@@ -1,27 +1,60 @@
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
   FaCalendarAlt, FaClock, FaBookmark, FaTwitter, FaLinkedin, FaGithub,
   FaTag, FaRocket, FaCode, FaBrain, FaLightbulb, FaArrowLeft
 } from 'react-icons/fa';
 import { allPosts } from './blogData';
+import { API_BASE } from '../../utils/auth';
 import './Blog.css';
 
 const iconMap = { code: FaCode, brain: FaBrain, lightbulb: FaLightbulb, rocket: FaRocket };
 
 const BlogPost = () => {
   const { slug } = useParams();
-  const post = allPosts.find(p => p.slug === slug);
+  const [post, setPost] = useState(null);
+  const [contentData, setContentData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [readingProgress, setReadingProgress] = useState(0);
   const [bookmarked, setBookmarked] = useState(false);
-  const [contentData, setContentData] = useState(null);
 
   useEffect(() => {
     if (!slug) return;
-    // Dynamic import of JSON content
-    import(`./blogContent/${slug}.json`)
-      .then(mod => setContentData(mod.default || mod))
-      .catch(() => setContentData(null));
+    let cancelled = false;
+    fetch(`${API_BASE}/blogs/${slug}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (cancelled) return;
+        if (data?.data) {
+          const p = data.data;
+          setPost({
+            ...p,
+            readTime: typeof p.readTime === 'number' ? `${p.readTime} min` : p.readTime,
+            tags: Array.isArray(p.tags) ? p.tags : [],
+          });
+          setContentData({ sections: p.sections || [] });
+        } else {
+          const local = allPosts.find(p => p.slug === slug);
+          setPost(local || null);
+          if (local) {
+            import(`./blogContent/${slug}.json`)
+              .then(m => setContentData(m.default || m))
+              .catch(() => setContentData(null));
+          }
+        }
+      })
+      .catch(() => {
+        if (cancelled) return;
+        const local = allPosts.find(p => p.slug === slug);
+        setPost(local || null);
+        if (local) {
+          import(`./blogContent/${slug}.json`)
+            .then(m => setContentData(m.default || m))
+            .catch(() => setContentData(null));
+        }
+      })
+      .finally(() => setLoading(false));
+    return () => { cancelled = true; };
   }, [slug]);
 
   useEffect(() => {
@@ -33,6 +66,14 @@ const BlogPost = () => {
     window.addEventListener('scroll', fn);
     return () => window.removeEventListener('scroll', fn);
   }, []);
+
+  if (loading) {
+    return (
+      <div className="blog-page" style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-secondary)' }}>
+        Loading article...
+      </div>
+    );
+  }
 
   if (!post) {
     return (
@@ -111,7 +152,7 @@ const BlogPost = () => {
                       </div>
                     )}
 
-                    {section.content.map((para, pIdx) => (
+                    {section.content?.map((para, pIdx) => (
                       <p key={pIdx}>{para}</p>
                     ))}
 
@@ -149,7 +190,7 @@ const BlogPost = () => {
         </div>
       </article>
     </div>
-);
+  );
 };
 
 export default BlogPost;

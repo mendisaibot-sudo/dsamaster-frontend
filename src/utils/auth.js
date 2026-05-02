@@ -1,6 +1,6 @@
 // Authentication helpers
 const TOKEN_KEY = 'dsa_admin_token';
-const API_BASE = 'https://dsamaster.de/api';
+export const API_BASE = 'https://dsamaster.de/api';
 
 export const setToken = (token) => {
   localStorage.setItem(TOKEN_KEY, token);
