@@ -14,9 +14,17 @@ import BlogPost from './components/Blog/BlogPost';
 import Footer from './components/Footer';
 import ProblemSolver from './components/Problems/ProblemSolver';
 
+import SEO from './components/SEO/SEO';
+
 function Home() {
   return (
     <>
+      <SEO 
+        title="DSA Master - Learn Data Structures & Algorithms Interactively"
+        description="Master Data Structures & Algorithms with interactive coding challenges, visualizations, and instant code execution. Practice 30+ problems in JavaScript, Python, Java & C++."
+        keywords="data structures, algorithms, coding interview, leetcode practice, coding challenges, DSA"
+        path="/"
+      />
       <Hero />
       <DataStructures />
       <Algorithms />

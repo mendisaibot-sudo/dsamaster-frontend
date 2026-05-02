@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/generate-sitemap.js > dist/sitemap.xml",
     "preview": "vite preview",
-    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0"
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "sitemap": "node scripts/generate-sitemap.js > public/sitemap.xml"
   },
   "dependencies": {
     "@codemirror/lang-cpp": "^6.0.3",

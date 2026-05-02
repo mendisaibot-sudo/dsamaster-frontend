@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { problems } from '../../data/problems';
 import { useProgress } from '../../contexts/ProgressContext';
 import ProblemSolver from './ProblemSolver';
+import SEO from '../SEO/SEO';
 import { FaCheck, FaCircle } from 'react-icons/fa';
 import './Problems.css';
 
@@ -13,6 +14,10 @@ const Problems = () => {
   const { progress } = useProgress();
 
   const currentProblems = problems[activeTab] || [];
+  
+  const allProblems = [...problems.easy, ...problems.medium, ...problems.hard];
+  
+  const selectedProblem = problemId ? allProblems.find((p) => p.id === problemId) : null;
 
   const isSolved = (id) => progress.problemsSolved.includes(id);
 
@@ -25,22 +30,32 @@ const Problems = () => {
     }
   };
 
-  const allProblems = [...problems.easy, ...problems.medium, ...problems.hard];
 
-  if (problemId) {
-    const selectedProblem = allProblems.find((p) => p.id === problemId);
-    if (selectedProblem) {
-      return (
+  if (problemId && selectedProblem) {
+    return (
+      <>
+        <SEO 
+          title={`${selectedProblem.title} - ${selectedProblem.category} - DSA Master`}
+          description={`Practice ${selectedProblem.title} - ${selectedProblem.difficulty} difficulty ${selectedProblem.category} problem with interactive code editor.`}
+          keywords={`${selectedProblem.title.toLowerCase()}, ${selectedProblem.category.toLowerCase()}, coding interview, DSA`}
+          path={`/problems/${selectedProblem.id}`}
+        />
         <ProblemSolver
           problem={selectedProblem}
           onClose={() => navigate('/problems')}
         />
-      );
-    }
+      </>
+    );
   }
 
   return (
     <section id="problems" className="section section-alt">
+      <SEO 
+        title="Practice Problems - DSA Master"
+        description="Practice 30+ Data Structures & Algorithms problems with interactive code editor. Includes Easy, Medium, and Hard difficulty levels."
+        keywords="coding problems, leetcode, DSA practice, interview preparation"
+        path="/problems"
+      />
       <div className="container">
         <div className="section-header">
           <h2>Practice Problems</h2>
