@@ -16,6 +16,11 @@ import ProblemSolver from './components/Problems/ProblemSolver';
 
 import SEO from './components/SEO/SEO';
 
+// Import Admin components
+import Login from './components/Admin/Login';
+import BlogAdmin from './components/Admin/BlogAdmin';
+import BlogEditor from './components/Admin/BlogEditor';
+
 function Home() {
   return (
     <>
@@ -54,6 +59,12 @@ function App() {
                 <Route path="/problem/:problemId" element={<ProblemSolver />} />
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/blog/:slug" element={<BlogPost />} />
+                
+                {/* Admin routes */}
+                <Route path="/admin/login" element={<Login />} />
+                <Route path="/admin/blog" element={<BlogAdmin />} />
+                <Route path="/admin/blog/new" element={<BlogEditor />} />
+                <Route path="/admin/blog/edit/:slug" element={<BlogEditor />} />
               </Routes>
             </main>
             <Footer />
