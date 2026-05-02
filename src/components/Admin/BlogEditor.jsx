@@ -27,6 +27,38 @@ const BLANK_POST = {
   ], null, 2),
 };
 
+// Helpers to normalize backend data for display
+const normalizeReadTime = (rt) => {
+  if (!rt) return '5 min';
+  if (typeof rt === 'number') return `${rt} min`;
+  if (typeof rt === 'string') {
+    if (rt.includes('min')) return rt;
+    return `${rt} min`;
+  }
+  return '5 min';
+};
+
+const normalizeDifficulty = (d) => {
+  if (!d) return 'easy';
+  return d.toLowerCase();
+};
+
+const normalizeTags = (tags) => {
+  if (!tags) return '';
+  if (Array.isArray(tags)) return tags.join(', ');
+  if (typeof tags === 'string') return tags;
+  return '';
+};
+
+const normalizeSections = (sections) => {
+  if (!sections) return JSON.stringify([], null, 2);
+  if (typeof sections === 'string') {
+    try { JSON.parse(sections); return sections; } catch { return JSON.stringify([], null, 2); }
+  }
+  if (Array.isArray(sections)) return JSON.stringify(sections, null, 2);
+  return JSON.stringify([], null, 2);
+};
+
 const BlogEditor = () => {
   const navigate = useNavigate();
   const { slug } = useParams();
@@ -50,9 +82,13 @@ const BlogEditor = () => {
         if (res.ok) {
           const data = await res.json();
           const post = data.data || {};
-          setForm((prev) => ({ ...prev, ...post,
-            tags: Array.isArray(post.tags) ? post.tags.join(', ') : post.tags || '',
-            sections: typeof post.sections === 'string' ? post.sections : JSON.stringify(post.sections || [], null, 2),
+          setForm((prev) => ({
+            ...prev,
+            ...post,
+            readTime: normalizeReadTime(post.readTime),
+            difficulty: normalizeDifficulty(post.difficulty),
+            tags: normalizeTags(post.tags),
+            sections: normalizeSections(post.sections),
           }));
           return;
         }
@@ -98,10 +134,34 @@ const BlogEditor = () => {
     if (!validate()) return;
     setSaving(true);
     try {
-      const payload = { ...form,
+      // Parse readTime integer from string (e.g., "5 min" -> 5)
+      const readTimeInt = parseInt(form.readTime) || 5;
+
+      // Capitalize difficulty for backend ("easy" -> "Easy")
+      const difficultyCapitalized = form.difficulty
+        ? form.difficulty.charAt(0).toUpperCase() + form.difficulty.slice(1).toLowerCase()
+        : 'Easy';
+
+      // Build payload matching backend model exactly
+      const payload = {
+        slug: form.slug,
+        title: form.title,
+        subtitle: form.subtitle || '',
+        excerpt: form.excerpt,
+        content: '',
+        date: form.date,
+        readTime: readTimeInt,
         tags: form.tags.split(',').map((t) => t.trim()).filter(Boolean),
+        difficulty: difficultyCapitalized,
+        author: form.author || 'Mendis AI',
+        published: true,
+        category: form.category || 'General',
+        authorTitle: form.authorTitle || 'Your Friendly Neighbourhood AI',
+        authorAvatar: form.authorAvatar || '/blog-robot.svg',
+        heroImage: form.heroImage || '',
         sections: JSON.parse(form.sections),
       };
+
       const endpoint = isEdit ? `/blogs/${slug}` : '/blogs';
       const method = isEdit ? 'PUT' : 'POST';
       const res = await authFetch(endpoint, { method, body: JSON.stringify(payload) });
@@ -109,8 +169,14 @@ const BlogEditor = () => {
         show(isEdit ? 'Post updated successfully' : 'Post created successfully', 'success');
         setTimeout(() => navigate('/admin/blog'), 800);
       } else {
-        const errData = await res.json().catch(() => ({}));
-        show(errData.message || 'Failed to save post', 'error');
+        let errorMsg = 'Failed to save post';
+        try {
+          const errData = await res.json();
+          errorMsg = errData.error || errData.message || `Error ${res.status}: ${res.statusText}`;
+        } catch {
+          errorMsg = `Error ${res.status}: ${res.statusText}`;
+        }
+        show(errorMsg, 'error');
       }
     } catch {
       show('Network error. Please try again.', 'error');
