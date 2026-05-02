@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FaSave, FaEye, FaArrowLeft, FaHeading, FaLink, FaCalendarAlt, FaClock, FaTag, FaLayerGroup, FaAlignLeft, FaImage } from 'react-icons/fa';
 import { isAuthenticated, authFetch } from '../../utils/auth';
-import { allPosts } from '../Blog/blogData';
 import { useToast, ToastContainer } from './BlogAdmin';
 import './admin.css';
 
@@ -92,21 +91,7 @@ const BlogEditor = () => {
           }));
           return;
         }
-      } catch { /* fallback */ }
-      const local = allPosts.find((p) => p.slug === slug);
-      if (local) {
-        try {
-          const mod = await import(`../Blog/blogContent/${slug}.json`);
-          const content = mod.default || mod;
-          setForm((prev) => ({ ...prev, ...local,
-            tags: Array.isArray(content.tags) ? content.tags.join(', ') : content.tags || '',
-            difficulty: content.difficulty || 'easy',
-            sections: JSON.stringify(content.sections || [], null, 2),
-          }));
-        } catch {
-          setForm((prev) => ({ ...prev, ...local, tags: '', sections: JSON.stringify([], null, 2) }));
-        }
-      }
+      } catch { /* fallback - keep blank form */ }
     };
     load();
   }, [slug, isEdit]);

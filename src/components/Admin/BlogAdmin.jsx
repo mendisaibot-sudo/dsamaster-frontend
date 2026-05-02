@@ -5,7 +5,6 @@ import {
   FaNewspaper, FaCalendarAlt,
 } from 'react-icons/fa';
 import { isAuthenticated, authFetch, logout } from '../../utils/auth';
-import { allPosts } from '../Blog/blogData';
 import './admin.css';
 
 let toastId = 0;
@@ -70,16 +69,7 @@ const BlogAdmin = () => {
           const data = await res.json();
           setPosts(data.data || []);
         } else {
-          const enriched = await Promise.all(
-            allPosts.map(async post => {
-              try {
-                const mod = await import(`../Blog/blogContent/${post.slug}.json`);
-                const content = mod.default || mod;
-                return { ...post, tags: content.tags || [] };
-              } catch { return { ...post, tags: [] }; }
-            })
-          );
-          setPosts(enriched);
+          setPosts([]);
         }
       } catch {
         setPosts([]);
