@@ -10,8 +10,8 @@ const navLinks = [
   { id: 'datastructures', label: 'Data Structures', path: '/datastructures', type: 'route' },
   { id: 'algorithms', label: 'Algorithms', path: '/algorithms', type: 'route' },
   { id: 'problems', label: 'Problems', path: '/problems', type: 'route' },
-  { id: 'blog', label: 'Blog', path: '/blog', type: 'route' },
-  { id: 'progress', label: 'Progress', path: '/progress', type: 'route' }
+  { id: 'progress', label: 'Progress', path: '/progress', type: 'route' },
+  { id: 'blog', label: 'Blog', path: '/blog', type: 'route' }
 ];
 
 const Navbar = () => {
