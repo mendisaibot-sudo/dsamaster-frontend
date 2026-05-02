@@ -12,7 +12,7 @@ import Progress from './components/Progress/Progress';
 import Blog from './components/Blog/BlogListing';
 import BlogPost from './components/Blog/BlogPost';
 import Footer from './components/Footer';
-import './App.css';
+import ProblemSolver from './components/Problems/ProblemSolver';
 
 function Home() {
   return (
@@ -42,6 +42,8 @@ function App() {
                 <Route path="/datastructures" element={<DataStructures />} />
                 <Route path="/algorithms" element={<Algorithms />} />
                 <Route path="/problems" element={<Problems />} />
+                <Route path="/problems/:problemId" element={<Problems />} />
+                <Route path="/problem/:problemId" element={<ProblemSolver />} />
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/blog/:slug" element={<BlogPost />} />
               </Routes>

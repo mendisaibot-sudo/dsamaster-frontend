@@ -1,25 +1,20 @@
 import { useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { problems } from '../../data/problems';
 import { useProgress } from '../../contexts/ProgressContext';
-import { FaCheck, FaCircle, FaCode } from 'react-icons/fa';
+import ProblemSolver from './ProblemSolver';
+import { FaCheck, FaCircle } from 'react-icons/fa';
 import './Problems.css';
 
 const Problems = () => {
+  const navigate = useNavigate();
+  const { problemId } = useParams();
   const [activeTab, setActiveTab] = useState('easy');
-  const { addSolvedProblem, addActivity } = useProgress();
-  const [solvedProblems, setSolvedProblems] = useState(new Set());
-  const [selectedProblem, setSelectedProblem] = useState(null);
+  const { progress } = useProgress();
 
-  const handleToggleSolved = (problem) => {
-    const newSolved = new Set(solvedProblems);
-    if (newSolved.has(problem.id)) {
-      newSolved.delete(problem.id);
-    } else {
-      newSolved.add(problem.id);
-      addSolvedProblem(problem.id);
-    }
-    setSolvedProblems(newSolved);
-  };
+  const currentProblems = problems[activeTab] || [];
+
+  const isSolved = (id) => progress.problemsSolved.includes(id);
 
   const getDifficultyColor = (difficulty) => {
     switch (difficulty) {
@@ -30,7 +25,19 @@ const Problems = () => {
     }
   };
 
-  const currentProblems = problems[activeTab] || [];
+  const allProblems = [...problems.easy, ...problems.medium, ...problems.hard];
+
+  if (problemId) {
+    const selectedProblem = allProblems.find((p) => p.id === problemId);
+    if (selectedProblem) {
+      return (
+        <ProblemSolver
+          problem={selectedProblem}
+          onClose={() => navigate('/problems')}
+        />
+      );
+    }
+  }
 
   return (
     <section id="problems" className="section section-alt">
@@ -68,11 +75,11 @@ const Problems = () => {
           {currentProblems.map((problem) => (
             <div
               key={problem.id}
-              className={`problem-card ${solvedProblems.has(problem.id) ? 'solved' : ''}`}
-              onClick={() => setSelectedProblem(problem)}
+              className={`problem-card ${isSolved(problem.id) ? 'solved' : ''}`}
+              onClick={() => navigate(`/problems/${problem.id}`)}
             >
               <div className="problem-status">
-                {solvedProblems.has(problem.id) ? (
+                {isSolved(problem.id) ? (
                   <FaCheck className="check-icon" />
                 ) : (
                   <FaCircle className="circle-icon" />
@@ -84,52 +91,16 @@ const Problems = () => {
               </div>
               <span
                 className="difficulty-badge-problems"
-                style={{ background: getDifficultyColor(problem.difficulty) + '20', color: getDifficultyColor(problem.difficulty) }}
+                style={{
+                  background: getDifficultyColor(problem.difficulty) + '20',
+                  color: getDifficultyColor(problem.difficulty)
+                }}
               >
                 {problem.difficulty}
               </span>
             </div>
           ))}
         </div>
-
-        {selectedProblem && (
-          <div className="modal-overlay" onClick={() => setSelectedProblem(null)}>
-            <div className="modal-content problem-modal" onClick={(e) => e.stopPropagation()}>
-              <div className="modal-header">
-                <div>
-                  <h2>{selectedProblem.title}</h2>
-                  <span className="category-tag">{selectedProblem.category}</span>
-                </div>
-                <button className="modal-close" onClick={() => setSelectedProblem(null)}>×</button>
-              </div>
-              <div className="modal-body">
-                <div className="problem-detail">
-                  <p className="problem-description">
-                    Solve this {selectedProblem.difficulty} level problem related to {selectedProblem.category}.
-                    Click the button below to mark it as solved and track your progress.
-                  </p>
-                  
-                  <div className="suggested-approach">
-                    <h4>Suggested Approach</h4>
-                    <ul>
-                      <li>Read the problem carefully</li>
-                      <li>Identify the data structure needed</li>
-                      <li>Consider edge cases</li>
-                      <li>Optimize for time and space complexity</li>
-                    </ul>
-                  </div>
-
-                  <button
-                    className={`btn ${solvedProblems.has(selectedProblem.id) ? 'btn-secondary' : 'btn-success'}`}
-                    onClick={() => handleToggleSolved(selectedProblem)}
-                  >
-                    <FaCode /> {solvedProblems.has(selectedProblem.id) ? 'Mark Unsolved' : 'Mark as Solved'}
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </section>
   );
