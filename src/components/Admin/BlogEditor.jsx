@@ -49,9 +49,10 @@ const BlogEditor = () => {
         const res = await authFetch(`/blogs/${slug}`);
         if (res.ok) {
           const data = await res.json();
-          setForm((prev) => ({ ...prev, ...data,
-            tags: Array.isArray(data.tags) ? data.tags.join(', ') : data.tags || '',
-            sections: typeof data.sections === 'string' ? data.sections : JSON.stringify(data.sections || [], null, 2),
+          const post = data.data || {};
+          setForm((prev) => ({ ...prev, ...post,
+            tags: Array.isArray(post.tags) ? post.tags.join(', ') : post.tags || '',
+            sections: typeof post.sections === 'string' ? post.sections : JSON.stringify(post.sections || [], null, 2),
           }));
           return;
         }

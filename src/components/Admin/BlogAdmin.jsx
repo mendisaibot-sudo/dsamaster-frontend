@@ -68,7 +68,7 @@ const BlogAdmin = () => {
         const res = await authFetch('/blogs');
         if (res.ok) {
           const data = await res.json();
-          setPosts(Array.isArray(data) ? data : data.posts || []);
+          setPosts(data.data || []);
         } else {
           const enriched = await Promise.all(
             allPosts.map(async post => {
