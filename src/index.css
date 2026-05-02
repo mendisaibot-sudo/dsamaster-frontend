@@ -89,6 +89,7 @@ body {
 
 .section-header h2 {
   white-space: nowrap;
+  display: inline-block;
 }
 
 .section-title {
