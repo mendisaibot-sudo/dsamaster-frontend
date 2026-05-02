@@ -3,7 +3,7 @@ import { useProgress } from '../../contexts/ProgressContext';
 import { runTests } from '../../utils/codeRunner';
 import CodeEditor from '../CodeEditor/CodeEditor';
 import TestRunner from '../CodeEditor/TestRunner';
-import { FaPlay, FaCheck, FaArrowLeft } from 'react-icons/fa';
+import { FaPlay, FaCheck, FaArrowLeft, FaCheckCircle } from 'react-icons/fa';
 import './ProblemSolver.css';
 
 const ProblemSolver = ({ problem, onClose }) => {
@@ -11,6 +11,7 @@ const ProblemSolver = ({ problem, onClose }) => {
   const [results, setResults] = useState(null);
   const [isRunning, setIsRunning] = useState(false);
   const [runtime, setRuntime] = useState(undefined);
+  const [allTestsPassed, setAllTestsPassed] = useState(false);
   const { addSolvedProblem, addActivity, progress } = useProgress();
   const [hasBeenSolved, setHasBeenSolved] = useState(false);
 
@@ -33,6 +34,7 @@ const ProblemSolver = ({ problem, onClose }) => {
 
     setResults(res);
     setRuntime(totalRuntime);
+    setAllTestsPassed(allPassed);
     setIsRunning(false);
 
     if (allPassed && !hasBeenSolved && !isAlreadySolved) {
@@ -58,32 +60,48 @@ const ProblemSolver = ({ problem, onClose }) => {
         </button>
         <div className="problem-solver-title">
           <h2>{problem.title}</h2>
-          <span
-            className="difficulty-badge"
-            data-difficulty={problem.difficulty}
-          >
-            {problem.difficulty}
-          </span>
-          <span className="category-tag">{problem.category}</span>
-        </div>
-        <div className="problem-solver-actions">
-          <button
-            className="btn-run"
-            onClick={handleRun}
-            disabled={isRunning || !problem.testCases?.length}
-          >
-            <FaPlay /> Run Tests
-          </button>
-          {(isAlreadySolved || hasBeenSolved) ? (
-            <span className="solved-badge">
-              <FaCheck /> Solved
+          <div className="problem-tags">
+            <span
+              className="difficulty-badge"
+              data-difficulty={problem.difficulty}
+            >
+              {problem.difficulty}
             </span>
-          ) : (
-            <button className="btn-mark" onClick={handleSolveManually}>
-              Mark as Solved
-            </button>
-          )}
+            <span className="category-tag">{problem.category}</span>
+            {(isAlreadySolved || hasBeenSolved) && (
+              <span className="solved-badge-inline">
+                <FaCheckCircle /> Solved
+              </span>
+            )}
+          </div>
         </div>
+      </div>
+
+      <div className="problem-actions-bar">
+        <button
+          className="btn-run"
+          onClick={handleRun}
+          disabled={isRunning || !problem.testCases?.length}
+        >
+          <FaPlay /> {isRunning ? 'Running...' : 'Run Tests'}
+        </button>
+        {!allTestsPassed && results && (
+          <span className="tests-fail-msg">Fix all tests to mark solved</span>
+        )}
+        <button
+          className={`btn-mark ${allTestsPassed ? 'btn-mark--active' : 'btn-mark--disabled'}`}
+          onClick={handleSolveManually}
+          disabled={!allTestsPassed || isAlreadySolved || hasBeenSolved}
+          title={
+            isAlreadySolved || hasBeenSolved
+              ? 'Already solved!'
+              : !allTestsPassed
+              ? 'Run and pass all tests first'
+              : 'Mark as solved'
+          }
+        >
+          <FaCheck /> Mark as Solved
+        </button>
       </div>
 
       <div className="problem-solver-body">
