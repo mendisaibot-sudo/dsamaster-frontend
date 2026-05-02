@@ -33,7 +33,20 @@ function compareResult(actual, expected) {
   return false;
 }
 
-export async function runTests(userCode, testCases, functionName, timeoutMs = 2000) {
+export async function runTests(userCode, testCases, functionName, timeoutMs = 2000, language = 'javascript') {
+  // For now, only JavaScript can run in the browser
+  if (language !== 'javascript') {
+    const results = testCases.map((tc) => ({
+      input: tc.input,
+      expected: deepClone(tc.expected),
+      actual: null,
+      passed: false,
+      language,
+      error: `Code execution for ${language} is coming soon. The code editor supports syntax highlighting for ${language}, but running tests is currently only available for JavaScript.`
+    }));
+    return { results, allPassed: false };
+  }
+
   const results = [];
   const fnName = functionName || 'solution';
 

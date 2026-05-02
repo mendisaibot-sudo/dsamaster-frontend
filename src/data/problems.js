@@ -8,9 +8,23 @@ export const problems = {
       completed: false,
       functionName: 'twoSum',
       description: `Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target. You may assume that each input would have exactly one solution, and you may not use the same element twice.`,
-      starterCode: `function twoSum(nums, target) {
+      starterCode: {
+        javascript: `function twoSum(nums, target) {
   // Your code here
 }`,
+        python: `def twoSum(nums, target):
+    # Your code here
+    pass`,
+        java: `public int[] twoSum(int[] nums, int target) {
+    // Your code here
+    return new int[0];
+}`,
+        cpp: `vector<int> twoSum(vector<int>& nums, int target) {
+    // Your code here
+    return {};
+}`
+      },
+      languages: ['javascript', 'python', 'java', 'cpp'],
       testCases: [
         { input: [[2, 7, 11, 15], 9], expected: [0, 1] },
         { input: [[3, 2, 4], 6], expected: [1, 2] },

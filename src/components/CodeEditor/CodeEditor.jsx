@@ -2,20 +2,33 @@ import { useRef, useEffect } from 'react';
 import { EditorView, basicSetup } from 'codemirror';
 import { EditorState } from '@codemirror/state';
 import { javascript } from '@codemirror/lang-javascript';
+import { python } from '@codemirror/lang-python';
+import { java } from '@codemirror/lang-java';
+import { cpp } from '@codemirror/lang-cpp';
 import { oneDark } from '@codemirror/theme-one-dark';
 
-const CodeEditor = ({ code, onChange, readOnly = false }) => {
+const languageExtensions = {
+  javascript: javascript,
+  python: python,
+  java: java,
+  cpp: cpp,
+  c: cpp,
+};
+
+const CodeEditor = ({ code, onChange, readOnly = false, language = 'javascript' }) => {
   const editorRef = useRef(null);
   const viewRef = useRef(null);
 
   useEffect(() => {
     if (!editorRef.current) return;
 
+    const langExt = languageExtensions[language] || javascript;
+
     const startState = EditorState.create({
       doc: code,
       extensions: [
         basicSetup,
-        javascript(),
+        langExt(),
         oneDark,
         EditorView.editable.of(!readOnly),
         EditorView.updateListener.of((update) => {
@@ -42,7 +55,7 @@ const CodeEditor = ({ code, onChange, readOnly = false }) => {
       view.destroy();
       viewRef.current = null;
     };
-  }, []);
+  }, [language]);
 
   useEffect(() => {
     if (viewRef.current && code !== viewRef.current.state.doc.toString()) {

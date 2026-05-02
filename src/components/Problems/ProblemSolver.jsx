@@ -7,7 +7,8 @@ import { FaPlay, FaCheck, FaArrowLeft, FaCheckCircle } from 'react-icons/fa';
 import './ProblemSolver.css';
 
 const ProblemSolver = ({ problem, onClose }) => {
-  const [code, setCode] = useState(problem.starterCode || '');
+  const [language, setLanguage] = useState(problem.defaultLanguage || 'javascript');
+  const [code, setCode] = useState(problem.starterCode?.[language] || problem.starterCode || '');
   const [results, setResults] = useState(null);
   const [isRunning, setIsRunning] = useState(false);
   const [runtime, setRuntime] = useState(undefined);
@@ -16,6 +17,15 @@ const ProblemSolver = ({ problem, onClose }) => {
   const [hasBeenSolved, setHasBeenSolved] = useState(false);
 
   const isAlreadySolved = progress.problemsSolved.includes(problem.id);
+
+  const languages = problem.languages || ['javascript'];
+
+  const handleLanguageChange = (newLang) => {
+    setLanguage(newLang);
+    setCode(problem.starterCode?.[newLang] || problem.starterCode || '');
+    setResults(null);
+    setAllTestsPassed(false);
+  };
 
   const handleRun = useCallback(async () => {
     if (!problem.testCases || problem.testCases.length === 0) return;
@@ -28,7 +38,8 @@ const ProblemSolver = ({ problem, onClose }) => {
       code,
       problem.testCases,
       problem.functionName,
-      2000
+      2000,
+      language
     );
     const totalRuntime = Math.round(performance.now() - start);
 
@@ -42,7 +53,7 @@ const ProblemSolver = ({ problem, onClose }) => {
       addActivity(`Solved problem ${problem.title} automatically`);
       setHasBeenSolved(true);
     }
-  }, [code, problem, addSolvedProblem, addActivity, hasBeenSolved, isAlreadySolved]);
+  }, [code, problem, language, addSolvedProblem, addActivity, hasBeenSolved, isAlreadySolved]);
 
   const handleSolveManually = () => {
     if (!isAlreadySolved && !hasBeenSolved) {
@@ -85,6 +96,21 @@ const ProblemSolver = ({ problem, onClose }) => {
         >
           <FaPlay /> {isRunning ? 'Running...' : 'Run Tests'}
         </button>
+
+        {languages.length > 1 && (
+          <div className="language-selector">
+            {languages.map((lang) => (
+              <button
+                key={lang}
+                className={`lang-tab ${language === lang ? 'lang-tab--active' : ''}`}
+                onClick={() => handleLanguageChange(lang)}
+              >
+                {lang.charAt(0).toUpperCase() + lang.slice(1)}
+              </button>
+            ))}
+          </div>
+        )}
+
         {!allTestsPassed && results && (
           <span className="tests-fail-msg">Fix all tests to mark solved</span>
         )}
@@ -151,11 +177,11 @@ const ProblemSolver = ({ problem, onClose }) => {
           <div className="editor-section">
             <div className="editor-toolbar">
               <span className="editor-label">
-                JavaScript
+                {language.charAt(0).toUpperCase() + language.slice(1)}
               </span>
             </div>
             <div className="editor-wrapper">
-              <CodeEditor code={code} onChange={setCode} />
+              <CodeEditor code={code} onChange={setCode} language={language} />
             </div>
           </div>
 
