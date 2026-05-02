@@ -1,5 +1,5 @@
 // Backend API configuration
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://dsamaster.de:3001';
 
 function serializeInput(input) {
   if (input === undefined) return 'undefined';
