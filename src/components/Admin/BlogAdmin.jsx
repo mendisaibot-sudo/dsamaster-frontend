@@ -82,7 +82,7 @@ const BlogAdmin = () => {
           setPosts(enriched);
         }
       } catch {
-        setPosts(allPosts.map(p => ({ ...p, tags: [] })));
+        setPosts([]);
       } finally {
         setLoading(false);
       }

@@ -36,6 +36,7 @@ export const authFetch = async (endpoint, options = {}) => {
   const res = await fetch(`${API_BASE}${endpoint}`, {
     ...options,
     headers,
+    credentials: 'include',
   });
 
   if (res.status === 401) {
