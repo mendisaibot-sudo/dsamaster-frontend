@@ -1,8 +1,13 @@
 User-agent: *
 Allow: /
+Allow: /health
 
 # Don't index API endpoints or assets
 Disallow: /api/
 Disallow: /assets/
 
+# Sitemap location
 Sitemap: https://dsamaster.de/sitemap.xml
+
+# Crawl rate hint
+Crawl-delay: 1
