@@ -65,7 +65,7 @@ const BlogAdmin = () => {
     if (!isAuthenticated()) return;
     const fetchPosts = async () => {
       try {
-        const res = await authFetch('/blog/posts');
+        const res = await authFetch('/blogs');
         if (res.ok) {
           const data = await res.json();
           setPosts(Array.isArray(data) ? data : data.posts || []);
@@ -94,7 +94,7 @@ const BlogAdmin = () => {
     if (!deleteTarget) return;
     setDeleting(true);
     try {
-      const res = await authFetch(`/blog/posts/${deleteTarget.slug}`, { method: 'DELETE' });
+      const res = await authFetch(`/blogs/${deleteTarget.slug}`, { method: 'DELETE' });
       if (res.ok) {
         setPosts(prev => prev.filter(p => p.slug !== deleteTarget.slug));
         show('Post deleted successfully', 'success');

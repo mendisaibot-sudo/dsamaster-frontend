@@ -46,7 +46,7 @@ const BlogEditor = () => {
     if (!isEdit || !slug) return;
     const load = async () => {
       try {
-        const res = await authFetch(`/blog/posts/${slug}`);
+        const res = await authFetch(`/blogs/${slug}`);
         if (res.ok) {
           const data = await res.json();
           setForm((prev) => ({ ...prev, ...data,
@@ -101,7 +101,7 @@ const BlogEditor = () => {
         tags: form.tags.split(',').map((t) => t.trim()).filter(Boolean),
         sections: JSON.parse(form.sections),
       };
-      const endpoint = isEdit ? `/blog/posts/${slug}` : '/blog/posts';
+      const endpoint = isEdit ? `/blogs/${slug}` : '/blogs';
       const method = isEdit ? 'PUT' : 'POST';
       const res = await authFetch(endpoint, { method, body: JSON.stringify(payload) });
       if (res.ok) {
