@@ -87,6 +87,10 @@ body {
   margin: 0 auto 3rem;
 }
 
+.section-header h2 {
+  white-space: nowrap;
+}
+
 .section-title {
   font-size: 2.5rem;
   font-weight: 700;
