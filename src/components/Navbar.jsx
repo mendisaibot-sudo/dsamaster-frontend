@@ -73,7 +73,7 @@ const Navbar = () => {
               <button
                 onClick={logout}
                 className="p-2 rounded-lg hover:bg-secondary transition"
-                title="Abmelden"
+                title="Sign Out"
               >
                 <FaSignOutAlt />
               </button>
@@ -84,7 +84,7 @@ const Navbar = () => {
               className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition text-sm"
             >
               <FaUser />
-              <span className="hidden md:inline">Anmelden</span>
+              <span className="hidden md:inline">Sign In</span>
             </Link>
           )}
           <button

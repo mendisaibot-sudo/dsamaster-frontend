@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import './Auth.css';
 
 export default function LoginPage() {
   const [mode, setMode] = useState('login');
@@ -7,113 +8,200 @@ export default function LoginPage() {
     email: '', password: '', first_name: '', last_name: '', display_name: '' 
   });
   const [captcha, setCaptcha] = useState(null);
+  const [captchaAnswer, setCaptchaAnswer] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const { login, register } = useAuth();
 
+  const API_URL = import.meta.env.VITE_API_URL || 'https://dsamaster.de';
+
   const loadCaptcha = async () => {
-    const API_URL = import.meta.env.VITE_API_URL || 'https://dsamaster.de';
-    const res = await fetch(`${API_URL}/api/auth/captcha`, { method: 'POST' });
-    const data = await res.json();
-    if (data.success) setCaptcha(data.data);
+    try {
+      const res = await fetch(`${API_URL}/api/auth/captcha`, { method: 'POST' });
+      const data = await res.json();
+      if (data.success) setCaptcha(data.data);
+    } catch (err) {
+      console.error('Failed to load captcha:', err);
+    }
   };
+
+  useEffect(() => {
+    if (mode === 'register') loadCaptcha();
+  }, [mode]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
-    if (mode === 'login') {
-      const res = await login(form.email, form.password);
-      if (!res.success) setError(res.error || 'Login failed');
-    } else {
-      const res = await register({ ...form, captcha_id: captcha?.captcha_id, captcha_answer: captchaAnswer });
-      if (!res.success) setError(res.error || 'Registration failed');
+    try {
+      if (mode === 'login') {
+        const res = await login(form.email, form.password);
+        if (!res.success) setError(res.error || 'Login failed');
+      } else {
+        if (!captchaAnswer.trim()) {
+          setError('Please enter the CAPTCHA');
+          setLoading(false);
+          return;
+        }
+        const res = await register({ 
+          ...form, 
+          captcha_id: captcha?.captcha_id, 
+          captcha_answer: captchaAnswer 
+        });
+        if (!res.success) {
+          setError(res.error || 'Registration failed');
+          loadCaptcha();
+          setCaptchaAnswer('');
+        }
+      }
+    } catch (err) {
+      setError('An error occurred. Please try again.');
     }
+    setLoading(false);
+  };
+
+  const toggleMode = () => {
+    setMode(mode === 'login' ? 'register' : 'login');
+    setError('');
+    setCaptchaAnswer('');
   };
 
   return (
-    <div className="max-w-md mx-auto mt-20 p-8 bg-card border border-border rounded-xl shadow-lg">
-      <h2 className="text-2xl font-bold text-center mb-6">
-        {mode === 'login' ? 'Anmelden' : 'Konto erstellen'}
-      </h2>
+    <div className="auth-page section">
+      <div className="auth-container animate-fade-in">
+        <div className="auth-card card">
+          <div className="auth-header">
+            <h1 className="section-title" style={{ fontSize: '1.75rem' }}>
+              {mode === 'login' ? 'Welcome Back' : 'Create Account'}
+            </h1>
+            <p className="section-subtitle" style={{ fontSize: '0.95rem' }}>
+              {mode === 'login' 
+                ? 'Sign in to track your progress' 
+                : 'Join to start your DSA journey'}
+            </p>
+          </div>
 
-      {error && <div className="bg-red-500/10 text-red-400 p-3 rounded-lg mb-4 text-sm">{error}</div>}
+          {error && (
+            <div className="auth-error">
+              {error}
+            </div>
+          )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="email"
-          placeholder="E-Mail"
-          value={form.email}
-          onChange={e => setForm({...form, email: e.target.value})}
-          className="w-full p-3 bg-secondary border border-border rounded-lg text-foreground outline-none focus:border-primary"
-          required
-        />
-        <input
-          type="password"
-          placeholder="Passwort"
-          value={form.password}
-          onChange={e => setForm({...form, password: e.target.value})}
-          className="w-full p-3 bg-secondary border border-border rounded-lg text-foreground outline-none focus:border-primary"
-          required
-        />
-
-        {mode === 'register' && (
-          <>
-            <div className="grid grid-cols-2 gap-4">
+          <form onSubmit={handleSubmit} className="auth-form">
+            <div className="form-group">
+              <label className="form-label">Email</label>
               <input
-                type="text"
-                placeholder="Vorname"
-                value={form.first_name}
-                onChange={e => setForm({...form, first_name: e.target.value})}
-                className="w-full p-3 bg-secondary border border-border rounded-lg text-foreground outline-none focus:border-primary"
-                required
-              />
-              <input
-                type="text"
-                placeholder="Nachname"
-                value={form.last_name}
-                onChange={e => setForm({...form, last_name: e.target.value})}
-                className="w-full p-3 bg-secondary border border-border rounded-lg text-foreground outline-none focus:border-primary"
+                type="email"
+                placeholder="your@email.com"
+                value={form.email}
+                onChange={e => setForm({...form, email: e.target.value})}
+                className="form-input"
                 required
               />
             </div>
-            <input
-              type="text"
-              placeholder="Anzeigename (optional)"
-              value={form.display_name}
-              onChange={e => setForm({...form, display_name: e.target.value})}
-              className="w-full p-3 bg-secondary border border-border rounded-lg text-foreground outline-none focus:border-primary"
-            />
 
-            {/* CAPTCHA */}
-            <div className="border border-border rounded-lg p-4">
-              {captcha && <img src={captcha.image} alt="CAPTCHA" className="mb-3" />}
-              <button type="button" onClick={loadCaptcha} className="text-sm text-primary hover:underline">
-                {captcha ? 'Neues CAPTCHA' : 'CAPTCHA laden'}
-              </button>
+            <div className="form-group">
+              <label className="form-label">Password</label>
               <input
-                type="text"
-                placeholder="CAPTCHA eingeben"
-                value={captchaAnswer}
-                onChange={e => setCaptchaAnswer(e.target.value)}
-                className="w-full mt-3 p-3 bg-secondary border border-border rounded-lg text-foreground outline-none focus:border-primary"
+                type="password"
+                placeholder="••••••••"
+                value={form.password}
+                onChange={e => setForm({...form, password: e.target.value})}
+                className="form-input"
                 required
               />
             </div>
-          </>
-        )}
 
-        <button type="submit" className="w-full bg-primary text-primary-foreground p-3 rounded-lg font-semibold hover:opacity-90 transition">
-          {mode === 'login' ? 'Anmelden' : 'Konto erstellen'}
-        </button>
-      </form>
+            {mode === 'register' && (
+              <>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">First Name</label>
+                    <input
+                      type="text"
+                      placeholder="John"
+                      value={form.first_name}
+                      onChange={e => setForm({...form, first_name: e.target.value})}
+                      className="form-input"
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Last Name</label>
+                    <input
+                      type="text"
+                      placeholder="Doe"
+                      value={form.last_name}
+                      onChange={e => setForm({...form, last_name: e.target.value})}
+                      className="form-input"
+                      required
+                    />
+                  </div>
+                </div>
 
-      <p className="text-center mt-4 text-sm text-muted-foreground">
-        {mode === 'login' ? (
-          <>Noch kein Konto? <button onClick={() => setMode('register')} className="text-primary hover:underline">Registrieren</button></>
-        ) : (
-          <>Bereits ein Konto? <button onClick={() => setMode('login')} className="text-primary hover:underline">Anmelden</button></>
-        )}
-      </p>
+                <div className="form-group">
+                  <label className="form-label">Display Name <span className="text-muted">(optional)</span></label>
+                  <input
+                    type="text"
+                    placeholder="How others see you"
+                    value={form.display_name}
+                    onChange={e => setForm({...form, display_name: e.target.value})}
+                    className="form-input"
+                  />
+                </div>
+
+                {/* CAPTCHA */}
+                <div className="captcha-section">
+                  <label className="form-label">Security Check</label>
+                  <div className="captcha-box">
+                    {captcha && (
+                      <img 
+                        src={captcha.image} 
+                        alt="CAPTCHA" 
+                        className="captcha-image"
+                      />
+                    )}
+                    <button 
+                      type="button" 
+                      onClick={loadCaptcha} 
+                      className="btn btn-secondary btn-sm"
+                    >
+                      🔄 Refresh
+                    </button>
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Enter characters above"
+                    value={captchaAnswer}
+                    onChange={e => setCaptchaAnswer(e.target.value)}
+                    className="form-input"
+                    required
+                  />
+                </div>
+              </>
+            )}
+
+            <button 
+              type="submit" 
+              className="btn btn-primary auth-submit"
+              disabled={loading}
+            >
+              {loading ? 'Please wait...' : (mode === 'login' ? 'Sign In' : 'Create Account')}
+            </button>
+          </form>
+
+          <div className="auth-footer">
+            <p>
+              {mode === 'login' ? (
+                <>New here? <button onClick={toggleMode} className="auth-link">Create an account</button></>
+              ) : (
+                <>Already have an account? <button onClick={toggleMode} className="auth-link">Sign in</button></>
+              )}
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
