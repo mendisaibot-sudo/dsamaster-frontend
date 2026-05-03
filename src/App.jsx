@@ -1,6 +1,7 @@
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ProgressProvider } from './contexts/ProgressContext';
+import { AuthProvider } from './contexts/AuthContext';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import DataStructures from './components/DataStructures/DataStructures';
@@ -13,6 +14,8 @@ import Blog from './components/Blog/BlogListing';
 import BlogPost from './components/Blog/BlogPost';
 import Footer from './components/Footer';
 import ProblemSolver from './components/Problems/ProblemSolver';
+
+import LoginPage from './components/Auth/LoginPage';
 
 import SEO from './components/SEO/SEO';
 
@@ -42,8 +45,9 @@ function Home() {
 function App() {
   return (
     <ThemeProvider>
-      <ProgressProvider>
-        <Router>
+      <AuthProvider>
+        <ProgressProvider>
+          <Router>
           <div className="app">
             <Navbar />
             <main className="main-content">
@@ -60,6 +64,8 @@ function App() {
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/blog/:slug" element={<BlogPost />} />
                 
+                <Route path="/auth/login" element={<LoginPage />} />
+                
                 {/* Admin routes */}
                 <Route path="/admin/login" element={<Login />} />
                 <Route path="/admin/blog" element={<BlogAdmin />} />
@@ -70,7 +76,8 @@ function App() {
             <Footer />
           </div>
         </Router>
-      </ProgressProvider>
+        </ProgressProvider>
+      </AuthProvider>
     </ThemeProvider>
   );
 }
