@@ -4,7 +4,6 @@ import {
   FaCalendarAlt, FaClock, FaBookmark, FaTwitter, FaLinkedin, FaGithub,
   FaTag, FaRocket, FaCode, FaBrain, FaLightbulb, FaArrowLeft
 } from 'react-icons/fa';
-import { allPosts } from './blogData';
 import { API_BASE } from '../../utils/auth';
 import './Blog.css';
 
@@ -34,24 +33,14 @@ const BlogPost = () => {
           });
           setContentData({ sections: p.sections || [] });
         } else {
-          const local = allPosts.find(p => p.slug === slug);
-          setPost(local || null);
-          if (local) {
-            import(`./blogContent/${slug}.json`)
-              .then(m => setContentData(m.default || m))
-              .catch(() => setContentData(null));
-          }
+          setPost(null);
+          setContentData(null);
         }
       })
       .catch(() => {
         if (cancelled) return;
-        const local = allPosts.find(p => p.slug === slug);
-        setPost(local || null);
-        if (local) {
-          import(`./blogContent/${slug}.json`)
-            .then(m => setContentData(m.default || m))
-            .catch(() => setContentData(null));
-        }
+        setPost(null);
+        setContentData(null);
       })
       .finally(() => setLoading(false));
     return () => { cancelled = true; };

@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { FaClock, FaCalendarAlt, FaArrowRight, FaRocket } from "react-icons/fa";
-import { allPosts } from "./blogData";
 import { API_BASE } from "../../utils/auth";
 import "./Blog.css";
 
@@ -13,11 +12,9 @@ const BlogListing = () => {
     fetch(`${API_BASE}/blogs`)
       .then(r => r.ok ? r.json() : null)
       .then(data => {
-        const apiPosts = data?.data || [];
-        if (apiPosts.length > 0) setPosts(apiPosts);
-        else setPosts(allPosts);
+        setPosts(data?.data || []);
       })
-      .catch(() => setPosts(allPosts))
+      .catch(() => setPosts([]))
       .finally(() => setLoading(false));
   }, []);
 

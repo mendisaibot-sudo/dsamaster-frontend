@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>API URL Test</title>
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+</head>
+<body>
+  <h1>API URL Test</h1>
+  <p>This page tests what URL is actually being fetched.</p>
+  
+  <button onclick="testFetch()">Test HTTPS API call</button>
+  <div id="result"></div>
+  
+  <script>
+    function testFetch() {
+      const result = document.getElementById('result');
+      
+      // Log all fetch calls to detect URL changes
+      const originalFetch = window.fetch;
+      window.fetch = function(url, ...args) {
+        console.log('FETCH URL:', url);
+        result.innerHTML += '<p>Fetching: ' + url + '</p>';
+        return originalFetch.call(this, url, ...args);
+      };
+      
+      // Now do the actual fetch
+      fetch('https://dsamaster.de/api/blogs/')
+        .then(r => r.json())
+        .then(data => {
+          result.innerHTML += '<p style="color:green">SUCCESS: ' + JSON.stringify(data).substring(0, 200) + '</p>';
+        })
+        .catch(err => {
+          result.innerHTML += '<p style="color:red">ERROR: ' + err.message + '</p>';
+        });
+    }
+  </script>
+</body>
+</html>
