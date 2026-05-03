@@ -151,12 +151,6 @@ const BlogPost = () => {
                       <p>{section.content}</p>
                     ) : null}
 
-                    {section.illustration && (
-                      <div className="section-illustration">
-                        <img src={section.illustration} alt={section.heading || section.title} />
-                      </div>
-                    )}
-
                     {section.highlightBox && (
                       <div className="blog-highlight-box">
                         <h4><FaTag /> {section.highlightBox.title}</h4>
