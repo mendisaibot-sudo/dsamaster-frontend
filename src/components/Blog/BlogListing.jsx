@@ -59,7 +59,7 @@ const BlogListing = () => {
                 <p className="blog-card-excerpt">{post.excerpt}</p>
                 <div className="blog-card-footer">
                   <span className="blog-meta"><FaCalendarAlt /> {post.date}</span>
-                  <span className="blog-meta"><FaClock /> {post.readTime} read</span>
+                  <span className="blog-meta"><FaClock /> {typeof post.readTime === 'number' ? `${post.readTime} min` : post.readTime} read</span>
                   <span className="read-more">Read <FaArrowRight /></span>
                 </div>
               </div>
