@@ -294,6 +294,7 @@
   line-height: 1.8;
   margin-bottom: 1.5rem;
   color: var(--text-secondary);
+  text-align: justify;
 }
 
 /* Quote */
@@ -323,6 +324,7 @@
   font-style: italic;
   margin: 0.5rem 0 1rem;
   color: var(--text-primary);
+  text-align: justify;
 }
 
 .blog-quote cite {
