@@ -124,15 +124,16 @@ const BlogPost = () => {
                 const IconComp = iconMap[section.icon] || FaRocket;
                 return (
                   <section key={idx} className={`blog-section ${section.conclusion ? 'conclusion' : ''}`}>
+                    {/* Heading - handle both heading and title */}
                     {!section.conclusion ? (
                       <div className="section-header">
                         <div className={`section-icon-wrapper ${section.icon === 'rocket' && !section.conclusion ? 'warning' : ''}`}>
                           <IconComp />
                         </div>
-                        <h2>{section.title}</h2>
+                        <h2>{section.heading || section.title}</h2>
                       </div>
                     ) : (
-                      <h2>{section.title}</h2>
+                      <h2>{section.heading || section.title}</h2>
                     )}
 
                     {section.illustration && (
@@ -141,24 +142,41 @@ const BlogPost = () => {
                       </div>
                     )}
 
-                    {section.content?.map((para, pIdx) => (
-                      <p key={pIdx}>{para}</p>
-                    ))}
+                    {/* Content - handle both string and array */}
+                    {Array.isArray(section.content) ? (
+                      section.content.map((para, pIdx) => (
+                        <p key={pIdx}>{para}</p>
+                      ))
+                    ) : section.content ? (
+                      <p>{section.content}</p>
+                    ) : null}
+
+                    {section.illustration && (
+                      <div className="section-illustration">
+                        <img src={section.illustration} alt={section.heading || section.title} />
+                      </div>
+                    )}
 
                     {section.highlightBox && (
                       <div className="blog-highlight-box">
                         <h4><FaTag /> {section.highlightBox.title}</h4>
-                        <ul>
-                          {section.highlightBox.items.map((item, iIdx) => (
-                            <li key={iIdx}><strong>{item.bold}</strong>{item.text}</li>
-                          ))}
-                        </ul>
+                        {Array.isArray(section.highlightBox.items) ? (
+                          <ul>
+                            {section.highlightBox.items.map((item, iIdx) => (
+                              <li key={iIdx}><strong>{item.bold}</strong>{item.text}</li>
+                            ))}
+                          </ul>
+                        ) : section.highlightBox.content ? (
+                          <p>{section.highlightBox.content}</p>
+                        ) : null}
                       </div>
                     )}
 
-                    {section.contentAfter?.map((para, aIdx) => (
-                      <p key={`after-${aIdx}`}>{para}</p>
-                    ))}
+                    {section.contentAfter && Array.isArray(section.contentAfter) && (
+                      section.contentAfter.map((para, aIdx) => (
+                        <p key={`after-${aIdx}`}>{para}</p>
+                      ))
+                    )}
 
                     {section.quote && (
                       <blockquote className={`blog-quote ${section.quote.accent ? 'accent' : ''}`}>
@@ -166,6 +184,22 @@ const BlogPost = () => {
                         <p>{section.quote.text}</p>
                         <cite>{section.quote.cite}</cite>
                       </blockquote>
+                    )}
+
+                    {/* Handle highlightBox appearing after content */}
+                    {section.highlightBox && section.highlightBox.position === 'after' && (
+                      <div className="blog-highlight-box">
+                        <h4><FaTag /> {section.highlightBox.title}</h4>
+                        {Array.isArray(section.highlightBox.items) ? (
+                          <ul>
+                            {section.highlightBox.items.map((item, iIdx) => (
+                              <li key={iIdx}><strong>{item.bold}</strong>{item.text}</li>
+                            ))}
+                          </ul>
+                        ) : section.highlightBox.content ? (
+                          <p>{section.highlightBox.content}</p>
+                        ) : null}
+                      </div>
                     )}
                   </section>
                 );
