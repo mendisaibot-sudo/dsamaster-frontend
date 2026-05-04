@@ -1,9 +1,51 @@
 import { useProgress } from '../../contexts/ProgressContext';
-import { FaTrophy, FaBook, FaCode, FaFire, FaClock } from 'react-icons/fa';
+import { useAuth } from '../../contexts/AuthContext';
+import { Link } from 'react-router-dom';
+import { FaTrophy, FaBook, FaCode, FaFire, FaClock, FaLock, FaUser } from 'react-icons/fa';
 import './Progress.css';
 
 const Progress = () => {
+  const { user } = useAuth();
   const { topicsCount, problemsCount, totalTopics, totalProblems, resetProgress, progress } = useProgress();
+
+  if (!user) {
+    return (
+      <section id="progress" className="section progress-guest">
+        <div className="container">
+          <div className="section-header">
+            <h2>Your Progress</h2>
+            <p>Sign in to track your learning journey</p>
+          </div>
+
+          <div className="progress-lock-card">
+            <div className="progress-lock-icon">
+              <FaLock />
+            </div>
+            <h3>Sign In to Track Progress</h3>
+            <p>Create an account or sign in to start tracking your progress across all Data Structures and Algorithms topics.</p>
+            <div className="progress-lock-preview">
+              <div className="lock-preview-item">
+                <FaBook />
+                <span>0 / {totalTopics} Topics</span>
+              </div>
+              <div className="lock-preview-item">
+                <FaCode />
+                <span>0 / {totalProblems} Problems</span>
+              </div>
+              <div className="lock-preview-item">
+                <FaFire />
+                <span>0 Day Streak</span>
+              </div>
+            </div>
+            <Link to="/auth/login" className="progress-signin-btn">
+              <FaUser />
+              Sign In to Start Tracking
+            </Link>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   const topicPercentage = Math.round((topicsCount / totalTopics) * 100);
   const problemPercentage = Math.round((problemsCount / totalProblems) * 100);

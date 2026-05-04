@@ -92,6 +92,11 @@ const Navbar = () => {
                 <Link to="/progress" className="nav-user-item">
                   <FaCodeBranch /> My Progress
                 </Link>
+                {user.role === 'admin' && (
+                  <Link to="/admin/panel" className="nav-user-item">
+                    <FaUser /> Admin Panel
+                  </Link>
+                )}
                 <div className="nav-user-divider" />
                 <button onClick={handleLogout} className="nav-user-item nav-user-logout">
                   <FaSignOutAlt /> Sign Out

@@ -1,4 +1,4 @@
-import { HashRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ProgressProvider } from './contexts/ProgressContext';
 import { AuthProvider } from './contexts/AuthContext';
@@ -18,6 +18,7 @@ import ProblemSolver from './components/Problems/ProblemSolver';
 import LoginPage from './components/Auth/LoginPage';
 import ForgotPassword from './components/Auth/ForgotPassword';
 import ResetPassword from './components/Auth/ResetPassword';
+import VerifyEmail from './components/Auth/VerifyEmail';
 
 import SEO from './components/SEO/SEO';
 
@@ -25,6 +26,7 @@ import SEO from './components/SEO/SEO';
 import Login from './components/Admin/Login';
 import BlogAdmin from './components/Admin/BlogAdmin';
 import BlogEditor from './components/Admin/BlogEditor';
+import AdminPanel from './components/Admin/AdminPanel';
 
 function Home() {
   return (
@@ -69,9 +71,11 @@ function App() {
                 <Route path="/auth/login" element={<LoginPage />} />
                 <Route path="/auth/forgot-password" element={<ForgotPassword />} />
                 <Route path="/auth/reset-password" element={<ResetPassword />} />
+                <Route path="/auth/verify-email" element={<VerifyEmail />} />
                 
                 {/* Admin routes */}
                 <Route path="/admin/login" element={<Login />} />
+                <Route path="/admin/panel" element={<AdminPanel />} />
                 <Route path="/admin/blog" element={<BlogAdmin />} />
                 <Route path="/admin/blog/new" element={<BlogEditor />} />
                 <Route path="/admin/blog/edit/:slug" element={<BlogEditor />} />
