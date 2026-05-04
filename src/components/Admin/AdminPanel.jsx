@@ -61,7 +61,7 @@ const EditModal = ({ user, onSave, onCancel, loading }) => {
     email: user?.email || '',
     role: user?.role || 'user',
     is_active: user?.is_active ?? true,
-    is_verified: user?.is_verified ?? false,
+    is_verified: user?.email_verified ?? false,
   });
 
   const handleChange = (field, value) => setForm(prev => ({ ...prev, [field]: value }));
@@ -307,7 +307,7 @@ const AdminPanel = () => {
     {
       icon: <FaUserShield />,
       label: 'Verified Users',
-      value: stats?.verified_users ?? users.filter(u => u.is_verified).length,
+      value: stats?.verified_users ?? users.filter(u => u.email_verified).length,
       bg: 'rgba(6,182,212,0.1)',
       color: 'var(--info)',
     },
@@ -433,8 +433,8 @@ const AdminPanel = () => {
                       </span>
                     </td>
                     <td>
-                      <span className={`admin-verified-badge ${u.is_verified ? 'admin-verified-yes' : 'admin-verified-no'}`}>
-                        {u.is_verified ? 'Yes' : 'No'}
+                      <span className={`admin-verified-badge ${u.email_verified ? 'admin-verified-yes' : 'admin-verified-no'}`}>
+                        {u.email_verified ? 'Yes' : 'No'}
                       </span>
                     </td>
                     <td>

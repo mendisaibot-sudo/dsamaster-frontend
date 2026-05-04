@@ -5,6 +5,7 @@ import './Auth.css';
 
 export default function LoginPage() {
   const [mode, setMode] = useState('login');
+  const [registered, setRegistered] = useState(false);
   const [form, setForm] = useState({ 
     email: '', password: '', first_name: '', last_name: '', display_name: '' 
   });
@@ -62,6 +63,8 @@ export default function LoginPage() {
           setError(errorMsg);
           loadCaptcha();
           setCaptchaAnswer('');
+        } else {
+          setRegistered(true);
         }
       }
     } catch (err) {
@@ -97,6 +100,16 @@ export default function LoginPage() {
             </div>
           )}
 
+          {registered ? (
+            <div className="auth-success" style={{textAlign: 'center', padding: '2rem 0'}}>
+              <div style={{fontSize: '3rem', marginBottom: '1rem'}}>✉️</div>
+              <h2 style={{marginBottom: '0.5rem'}}>Check your email!</h2>
+              <p>We've sent a verification link to <strong>{form.email}</strong>.</p>
+              <p style={{fontSize: '0.9rem', color: '#6b7280', marginTop: '1rem'}}>
+                Click the link in the email to verify your account and start using DSA Master.
+              </p>
+            </div>
+          ) : (
           <form onSubmit={handleSubmit} className="auth-form">
             <div className="form-group">
               <label className="form-label">Email</label>
@@ -216,8 +229,9 @@ export default function LoginPage() {
               {loading ? 'Please wait...' : (mode === 'login' ? 'Sign In' : 'Create Account')}
             </button>
           </form>
+          )}
 
-          {mode === 'login' && (
+          {mode === 'login' && !registered && (
             <div className="auth-forgot" style={{ textAlign: 'center', marginBottom: '1rem' }}>
               <button 
                 onClick={() => navigate('/auth/forgot-password')} 

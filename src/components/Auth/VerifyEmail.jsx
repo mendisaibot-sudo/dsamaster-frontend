@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 import './Auth.css';
 
 export default function VerifyEmail() {
@@ -8,6 +9,7 @@ export default function VerifyEmail() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_URL || 'https://dsamaster.de';
+  const { setUser } = useAuth();
 
   useEffect(() => {
     const token = searchParams.get('token');
@@ -23,10 +25,18 @@ export default function VerifyEmail() {
         if (data.success) {
           setStatus('success');
           setMessage(data.message || 'Email verified successfully!');
-          // Auto-redirect to homepage after 3 seconds
+          
+          // Store tokens and login user automatically
+          if (data.token && data.user) {
+            setUser(data.user);
+            localStorage.setItem('access_token', data.token);
+            localStorage.setItem('refresh_token', data.refresh_token);
+          }
+          
+          // Auto-redirect to homepage after 2 seconds
           setTimeout(() => {
-            navigate('/');
-          }, 3000);
+            window.location.href = '/';
+          }, 2000);
         } else {
           setStatus('error');
           setMessage(data.message || data.detail || 'Verification failed');
