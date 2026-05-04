@@ -16,6 +16,8 @@ import Footer from './components/Footer';
 import ProblemSolver from './components/Problems/ProblemSolver';
 
 import LoginPage from './components/Auth/LoginPage';
+import ForgotPassword from './components/Auth/ForgotPassword';
+import ResetPassword from './components/Auth/ResetPassword';
 
 import SEO from './components/SEO/SEO';
 
@@ -65,6 +67,8 @@ function App() {
                 <Route path="/blog/:slug" element={<BlogPost />} />
                 
                 <Route path="/auth/login" element={<LoginPage />} />
+                <Route path="/auth/forgot-password" element={<ForgotPassword />} />
+                <Route path="/auth/reset-password/:token" element={<ResetPassword />} />
                 
                 {/* Admin routes */}
                 <Route path="/admin/login" element={<Login />} />

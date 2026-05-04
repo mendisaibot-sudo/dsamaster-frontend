@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import './Auth.css';
 
@@ -11,6 +12,7 @@ export default function LoginPage() {
   const [captchaAnswer, setCaptchaAnswer] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
   const { login, register } = useAuth();
 
   const API_URL = import.meta.env.VITE_API_URL || 'https://dsamaster.de';
@@ -190,6 +192,18 @@ export default function LoginPage() {
               {loading ? 'Please wait...' : (mode === 'login' ? 'Sign In' : 'Create Account')}
             </button>
           </form>
+
+          {mode === 'login' && (
+            <div className="auth-forgot" style={{ textAlign: 'center', marginBottom: '1rem' }}>
+              <button 
+                onClick={() => navigate('/auth/forgot-password')} 
+                className="auth-link"
+                style={{ fontSize: '0.85rem' }}
+              >
+                Forgot Password?
+              </button>
+            </div>
+          )}
 
           <div className="auth-footer">
             <p>
