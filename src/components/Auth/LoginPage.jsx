@@ -110,6 +110,7 @@ export default function LoginPage() {
               />
             </div>
 
+          {mode === 'login' && (
             <div className="form-group">
               <label className="form-label">Password</label>
               <input
@@ -121,9 +122,25 @@ export default function LoginPage() {
                 required
               />
             </div>
+          )}
 
-            {mode === 'register' && (
+          {mode === 'register' && (
               <>
+                <div className="form-group">
+                  <label className="form-label">Password</label>
+                  <input
+                    type="password"
+                    placeholder="Min 12 chars, A-Z, 0-9, special char"
+                    value={form.password}
+                    onChange={e => setForm({...form, password: e.target.value})}
+                    className="form-input"
+                    required
+                  />
+                  <div className="password-requirements" style={{fontSize: '0.8rem', color: '#6b7280', marginTop: '0.25rem'}}>
+                    Password must have: 12+ chars, 1 uppercase, 1 digit, 1 special char (!@#$%^&*)
+                  </div>
+                </div>
+
                 <div className="form-row">
                   <div className="form-group">
                     <label className="form-label">First Name</label>
