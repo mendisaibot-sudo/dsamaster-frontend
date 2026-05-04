@@ -36,6 +36,11 @@ const Navbar = () => {
     setMobileMenuOpen(false);
   };
 
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
   return (
     <nav className="navbar">
       <div className="navbar-container">
@@ -66,25 +71,37 @@ const Navbar = () => {
           ))}
         </ul>
 
-        <div className="flex items-center gap-3">
+        <div className="nav-actions">
           {user ? (
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground hidden md:inline">{user.first_name}</span>
-              <button
-                onClick={logout}
-                className="p-2 rounded-lg hover:bg-secondary transition"
-                title="Sign Out"
-              >
-                <FaSignOutAlt />
-              </button>
+            <div className="nav-user-menu">
+              <div className="nav-user-trigger">
+                <div className="nav-user-avatar">
+                  {user.first_name?.[0]?.toUpperCase() || 'U'}
+                </div>
+                <span className="nav-user-name">{user.first_name}</span>
+              </div>
+              <div className="nav-user-dropdown">
+                <div className="nav-user-info">
+                  <span className="nav-user-fullname">{user.first_name} {user.last_name}</span>
+                  <span className="nav-user-email">{user.email}</span>
+                </div>
+                <div className="nav-user-divider" />
+                <Link to="/profile" className="nav-user-item">
+                  <FaUser /> My Profile
+                </Link>
+                <Link to="/progress" className="nav-user-item">
+                  <FaCodeBranch /> My Progress
+                </Link>
+                <div className="nav-user-divider" />
+                <button onClick={handleLogout} className="nav-user-item nav-user-logout">
+                  <FaSignOutAlt /> Sign Out
+                </button>
+              </div>
             </div>
           ) : (
-            <Link
-              to="/auth/login"
-              className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition text-sm"
-            >
+            <Link to="/auth/login" className="nav-signin-btn">
               <FaUser />
-              <span className="hidden md:inline">Sign In</span>
+              <span>Sign In</span>
             </Link>
           )}
           <button
