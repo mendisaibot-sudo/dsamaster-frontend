@@ -1,5 +1,6 @@
-// Authentication helpers
+// Authentication helpers for blog admin
 const TOKEN_KEY = 'dsa_admin_token';
+const ACCESS_TOKEN_KEY = 'access_token';
 export const API_BASE = 'https://dsamaster.de/api';
 
 export const setToken = (token) => {
@@ -7,7 +8,8 @@ export const setToken = (token) => {
 };
 
 export const getToken = () => {
-  return localStorage.getItem(TOKEN_KEY);
+  // Check blog admin token first, fallback to main app token
+  return localStorage.getItem(TOKEN_KEY) || localStorage.getItem(ACCESS_TOKEN_KEY);
 };
 
 export const removeToken = () => {
@@ -51,7 +53,7 @@ export const login = async (username, password) => {
   const res = await fetch(`${API_BASE}/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, password }),
+    body: JSON.stringify({ email: username, password }),
   });
 
   if (!res.ok) {
@@ -59,7 +61,6 @@ export const login = async (username, password) => {
   }
 
   const data = await res.json();
-  // Backend returns: {success: true, data: {token: "...", user: {...}}}
   const token = data.data?.token ?? data.token;
   if (token) {
     setToken(token);
@@ -70,4 +71,27 @@ export const login = async (username, password) => {
 
 export const logout = () => {
   removeToken();
+};
+
+// New: Unified login that uses the main auth system
+export const unifiedLogin = async (email, password) => {
+  const res = await fetch(`${API_BASE}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  });
+
+  if (!res.ok) {
+    throw new Error('Invalid credentials');
+  }
+
+  const data = await res.json();
+  // Backend returns: {success: true, data: {token: "...", user: {...}}}
+  const token = data.data?.token ?? data.token;
+  if (token) {
+    localStorage.setItem(TOKEN_KEY, token);
+    localStorage.setItem(ACCESS_TOKEN_KEY, token);
+    return { ...data, token };
+  }
+  throw new Error('Login failed');
 };
