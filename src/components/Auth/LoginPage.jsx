@@ -52,7 +52,14 @@ export default function LoginPage() {
           captcha_answer: captchaAnswer 
         });
         if (!res.success) {
-          setError(res.error || 'Registration failed');
+          let errorMsg = res.error || res.message || 'Registration failed';
+          // Handle Pydantic validation errors
+          if (res.detail && Array.isArray(res.detail)) {
+            errorMsg = res.detail.map(d => d.msg).join(' ');
+          } else if (res.detail) {
+            errorMsg = res.detail;
+          }
+          setError(errorMsg);
           loadCaptcha();
           setCaptchaAnswer('');
         }
