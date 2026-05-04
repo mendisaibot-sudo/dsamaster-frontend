@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext(null);
 
@@ -48,6 +49,7 @@ export function AuthProvider({ children }) {
       localStorage.setItem('access_token', data.token);
       localStorage.setItem('refresh_token', data.refresh_token);
       setUser(data.user);
+      window.location.href = '/';
     }
     return data;
   };
