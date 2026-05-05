@@ -18,6 +18,7 @@ import ProblemSolver from './components/Problems/ProblemSolver';
 import LoginPage from './components/Auth/LoginPage';
 import ForgotPassword from './components/Auth/ForgotPassword';
 import ResetPassword from './components/Auth/ResetPassword';
+import VerifyEmail from './components/Auth/VerifyEmail';
 
 import SEO from './components/SEO/SEO';
 
@@ -69,6 +70,7 @@ function App() {
                 <Route path="/auth/login" element={<LoginPage />} />
                 <Route path="/auth/forgot-password" element={<ForgotPassword />} />
                 <Route path="/auth/reset-password" element={<ResetPassword />} />
+                <Route path="/auth/verify-email" element={<VerifyEmail />} />
                 
                 {/* Admin routes */}
                 <Route path="/admin/login" element={<Login />} />
