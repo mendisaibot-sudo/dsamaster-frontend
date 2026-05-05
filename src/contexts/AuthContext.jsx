@@ -60,6 +60,22 @@ export function AuthProvider({ children }) {
       body: JSON.stringify(formData)
     });
     const data = await res.json();
+    // If email verification is required, store email and do not auto-login
+    const needsVerification =
+      !data.success &&
+      data.error &&
+      typeof data.error === 'string' &&
+      (data.error.toLowerCase().includes('check your email') ||
+       data.error.toLowerCase().includes('verify your email') ||
+       data.message?.toLowerCase().includes('check your email') ||
+       data.message?.toLowerCase().includes('verify your email'));
+    if (needsVerification) {
+      try {
+        sessionStorage.setItem('pendingEmail', formData.email);
+      } catch {
+        // ignore storage errors
+      }
+    }
     if (data.success) {
       localStorage.setItem('access_token', data.token);
       localStorage.setItem('refresh_token', data.refresh_token);

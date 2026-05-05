@@ -1,22 +1,62 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { FaEnvelope, FaLock, FaUser, FaEye, FaEyeSlash, FaCheck, FaExclamationCircle, FaRedo } from 'react-icons/fa';
 import './Auth.css';
 
+const API_URL = import.meta.env.VITE_API_URL || 'https://dsamaster.de';
+
+function PasswordStrength({ password }) {
+  const reqs = [
+    { label: 'At least 12 characters', test: p => p.length >= 12 },
+    { label: 'One uppercase letter', test: p => /[A-Z]/.test(p) },
+    { label: 'One lowercase letter', test: p => /[a-z]/.test(p) },
+    { label: 'One digit', test: p => /\d/.test(p) },
+    { label: 'One special character', test: p => /[!@#$%^&*(),.?":{}|<>]/.test(p) },
+  ];
+
+  const passed = reqs.filter(r => r.test(password)).length;
+  const strength = passed === 0 ? 0 : Math.round((passed / reqs.length) * 100);
+
+  let barColor = '#ef4444';
+  if (strength >= 100) barColor = '#84cc16';
+  else if (strength >= 40) barColor = '#eab308';
+
+  return (
+    <div className="password-strength">
+      <div className="strength-bar-bg">
+        <div
+          className="strength-bar-fill"
+          style={{ width: `${strength}%`, background: barColor }}
+        />
+      </div>
+      <ul className="strength-checklist">
+        {reqs.map((req, i) => (
+          <li key={i} className={req.test(password) ? 'met' : ''}>
+            {req.test(password) ? <FaCheck size={11} /> : <span className="check-circle">○</span>}
+            <span>{req.label}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export default function LoginPage() {
-  const [mode, setMode] = useState('login');
-  const [registered, setRegistered] = useState(false);
-  const [form, setForm] = useState({ 
-    email: '', password: '', first_name: '', last_name: '', display_name: '' 
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('login');
+  const [form, setForm] = useState({
+    email: '', password: '', confirmPassword: '',
+    first_name: '', last_name: '', display_name: ''
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [captcha, setCaptcha] = useState(null);
   const [captchaAnswer, setCaptchaAnswer] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const [resendSuccess, setResendSuccess] = useState('');
   const { login, register } = useAuth();
-
-  const API_URL = import.meta.env.VITE_API_URL || 'https://dsamaster.de';
 
   const loadCaptcha = async () => {
     try {
@@ -29,226 +69,330 @@ export default function LoginPage() {
   };
 
   useEffect(() => {
-    if (mode === 'register') loadCaptcha();
-  }, [mode]);
+    if (activeTab === 'register') loadCaptcha();
+  }, [activeTab]);
+
+  const switchTab = (tab) => {
+    setActiveTab(tab);
+    setError('');
+    setResendSuccess('');
+    setCaptchaAnswer('');
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setResendSuccess('');
     setLoading(true);
 
     try {
-      if (mode === 'login') {
+      if (activeTab === 'login') {
         const res = await login(form.email, form.password);
-        if (!res.success) setError(res.error || 'Login failed');
+        if (!res.success) setError(res.error || 'Sign in failed. Please check your credentials.');
       } else {
-        if (!captchaAnswer.trim()) {
-          setError('Please enter the CAPTCHA');
+        if (form.password !== form.confirmPassword) {
+          setError('Passwords do not match.');
           setLoading(false);
           return;
         }
-        const res = await register({ 
-          ...form, 
-          captcha_id: captcha?.captcha_id, 
-          captcha_answer: captchaAnswer 
+        const reqs = [
+          form.password.length >= 12,
+          /[A-Z]/.test(form.password),
+          /[a-z]/.test(form.password),
+          /\d/.test(form.password),
+          /[!@#$%^&*(),.?":{}|<>]/.test(form.password),
+        ];
+        if (!reqs.every(Boolean)) {
+          setError('Password does not meet all requirements.');
+          setLoading(false);
+          return;
+        }
+        if (!captchaAnswer.trim()) {
+          setError('Please enter the CAPTCHA.');
+          setLoading(false);
+          return;
+        }
+        const res = await register({
+          ...form,
+          captcha_id: captcha?.captcha_id,
+          captcha_answer: captchaAnswer
         });
         if (!res.success) {
-          let errorMsg = res.error || res.message || 'Registration failed';
-          // Handle Pydantic validation errors
-          if (res.detail && Array.isArray(res.detail)) {
-            errorMsg = res.detail.map(d => d.msg).join(' ');
-          } else if (res.detail) {
-            errorMsg = res.detail;
+          // Check if backend says "check your email" / verification required
+          const msg = (res.error || res.message || '').toLowerCase();
+          if (msg.includes('check your email') || msg.includes('verify your email') || msg.includes('verification')) {
+            try { sessionStorage.setItem('pendingEmail', form.email); } catch {}
+            navigate('/auth/verify-pending');
+            return;
           }
-          setError(errorMsg);
+          setError(res.error || 'Registration failed. Please try again.');
           loadCaptcha();
           setCaptchaAnswer('');
         } else {
-          setRegistered(true);
+          // Registration succeeded but might still need verification (token-based flow not returned)
+          const msg = (res.message || '').toLowerCase();
+          if (msg.includes('check your email') || msg.includes('verify your email')) {
+            try { sessionStorage.setItem('pendingEmail', form.email); } catch {}
+            navigate('/auth/verify-pending');
+          }
         }
       }
     } catch (err) {
-      setError('An error occurred. Please try again.');
+      setError('An unexpected error occurred. Please try again.');
     }
     setLoading(false);
   };
 
-  const toggleMode = () => {
-    setMode(mode === 'login' ? 'register' : 'login');
+  const handleResend = async () => {
+    setResendSuccess('');
     setError('');
-    setCaptchaAnswer('');
+    try {
+      const res = await fetch(`${API_URL}/api/auth/resend-verification`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: form.email })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setResendSuccess('Verification email resent. Please check your inbox.');
+      } else {
+        setError(data.error || 'Failed to resend verification email.');
+      }
+    } catch {
+      setError('Failed to resend verification email. Please try again.');
+    }
   };
+
+  const isRegister = activeTab === 'register';
 
   return (
     <div className="auth-page section">
       <div className="auth-container animate-fade-in">
         <div className="auth-card card">
+          {/* Tabs */}
+          <div className="auth-tabs">
+            <button
+              className={activeTab === 'login' ? 'active' : ''}
+              onClick={() => switchTab('login')}
+              type="button"
+            >
+              <FaLock size={14} />
+              Sign In
+            </button>
+            <button
+              className={activeTab === 'register' ? 'active' : ''}
+              onClick={() => switchTab('register')}
+              type="button"
+            >
+              <FaUser size={14} />
+              Create Account
+            </button>
+          </div>
+
           <div className="auth-header">
-            <h1 className="section-title" style={{ fontSize: '1.75rem' }}>
-              {mode === 'login' ? 'Welcome Back' : 'Create Account'}
+            <h1 className="section-title" style={{ fontSize: '1.6rem' }}>
+              {isRegister ? 'Create Your Account' : 'Welcome Back'}
             </h1>
             <p className="section-subtitle" style={{ fontSize: '0.95rem' }}>
-              {mode === 'login' 
-                ? 'Sign in to track your progress' 
-                : 'Join to start your DSA journey'}
+              {isRegister
+                ? 'Join the community and start mastering DSA'
+                : 'Sign in to track your progress and continue learning'}
             </p>
           </div>
 
           {error && (
             <div className="auth-error">
-              {error}
+              <FaExclamationCircle size={14} />
+              <span>{error}</span>
             </div>
           )}
 
-          {registered ? (
-            <div className="auth-success" style={{textAlign: 'center', padding: '2rem 0'}}>
-              <div style={{fontSize: '3rem', marginBottom: '1rem'}}>✉️</div>
-              <h2 style={{marginBottom: '0.5rem'}}>Check your email!</h2>
-              <p>We've sent a verification link to <strong>{form.email}</strong>.</p>
-              <p style={{fontSize: '0.9rem', color: '#6b7280', marginTop: '1rem'}}>
-                Click the link in the email to verify your account and start using DSA Master.
-              </p>
+          {resendSuccess && (
+            <div className="auth-success">
+              <FaCheck size={14} />
+              <span>{resendSuccess}</span>
             </div>
-          ) : (
+          )}
+
           <form onSubmit={handleSubmit} className="auth-form">
+            {/* Email */}
             <div className="form-group">
-              <label className="form-label">Email</label>
+              <label className="form-label">
+                <FaEnvelope size={12} style={{ marginRight: 6, opacity: 0.7 }} />
+                Email Address
+              </label>
               <input
                 type="email"
-                placeholder="your@email.com"
+                placeholder="you@example.com"
                 value={form.email}
-                onChange={e => setForm({...form, email: e.target.value})}
+                onChange={e => setForm({ ...form, email: e.target.value })}
                 className="form-input"
                 required
               />
             </div>
 
-          {mode === 'login' && (
+            {/* Password */}
             <div className="form-group">
-              <label className="form-label">Password</label>
-              <input
-                type="password"
-                placeholder="••••••••"
-                value={form.password}
-                onChange={e => setForm({...form, password: e.target.value})}
-                className="form-input"
-                required
-              />
+              <label className="form-label">
+                <FaLock size={12} style={{ marginRight: 6, opacity: 0.7 }} />
+                Password
+              </label>
+              <div className="password-input-wrapper">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Enter your password"
+                  value={form.password}
+                  onChange={e => setForm({ ...form, password: e.target.value })}
+                  className="form-input"
+                  required
+                />
+                <button
+                  type="button"
+                  className="password-toggle"
+                  onClick={() => setShowPassword(!showPassword)}
+                  tabIndex={-1}
+                >
+                  {showPassword ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
+                </button>
+              </div>
             </div>
-          )}
 
-          {mode === 'register' && (
-              <>
-                <div className="form-group">
-                  <label className="form-label">Password</label>
+            {/* Confirm Password (register only) */}
+            {isRegister && (
+              <div className="form-group">
+                <label className="form-label">
+                  <FaLock size={12} style={{ marginRight: 6, opacity: 0.7 }} />
+                  Confirm Password
+                </label>
+                <div className="password-input-wrapper">
                   <input
-                    type="password"
-                    placeholder="Min 12 chars, A-Z, 0-9, special char"
-                    value={form.password}
-                    onChange={e => setForm({...form, password: e.target.value})}
+                    type={showConfirm ? 'text' : 'password'}
+                    placeholder="Re-enter your password"
+                    value={form.confirmPassword}
+                    onChange={e => setForm({ ...form, confirmPassword: e.target.value })}
                     className="form-input"
                     required
                   />
-                  <div className="password-requirements" style={{fontSize: '0.8rem', color: '#6b7280', marginTop: '0.25rem'}}>
-                    Password must have: 12+ chars, 1 uppercase, 1 digit, 1 special char (!@#$%^&*)
-                  </div>
+                  <button
+                    type="button"
+                    className="password-toggle"
+                    onClick={() => setShowConfirm(!showConfirm)}
+                    tabIndex={-1}
+                  >
+                    {showConfirm ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
+                  </button>
                 </div>
-
-                <div className="form-row">
-                  <div className="form-group">
-                    <label className="form-label">First Name</label>
-                    <input
-                      type="text"
-                      placeholder="John"
-                      value={form.first_name}
-                      onChange={e => setForm({...form, first_name: e.target.value})}
-                      className="form-input"
-                      required
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Last Name</label>
-                    <input
-                      type="text"
-                      placeholder="Doe"
-                      value={form.last_name}
-                      onChange={e => setForm({...form, last_name: e.target.value})}
-                      className="form-input"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">Display Name <span className="text-muted">(optional)</span></label>
-                  <input
-                    type="text"
-                    placeholder="How others see you"
-                    value={form.display_name}
-                    onChange={e => setForm({...form, display_name: e.target.value})}
-                    className="form-input"
-                  />
-                </div>
-
-                {/* CAPTCHA */}
-                <div className="captcha-section">
-                  <label className="form-label">Security Check</label>
-                  <div className="captcha-box">
-                    {captcha && (
-                      <img 
-                        src={captcha.image} 
-                        alt="CAPTCHA" 
-                        className="captcha-image"
-                      />
-                    )}
-                    <button 
-                      type="button" 
-                      onClick={loadCaptcha} 
-                      className="btn btn-secondary btn-sm"
-                    >
-                      🔄 Refresh
-                    </button>
-                  </div>
-                  <input
-                    type="text"
-                    placeholder="Enter characters above"
-                    value={captchaAnswer}
-                    onChange={e => setCaptchaAnswer(e.target.value)}
-                    className="form-input"
-                    required
-                  />
-                </div>
-              </>
+                <PasswordStrength password={form.password} />
+              </div>
             )}
 
-            <button 
-              type="submit" 
+            {/* Forgot Password link (login only) */}
+            {!isRegister && (
+              <div className="forgot-password-row">
+                <a href="#/auth/forgot-password" className="auth-link" style={{ fontSize: '0.85rem' }}>
+                  Forgot Password?
+                </a>
+              </div>
+            )}
+
+            {/* Name fields (register only) */}
+            {isRegister && (
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="form-label">
+                    <FaUser size={12} style={{ marginRight: 6, opacity: 0.7 }} />
+                    First Name
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="John"
+                    value={form.first_name}
+                    onChange={e => setForm({ ...form, first_name: e.target.value })}
+                    className="form-input"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">
+                    <FaUser size={12} style={{ marginRight: 6, opacity: 0.7 }} />
+                    Last Name
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Doe"
+                    value={form.last_name}
+                    onChange={e => setForm({ ...form, last_name: e.target.value })}
+                    className="form-input"
+                    required
+                  />
+                </div>
+              </div>
+            )}
+
+            {isRegister && (
+              <div className="form-group">
+                <label className="form-label">
+                  <FaUser size={12} style={{ marginRight: 6, opacity: 0.7 }} />
+                  Display Name
+                  <span className="text-muted">(optional)</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="How others see you"
+                  value={form.display_name}
+                  onChange={e => setForm({ ...form, display_name: e.target.value })}
+                  className="form-input"
+                />
+              </div>
+            )}
+
+            {/* CAPTCHA (register only) */}
+            {isRegister && (
+              <div className="captcha-section">
+                <label className="form-label">Security Check</label>
+                <div className="captcha-box">
+                  {captcha && (
+                    <img
+                      src={captcha.image}
+                      alt="CAPTCHA"
+                      className="captcha-image"
+                    />
+                  )}
+                  <button
+                    type="button"
+                    onClick={loadCaptcha}
+                    className="btn btn-secondary btn-sm captcha-refresh"
+                  >
+                    <FaRedo size={12} />
+                    Refresh
+                  </button>
+                </div>
+                <input
+                  type="text"
+                  placeholder="Enter the characters above"
+                  value={captchaAnswer}
+                  onChange={e => setCaptchaAnswer(e.target.value)}
+                  className="form-input"
+                  required
+                />
+              </div>
+            )}
+
+            <button
+              type="submit"
               className="btn btn-primary auth-submit"
               disabled={loading}
             >
-              {loading ? 'Please wait...' : (mode === 'login' ? 'Sign In' : 'Create Account')}
+              {loading ? 'Please wait...' : (isRegister ? 'Create Account' : 'Sign In')}
             </button>
           </form>
-          )}
-
-          {mode === 'login' && !registered && (
-            <div className="auth-forgot" style={{ textAlign: 'center', marginBottom: '1rem' }}>
-              <button 
-                onClick={() => navigate('/auth/forgot-password')} 
-                className="auth-link"
-                style={{ fontSize: '0.85rem' }}
-              >
-                Forgot Password?
-              </button>
-            </div>
-          )}
 
           <div className="auth-footer">
             <p>
-              {mode === 'login' ? (
-                <>New here? <button onClick={toggleMode} className="auth-link">Create an account</button></>
+              {isRegister ? (
+                <>Already have an account? <button onClick={() => switchTab('login')} className="auth-link" type="button">Sign in</button></>
               ) : (
-                <>Already have an account? <button onClick={toggleMode} className="auth-link">Sign in</button></>
+                <>New here? <button onClick={() => switchTab('register')} className="auth-link" type="button">Create an account</button></>
               )}
             </p>
           </div>

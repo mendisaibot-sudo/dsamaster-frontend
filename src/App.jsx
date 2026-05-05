@@ -16,6 +16,8 @@ import Footer from './components/Footer';
 import ProblemSolver from './components/Problems/ProblemSolver';
 
 import LoginPage from './components/Auth/LoginPage';
+import VerificationPending from './components/Auth/VerificationPending';
+import EmailVerified from './components/Auth/EmailVerified';
 import ForgotPassword from './components/Auth/ForgotPassword';
 import ResetPassword from './components/Auth/ResetPassword';
 import VerifyEmail from './components/Auth/VerifyEmail';
@@ -69,6 +71,8 @@ function App() {
                 <Route path="/blog/:slug" element={<BlogPost />} />
                 
                 <Route path="/auth/login" element={<LoginPage />} />
+                <Route path="/auth/verify-pending" element={<VerificationPending />} />
+                <Route path="/auth/verify" element={<EmailVerified />} />
                 <Route path="/auth/forgot-password" element={<ForgotPassword />} />
                 <Route path="/auth/reset-password" element={<ResetPassword />} />
                 <Route path="/auth/verify-email" element={<VerifyEmail />} />
