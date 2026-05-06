@@ -84,7 +84,7 @@ print(f"R2 Score: {r2_score(y, model.predict(X)):.3f}")
 
 # Predict price for 1800 sqft
 predicted = model.predict([[1800]])
-print(f"Predicted price for 1800 sqft: ${predicted[0]:,.0f}k")`
+print(f"Predicted price for 1800 sqft: \${predicted[0]:,.0f}k")`
       }
     ]
   },
