@@ -147,7 +147,7 @@ const BlogEditor = () => {
         sections: JSON.parse(form.sections),
       };
 
-      const endpoint = isEdit ? `/blogs/${slug}` : '/blogs';
+      const endpoint = isEdit ? `/blogs/${slug}` : '/blogs/';
       const method = isEdit ? 'PUT' : 'POST';
       const res = await authFetch(endpoint, { method, body: JSON.stringify(payload) });
       const data = await res.json();
