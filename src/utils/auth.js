@@ -43,7 +43,7 @@ export const authFetch = async (endpoint, options = {}) => {
 
   if (res.status === 401) {
     removeToken();
-    window.location.hash = '#/admin/login';
+    window.location.href = '/admin/login';
   }
 
   return res;
