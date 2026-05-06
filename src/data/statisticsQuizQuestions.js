@@ -1,34 +1,49 @@
+// Statistics Quiz Questions — organized by topic ID
 export const statisticsQuizQuestions = {
   'descriptive-statistics': [
-    { q: "Which measure of central tendency is most affected by extreme outliers?", options: ["Median", "Mode", "Mean", "Range"], correct: 2, explanation: "The Mean is most affected by outliers because every value contributes to the calculation. The Median only depends on the middle value." },
-    { q: "What does the standard deviation tell us about a dataset?", options: ["The average value", "The spread of data around the mean", "The middle value", "The most frequent value"], correct: 1, explanation: "Standard deviation measures the average distance of data points from the mean, indicating how spread out the data is." },
-    { q: "In a right-skewed distribution, which relationship holds?", options: ["Mean = Median = Mode", "Mean > Median > Mode", "Mean < Median < Mode", "Median > Mode > Mean"], correct: 1, explanation: "In a right-skewed distribution, outliers on the right pull the mean to the right. Thus: Mean > Median > Mode." },
-    { q: "Why do we use n-1 in the denominator for sample variance?", options: ["To make calculations faster", "Bessel's correction for unbiased estimate", "Because n is unknown", "It's just convention"], correct: 1, explanation: "Using n-1 (Bessel's correction) provides an unbiased estimator of the population variance. Using n would systematically underestimate." },
-    { q: "What percentile represents the median in a dataset?", options: ["25th percentile", "50th percentile", "75th percentile", "90th percentile"], correct: 1, explanation: "The median is the middle value, which corresponds to the 50th percentile - exactly half the values are below and half are above." }
+    { q: "What is the median of [12, 15, 18, 20, 23, 25, 28]?", options: ["15", "18", "20", "23"], correct: 2, explanation: "With 7 values, the 4th value (20) is the median." },
+    { q: "Which measure is MOST affected by outliers?", options: ["Median", "Mode", "Mean", "Range"], correct: 2, explanation: "Mean uses all values equally. A single extreme value can shift it dramatically." },
+    { q: "What does variance measure?", options: ["Center", "Spread", "Frequency", "Correlation"], correct: 1, explanation: "Variance (σ²) measures how far data points spread from the mean." },
+    { q: "n=5, sum of squared deviations=100. Sample variance=?", options: ["20", "25", "100", "16"], correct: 0, explanation: "Sample variance = Σ(xᵢ−x̄)²/(n−1) = 100/5 = 20" }
   ],
   'probability-theory': [
-    { q: "If events A and B are independent, what is P(A and B)?", options: ["P(A) + P(B)", "P(A) x P(B)", "P(A) / P(B)", "P(A) - P(B)"], correct: 1, explanation: "For independent events, the joint probability is the product of individual probabilities." },
-    { q: "In the Monty Hall problem, should you switch doors?", options: ["No, probabilities are equal", "Yes, switching gives 2/3 chance", "It does not matter", "Yes, switching guarantees a win"], correct: 1, explanation: "Switching gives a 2/3 probability of winning because the host's action provides additional information. Staying keeps the initial 1/3 chance." },
-    { q: "What does Bayes' Theorem allow us to calculate?", options: ["Joint probability", "Conditional probability in reverse", "Independence of events", "Expected value"], correct: 1, explanation: "Bayes' Theorem calculates P(A|B) from P(B|A): it updates our beliefs about a hypothesis given new evidence." },
-    { q: "If P(A) = 0.7 and P(A union B) = 0.9 with A and B mutually exclusive, what is P(B)?", options: ["0.2", "0.3", "0.6", "Cannot determine"], correct: 0, explanation: "For mutually exclusive events: P(A union B) = P(A) + P(B). So P(B) = 0.9 - 0.7 = 0.2." },
-    { q: "What is the probability of rolling at least one 6 in two fair dice rolls?", options: ["1/6", "1/3", "11/36", "1/36"], correct: 2, explanation: "P(at least one 6) = 1 - P(no sixes) = 1 - (5/6)^2 = 1 - 25/36 = 11/36." }
+    { q: "P(A)=0.3, P(B)=0.4, independent. P(A∩B)=?", options: ["0.12", "0.7", "0.1", "0.04"], correct: 0, explanation: "Independent: P(A∩B)=P(A)×P(B)=0.3×0.4=0.12" },
+    { q: "Bayes' Theorem calculates:", options: ["Joint probability", "Prior", "Conditional probability", "Marginal"], correct: 2, explanation: "Bayes calculates P(A|B) using P(B|A), P(A), and P(B)." },
+    { q: "3 red, 2 blue balls. P(both red without replacement)?", options: ["0.3", "0.6", "0.36", "0.5"], correct: 0, explanation: "3/5 × 2/4 = 6/20 = 0.3" }
   ],
   'probability-distributions': [
-    { q: "Which distribution models the number of emails received per hour?", options: ["Normal", "Binomial", "Poisson", "Uniform"], correct: 2, explanation: "The Poisson distribution models the number of events in a fixed interval of time or space, such as emails per hour." },
-    { q: "In a standard normal distribution, what percentage of data falls within mu +/- 2 sigma?", options: ["68%", "95%", "99.7%", "75%"], correct: 1, explanation: "By the empirical rule (68-95-99.7 rule), approximately 95% of data falls within 2 standard deviations of the mean." },
-    { q: "A coin is flipped 10 times. The number of heads follows which distribution?", options: ["Normal", "Binomial", "Poisson", "Exponential"], correct: 1, explanation: "The Binomial distribution models the number of successes (heads) in a fixed number of independent trials with constant probability." },
-    { q: "What happens to the binomial distribution as n increases?", options: ["Becomes skewed left", "Approaches normal distribution", "Becomes uniform", "Approaches Poisson"], correct: 1, explanation: "By the Central Limit Theorem, as n increases the binomial distribution approaches a normal distribution (when np and n(1-p) are both > 5)." },
-    { q: "The expected value of a random variable represents:", options: ["The most likely outcome", "The long-run average", "The middle value", "The standard deviation"], correct: 1, explanation: "Expected value E[X] represents the long-run average if the experiment is repeated many times, not necessarily the most likely outcome." }
+    { q: "X~N(100,15). % between 85 and 115?", options: ["68%", "95%", "99.7%", "50%"], correct: 0, explanation: "85 and 115 are μ±σ. ≈68% within 1 SD." },
+    { q: "10 fair coin flips. P(exactly 5 heads)?", options: ["0.5", "0.246", "0.1", "0.05"], correct: 1, explanation: "Binomial: C(10,5)×(0.5)^10 = 252/1024 ≈ 0.246" },
+    { q: "Poisson distribution models:", options: ["Binary outcomes", "Events in fixed interval", "Continuous values", "No replacement"], correct: 1, explanation: "Poisson counts events in a fixed interval of time or space." }
   ],
   'sampling-clt': [
-    { q: "What does the Central Limit Theorem state?", options: ["Sample size must be > 30", "Sample means converge to normal distribution", "Population must be normal", "Variance equals mean"], correct: 1, explanation: "The CLT states that sample means approach a normal distribution as sample size increases, regardless of the population distribution shape." },
-    { q: "Stratified sampling is best used when:", options: ["Population is homogeneous", "Population has distinct subgroups", "Quick results are needed", "Budget is limited"], correct: 1, explanation: "Stratified sampling divides the population into homogeneous subgroups (strata) and samples from each, ensuring representation of all subgroups." },
-    { q: "What does the standard error measure?", options: ["Population standard deviation", "Variability of sample means", "Confidence level", "Margin of error"], correct: 1, explanation: "Standard Error = sigma/sqrt(n) measures the variability of sample means around the population mean. Smaller SE means more precise estimates." },
-    { q: "Bootstrap sampling involves:", options: ["Sampling without replacement", "Sampling with replacement from the sample", "Only using the mean", "Removing outliers"], correct: 1, explanation: "Bootstrap resampling draws samples WITH replacement from the original sample to estimate sampling distributions without assuming a population distribution." },
-    { q: "For a 95% confidence level, what Z-score is used?", options: ["1.645", "1.96", "2.576", "2.33"], correct: 1, explanation: "For 95% confidence (alpha=0.05, two-tailed), the critical Z-value is 1.96, which leaves 2.5% in each tail." }
+    { q: "CLT: sampling distribution approaches normal when:", options: ["n>10", "n>30", "n=population", "Always"], correct: 1, explanation: "Sample means approach normal as n ≥ 30, regardless of population distribution." },
+    { q: "Stratified sampling involves:", options: ["Random from entire pop", "Subgroups, sample from each", "Every k-th element", "Resample with replacement"], correct: 1, explanation: "Divides population into homogeneous strata and samples from each." },
+    { q: "Standard error of mean =", options: ["SD", "Var/n", "σ/√n", "σ×√n"], correct: 2, explanation: "SE = σ/√n measures variability of sample means." }
   ],
   'confidence-intervals': [
-    { q: "What happens to the width of a confidence interval if confidence level increases?", options: ["It decreases", "It increases", "It stays the same", "It becomes zero"], correct: 1, explanation: "Higher confidence requires a wider interval to be more certain of capturing the true parameter. Trade-off: more confidence = less precision." },
-    { q: "When the population standard deviation is unknown, which distribution should be used?", options: ["Normal (Z)", "t-distribution", "Chi-square", "F-distribution"], correct: 1, explanation: "When population standard deviation is unknown, the t-distribution accounts for additional uncertainty, especially with small sample sizes." },
-    { q: "What is the margin of error formula for a confidence interval (known sigma)?", options: ["Z* x sigma/sqrt(n)", "Z* x s", "t* x sigma", "Z* x n"], correct: 0, explanation: "The margin of error = critical value x standard error = Z* x (sigma/sqrt(n)), where sigma/sqrt(n) is the standard error of the mean." },
-    { q: "A 99% CI is ____ than a 95% CI.", options: ["Narrower", "Wider", "The same width", "Not comparable"], correct: 1, explanation: "A 99% confidence interval is wider than a 95% interval because you
+    { q: "95% CI [45,55] means:", options: ["95% of data in range", "95% confident true mean in range", "95% error", "p=0.05"], correct: 1, explanation: "If we repeated sampling many times, 95% of intervals would contain the true mean." }
+  ],
+  'hypothesis-testing': [
+    { q: "p-value of 0.03 means:", options: ["3% H₀ is true", "3% chance of data if H₀ true", "97% alt is true", "Effect=3%"], correct: 1, explanation: "p-value = P(data | H₀ true). Low p means data is unlikely if null were true." },
+    { q: "Reject H₀ when it's actually true =", options: ["Type I error", "Type II error", "Correct", "Power error"], correct: 0, explanation: "Type I error (false positive): rejecting null when it is actually true." }
+  ],
+  'correlation-regression': [
+    { q: "r = -0.85 indicates:", options: ["Strong positive", "Strong negative", "No relation", "Weak negative"], correct: 1, explanation: "Values near -1 indicate strong negative correlation." },
+    { q: "R² = 0.81 means model explains:", options: ["19%", "81%", "90%", "Can't tell"], correct: 1, explanation: "R² is the proportion of variance in the dependent variable explained by the model." }
+  ],
+  'covariance-matrix': [
+    { q: "Cov(X,Y) = 0 implies:", options: ["Independent", "No linear relation", "Identical", "ρ=1"], correct: 1, explanation: "Zero covariance means no linear relationship, but variables might still be dependent nonlinearly." }
+  ],
+  'bayesian-inference': [
+    { q: "Prior * Likelihood = ?", options: ["Marginal likelihood", "Posterior", "Predictive", "Evidence"], correct: 1, explanation: "Posterior = Likelihood × Prior / Evidence. The numerator alone is proportional to the posterior." },
+    { q: "MAP estimation finds:", options: ["Mean of posterior", "Mode of posterior", "Median of posterior", "Variance"], correct: 1, explanation: "Maximum A Posteriori (MAP) finds the mode (peak) of the posterior distribution." },
+    { q: "Beta distribution is conjugate prior for:", options: ["Normal likelihood", "Binomial likelihood", "Poisson likelihood", "Uniform likelihood"], correct: 1, explanation: "Beta conjugates with Binomial: if prior ~ Beta(α,β), posterior ~ Beta(α+k,β+n-k)." },
+    { q: "P(H|D) with prior=0.6, likelihood=0.8, evidence=0.72:", options: ["0.48", "0.72", "0.667", "0.60"], correct: 2, explanation: "P(H|D) = (0.8 × 0.6) / 0.72 = 0.48/0.72 = 0.667" }
+  ],
+  'anova-design': [
+    { q: "ANOVA tests differences in:", options: ["Variances between groups", "Means between groups", "Standard deviations", "Medians"], correct: 1, explanation: "ANOVA (Analysis of Variance) tests whether the means of 3+ groups differ significantly." },
+    { q: "F-statistic = MS_between / MS_within. Large F indicates:", options: ["Small group differences", "Large between-group variation vs within", "Equal variances", "Normal distribution"], correct: 1, explanation: "A large F means between-group variation exceeds within-group variation → groups differ." },
+    { q: "Post-hoc test purpose:", options: ["Replace ANOVA", "Find which specific groups differ", "Calculate F-value", "Check normality"], correct: 1, explanation: "Post-hoc tests (Tukey HSD, Bonferroni) identify which pairs differ after ANOVA rejects null." }
+  ]
+};
