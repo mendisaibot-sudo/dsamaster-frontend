@@ -1,14 +1,23 @@
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
 import { statisticsTopics } from '../../data/statistics';
 import './Statistics.css';
-import { FaChartPie, FaDice, FaChartLine, FaFlask, FaSync, FaRandom, FaExpandAlt, FaTable } from 'react-icons/fa';
+import { RandomTestModal } from '../Quiz/RandomTestModal';
+import { FaChartPie, FaDice, FaChartLine, FaFlask, FaSync, FaRandom, FaExpandAlt, FaTable, FaRocket } from 'react-icons/fa';
 
 const iconMap = {
   FaChartPie, FaDice, FaChartLine, FaFlask, FaSync, FaRandom, FaExpandAlt, FaTable
 };
 
 const StatisticsListing = () => {
+  const [showTest, setShowTest] = useState(false);
   const categories = [...new Set(statisticsTopics.map(t => t.category))];
+
+  // Aggregate all quiz questions
+  const allQuestions = {};
+  Object.keys(statisticsQuizQuestions).forEach(topicId => {
+    allQuestions[topicId] = statisticsQuizQuestions[topicId];
+  });
 
   return (
     <section id="statistics" className="section section-alt">
@@ -16,6 +25,9 @@ const StatisticsListing = () => {
         <div className="section-header">
           <h2>Statistics</h2>
           <p>Master statistical concepts with clear definitions, formulas, and real-world examples</p>
+          <button className="quiz-launch-btn" onClick={() => setShowTest(true)}>
+            <FaRocket /> Take a Quick Test
+          </button>
         </div>
 
         {categories.map(cat => (
@@ -45,6 +57,13 @@ const StatisticsListing = () => {
           </div>
         ))}
       </div>
+
+      <RandomTestModal
+        isOpen={showTest}
+        onClose={() => setShowTest(false)}
+        allQuestions={allQuestions}
+        title="Statistics"
+      />
     </section>
   );
 };

@@ -1,0 +1,124 @@
+/* CodeBlock.css - CodePen-style code display */
+
+.code-block {
+  background: #1e1e2e;
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 1.5rem 0;
+  border: 1px solid #2d2d44;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.code-header {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: #252536;
+  border-bottom: 1px solid #2d2d44;
+}
+
+.code-dots {
+  display: flex;
+  gap: 6px;
+  margin-right: 1rem;
+}
+
+.code-dots .dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.code-dots .dot.red { background: #ff5f56; }
+.code-dots .dot.yellow { background: #ffbd2e; }
+.code-dots .dot.green { background: #27c93f; }
+
+.code-lang {
+  color: #7a7a9d;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.code-copy-btn {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  background: rgba(99, 102, 241, 0.15);
+  color: #a5a5d6;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.code-copy-btn:hover {
+  background: rgba(99, 102, 241, 0.25);
+  color: #fff;
+}
+
+.code-content {
+  padding: 1.25rem;
+  margin: 0;
+  overflow-x: auto;
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Cascadia Code', monospace;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #e4e4e7;
+}
+
+.code-content::-webkit-scrollbar {
+  height: 8px;
+}
+
+.code-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.code-content::-webkit-scrollbar-thumb {
+  background: #3d3d5c;
+  border-radius: 4px;
+}
+
+/* Syntax Highlighting Colors */
+.code-keyword {
+  color: #ff79c6;
+  font-weight: 600;
+}
+
+.code-string {
+  color: #f1fa8c;
+}
+
+.code-comment {
+  color: #6272a4;
+  font-style: italic;
+}
+
+.code-number {
+  color: #bd93f9;
+}
+
+.code-function {
+  color: #50fa7b;
+}
+
+.code-builtin {
+  color: #8be9fd;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .code-block {
+    border-radius: 8px;
+  }
+  
+  .code-content {
+    padding: 1rem;
+    font-size: 0.8rem;
+  }
+}

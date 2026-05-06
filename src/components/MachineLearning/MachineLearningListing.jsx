@@ -1,14 +1,23 @@
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
 import { mlTopics } from '../../data/machineLearning';
+import { mlQuizQuestions } from '../../data/mlQuizQuestions';
+import { RandomTestModal } from '../Quiz/RandomTestModal';
 import './MachineLearning.css';
-import { FaBrain, FaRobot, FaChartArea, FaTree, FaNetworkWired, FaBuffer, FaPeopleArrows, FaProjectDiagram, FaCompressArrowsAlt, FaBalanceScale } from 'react-icons/fa';
+import { FaBrain, FaRobot, FaChartArea, FaTree, FaNetworkWired, FaBuffer, FaPeopleArrows, FaProjectDiagram, FaCompressArrowsAlt, FaBalanceScale, FaRocket } from 'react-icons/fa';
 
 const iconMap = {
   FaBrain, FaRobot, FaChartArea, FaTree, FaNetworkWired, FaBuffer, FaPeopleArrows, FaProjectDiagram, FaCompressArrowsAlt, FaBalanceScale
 };
 
 const MachineLearningListing = () => {
+  const [showTest, setShowTest] = useState(false);
   const categories = [...new Set(mlTopics.map(t => t.category))];
+
+  const allQuestions = {};
+  Object.keys(mlQuizQuestions).forEach(topicId => {
+    allQuestions[topicId] = mlQuizQuestions[topicId];
+  });
 
   return (
     <section id="machinelearning" className="section section-alt">
@@ -16,6 +25,9 @@ const MachineLearningListing = () => {
         <div className="section-header">
           <h2>Machine Learning</h2>
           <p>Master ML concepts with clear definitions, formulas, and real-world examples</p>
+          <button className="quiz-launch-btn" onClick={() => setShowTest(true)}>
+            <FaRocket /> Take a Quick Test
+          </button>
         </div>
 
         {categories.map(cat => (
@@ -25,7 +37,7 @@ const MachineLearningListing = () => {
               {mlTopics.filter(t => t.category === cat).map(topic => {
                 const IconComp = iconMap[topic.icon] || FaBrain;
                 return (
-                  <Link key={topic.id} to={`/ml/${topic.id}`} className="ml-card card-interactive">
+                  <Link key={topic.id} to={`/machine-learning/${topic.id}`} className="ml-card card-interactive">
                     <div className="ml-icon" style={{ background: topic.color }}>
                       <IconComp />
                     </div>
@@ -45,6 +57,13 @@ const MachineLearningListing = () => {
           </div>
         ))}
       </div>
+
+      <RandomTestModal
+        isOpen={showTest}
+        onClose={() => setShowTest(false)}
+        allQuestions={allQuestions}
+        title="Machine Learning"
+      />
     </section>
   );
 };

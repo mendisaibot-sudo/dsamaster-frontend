@@ -1,6 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { mlTopics } from '../../data/machineLearning';
+import { mlQuizQuestions } from '../../data/mlQuizQuestions';
+import { QuizSection } from '../Quiz/QuizSection';
+import { CodeBlock } from '../CodeBlock/CodeBlock';
 import { useProgress } from '../../contexts/ProgressContext';
 import './MachineLearning.css';
 
@@ -132,6 +135,24 @@ const MachineLearningDetail = () => {
               ))}
             </div>
           </div>
+        )}
+
+        {/* Code Examples Section */}
+        {topic.codeExamples && topic.codeExamples.length > 0 && (
+          <div className="code-examples-section">
+            <h3>💻 Code Examples</h3>
+            {topic.codeExamples.map((ex, i) => (
+              <div key={i} className="code-example-item">
+                <p className="code-explanation">{ex.explanation}</p>
+                <CodeBlock code={ex.code} language={ex.language || 'python'} />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Quiz Section */}
+        {mlQuizQuestions[topic.id] && mlQuizQuestions[topic.id].length > 0 && (
+          <QuizSection questions={mlQuizQuestions[topic.id]} topicName={topic.name} />
         )}
       </div>
     </div>
