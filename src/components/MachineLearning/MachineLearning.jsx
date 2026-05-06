@@ -18,7 +18,7 @@ const MachineLearning = () => {
 
         <div className="ml-grid">
           {mlTopics.map((topic) => (
-            <Link key={topic.id} to={`/ml/${topic.id}`} className="ml-card card-interactive">
+            <Link key={topic.id} to={`/machine-learning/${topic.id}`} className="ml-card card-interactive">
               <div className="ml-icon" style={{ background: topic.color }}>
                 <FaBrain />
               </div>

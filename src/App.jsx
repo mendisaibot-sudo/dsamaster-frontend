@@ -18,7 +18,7 @@ import ProblemSolver from './components/Problems/ProblemSolver';
 // Statistics & Machine Learning
 import StatisticsListing from './components/Statistics/StatisticsListing';
 import StatisticsDetail from './components/Statistics/StatisticsDetail';
-import MachineLearning from './components/MachineLearning/MachineLearning';
+import MachineLearningListing from './components/MachineLearning/MachineLearningListing';
 import MachineLearningDetail from './components/MachineLearning/MachineLearningDetail';
 
 import LoginPage from './components/Auth/LoginPage';
@@ -79,8 +79,8 @@ function App() {
                 {/* Statistics & Machine Learning */}
                 <Route path="/statistics" element={<StatisticsListing />} />
                 <Route path="/statistics/:topicId" element={<StatisticsDetail />} />
-                <Route path="/ml" element={<MachineLearning />} />
-                <Route path="/ml/:topicId" element={<MachineLearningDetail />} />
+                <Route path="/machine-learning" element={<MachineLearningListing />} />
+                <Route path="/machine-learning/:topicId" element={<MachineLearningDetail />} />
                 
                 <Route path="/auth/login" element={<LoginPage />} />
                 <Route path="/auth/verify-pending" element={<VerificationPending />} />
