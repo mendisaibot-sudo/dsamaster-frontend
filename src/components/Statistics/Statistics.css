@@ -128,3 +128,33 @@
 .code-body code { color: #cdd6f4; font-family: 'Fira Code', 'Consolas', monospace; font-size: 0.85rem; line-height: 1.5; white-space: pre; }
 .quiz-section-wrapper { margin-top: 3rem; padding-top: 2rem; border-top: 2px solid rgba(74, 144, 226, 0.2); }
 .quiz-section-wrapper h3 { color: var(--primary-blue); margin-bottom: 1.5rem; font-size: 1.5rem; text-align: center; }
+
+/* === Clickable Concept Cards === */
+.topic-description { margin-bottom: 2rem; }
+.topic-description h3 { font-size: 1.35rem; color: var(--text-primary); margin-bottom: 0.75rem; }
+.topic-description p { font-size: 1rem; color: var(--text-secondary); line-height: 1.7; }
+.topic-description .detail-why { margin-top: 0.75rem; padding: 1rem; background: var(--bg-secondary); border-radius: 10px; border-left: 3px solid var(--primary); color: var(--text-primary); }
+
+.concepts-heading { font-size: 1.25rem; color: var(--text-primary); margin-bottom: 1rem; }
+
+.concepts-cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+.concept-card {
+  display: flex; align-items: flex-start; gap: 0.875rem;
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 1rem 1.25rem; cursor: pointer; transition: all 0.25s ease;
+}
+.concept-card:hover {
+  transform: translateY(-3px); box-shadow: 0 12px 28px rgba(0,0,0,0.12); border-color: var(--primary);
+}
+.concept-card-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-weight: 700; font-size: 0.85rem; flex-shrink: 0;
+}
+.concept-card-body h4 { font-size: 1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.25rem; }
+.concept-card-hint { font-size: 0.8rem; color: var(--primary); font-weight: 500; }
+
+@media (max-width: 640px) {
+  .concepts-cards-grid { grid-template-columns: 1fr; }
+  .concept-card { padding: 0.875rem 1rem; }
+}

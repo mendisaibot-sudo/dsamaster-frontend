@@ -20,7 +20,54 @@ export const statisticsTopics = [
     visualType: 'histogram',
     codeExamples: [
       { language: 'python', title: 'Calculate Summary Statistics', code: `import numpy as np\n\ndata = [12, 15, 18, 20, 23, 25, 28]\n\nprint(f"Mean: {np.mean(data):.2f}")\nprint(f"Median: {np.median(data):.2f}")\nprint(f"Std Dev: {np.std(data, ddof=1):.2f}")\nprint(f"Variance: {np.var(data, ddof=1):.2f}")\n\n# Output:\n# Mean: 20.14\n# Median: 20.00\n# Std Dev: 4.98\n# Variance: 24.81` }
-    ]
+    ],
+    conceptDetails: {
+      'Mean': {
+        explanation: 'The arithmetic mean is the sum of all values divided by the number of values. It is the most common measure of central tendency but is sensitive to outliers.',
+        formula: 'μ = Σxᵢ / N',
+        visualType: 'array',
+        visualData: { values: [12, 15, 18, 20, 23, 25, 28], highlight: [3] },
+        quizQuestions: [
+          { q: "What is the mean of [10, 20, 30]?", options: ["15", "20", "25", "30"], correct: 1, explanation: "(10+20+30)/3 = 60/3 = 20" },
+          { q: "The mean is most affected by:", options: ["Outliers", "Median", "Mode", "Sample size"], correct: 0, explanation: "Extreme values can shift the mean dramatically toward them." }
+        ]
+      },
+      'Median': {
+        explanation: 'The median is the middle value when data is sorted. For an even count, it is the average of the two middle values. It is robust to outliers.',
+        visualType: 'array',
+        visualData: { values: [12, 15, 18, 20, 23, 25, 28], highlight: [3] },
+        quizQuestions: [
+          { q: "Median of [12, 15, 20, 22, 28]:", options: ["15", "19", "20", "22"], correct: 2, explanation: "With 5 values, the 3rd sorted value (20) is the median." },
+          { q: "Median vs Mean: which is robust to outliers?", options: ["Mean", "Median", "Both", "Neither"], correct: 1, explanation: "Median only cares about position, not extreme values." }
+        ]
+      },
+      'Mode': {
+        explanation: 'The mode is the most frequently occurring value. A dataset can have multiple modes (bimodal, multimodal) or no mode at all.',
+        visualType: 'array',
+        visualData: { values: [2, 3, 3, 4, 5, 5, 5, 6], labels: { 2: 'Mode: 5' } },
+        quizQuestions: [
+          { q: "Mode of [1, 2, 2, 3, 3, 3, 4]:", options: ["1", "2", "3", "4"], correct: 2, explanation: "3 appears 3 times, more than any other value." }
+        ]
+      },
+      'Variance': {
+        explanation: 'Variance measures how far data points spread from the mean. Population variance divides by N; sample variance divides by n-1 (Bessel correction).',
+        formula: 's² = Σ(xᵢ − x̄)² / (n−1)',
+        visualType: 'distribution',
+        visualData: { mean: 0, std: 1, shadedArea: [-1, 1] },
+        quizQuestions: [
+          { q: "Why does sample variance divide by n-1?", options: ["To make it larger", "Bias correction", "Simpler math", "Historical reason"], correct: 1, explanation: "Dividing by n-1 gives an unbiased estimator of the population variance." }
+        ]
+      },
+      'Standard Deviation': {
+        explanation: 'Standard deviation is the square root of variance, bringing units back to the original scale. It tells us the typical distance from the mean.',
+        formula: 'σ = √(σ²)',
+        visualType: 'distribution',
+        visualData: { mean: 0, std: 1 },
+        quizQuestions: [
+          { q: "If variance = 25, standard deviation = ?", options: ["5", "25", "12.5", "625"], correct: 0, explanation: "√25 = 5. SD is the square root of variance." }
+        ]
+      }
+    }
   },
   {
     id: 'probability-theory',

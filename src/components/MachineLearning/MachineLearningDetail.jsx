@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { mlTopics } from '../../data/machineLearning';
-import { mlQuizQuestions } from '../../data/mlQuizQuestions';
-import { QuizSection } from '../Quiz/QuizSection';
 import { CodeBlock } from '../CodeBlock/CodeBlock';
+import ConceptModal from '../ConceptModal/ConceptModal';
 import { useProgress } from '../../contexts/ProgressContext';
 import './MachineLearning.css';
 
@@ -11,8 +10,10 @@ const MachineLearningDetail = () => {
   const { topicId } = useParams();
   const navigate = useNavigate();
   const [topic, setTopic] = useState(null);
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState('concepts');
   const [activeExample, setActiveExample] = useState(0);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedConcept, setSelectedConcept] = useState(null);
   const { addTopic } = useProgress();
 
   useEffect(() => {
@@ -22,6 +23,12 @@ const MachineLearningDetail = () => {
       addTopic(found.name);
     }
   }, [topicId, addTopic]);
+
+  const openConcept = (conceptName) => {
+    const details = topic?.conceptDetails?.[conceptName] || { name: conceptName, explanation: `Learn more about ${conceptName}.` };
+    setSelectedConcept(details);
+    setModalOpen(true);
+  };
 
   if (!topic) return (
     <div className="detail-page">
@@ -47,32 +54,33 @@ const MachineLearningDetail = () => {
         </div>
 
         <div className="detail-tabs">
-          <button className={activeTab === 'overview' ? 'active' : ''} onClick={() => setActiveTab('overview')}>Overview</button>
+          <button className={activeTab === 'concepts' ? 'active' : ''} onClick={() => setActiveTab('concepts')}>Key Concepts</button>
           <button className={activeTab === 'formulas' ? 'active' : ''} onClick={() => setActiveTab('formulas')}>Formulas</button>
-          <button className={activeTab === 'code' ? 'active' : ''} onClick={() => setActiveTab('code')}>Code Examples</button>
+          <button className={activeTab === 'code' ? 'active' : ''} onClick={() => setActiveTab('code')}>Code</button>
           <button className={activeTab === 'examples' ? 'active' : ''} onClick={() => setActiveTab('examples')}>Examples</button>
-          <button className={activeTab === 'applications' ? 'active' : ''} onClick={() => setActiveTab('applications')}>Real World</button>
+          <button className={activeTab === 'apps' ? 'active' : ''} onClick={() => setActiveTab('apps')}>Applications</button>
         </div>
 
-        {activeTab === 'overview' && (
+        {activeTab === 'concepts' && (
           <div className="tab-content">
-            <div className="ml-visual" style={{ background: topic.color.replace('135deg', '160deg'), padding: '2rem', borderRadius: '12px', marginBottom: '1.5rem' }}>
-              <h3>Key Concepts</h3>
-              <div className="concepts-grid">
-                {topic.concepts.map((c, i) => (
-                  <span key={i} className="concept-pill">{c}</span>
-                ))}
-              </div>
+            <div className="topic-description">
+              <h3>What is {topic.name}?</h3>
+              <p>{topic.description}</p>
+              <p className="detail-why">{topic.details}</p>
             </div>
-            <div className="ml-info-cards">
-              <div className="info-card">
-                <h4>What is it?</h4>
-                <p>{topic.description}</p>
-              </div>
-              <div className="info-card">
-                <h4>Why it matters</h4>
-                <p>{topic.details}</p>
-              </div>
+            <h3 className="concepts-heading">Click any concept to explore:</h3>
+            <div className="concepts-cards-grid">
+              {topic.concepts.map((c, i) => (
+                <div key={i} className="concept-card card-interactive" onClick={() => openConcept(c)}>
+                  <div className="concept-card-icon" style={{ background: topic.color }}>
+                    <span>{i + 1}</span>
+                  </div>
+                  <div className="concept-card-body">
+                    <h4>{c}</h4>
+                    <span className="concept-card-hint">Click to learn + test →</span>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
@@ -96,13 +104,9 @@ const MachineLearningDetail = () => {
           <div className="tab-content">
             <div className="code-examples">
               {topic.codeExamples.map((ex, i) => (
-                <div key={i} className="code-block">
-                  <div className="code-header">
-                    <span className="code-lang">{ex.language}</span>
-                    <span className="code-title">{ex.title}</span>
-                    <button className="code-copy" onClick={() => navigator.clipboard.writeText(ex.code)}>📋 Copy</button>
-                  </div>
-                  <pre className="code-body"><code>{ex.code}</code></pre>
+                <div key={i} className="code-example-item">
+                  <p className="code-explanation">{ex.title}</p>
+                  <CodeBlock code={ex.code} language={ex.language} />
                 </div>
               ))}
             </div>
@@ -113,11 +117,7 @@ const MachineLearningDetail = () => {
           <div className="tab-content">
             <div className="example-selector">
               {topic.examples.map((ex, i) => (
-                <button
-                  key={i}
-                  className={activeExample === i ? 'active' : ''}
-                  onClick={() => setActiveExample(i)}
-                >
+                <button key={i} className={activeExample === i ? 'active' : ''} onClick={() => setActiveExample(i)}>
                   {ex.title}
                 </button>
               ))}
@@ -141,7 +141,7 @@ const MachineLearningDetail = () => {
           </div>
         )}
 
-        {activeTab === 'applications' && (
+        {activeTab === 'apps' && (
           <div className="tab-content">
             <h3>Real-World Applications</h3>
             <div className="applications-grid">
@@ -155,10 +155,12 @@ const MachineLearningDetail = () => {
           </div>
         )}
 
-        <div className="quiz-section-wrapper">
-          <h3>🎯 Test Your Knowledge</h3>
-          <QuizSection questions={mlQuizQuestions[topicId] || []} topicName={topic.name} />
-        </div>
+        <ConceptModal
+          isOpen={modalOpen}
+          onClose={() => setModalOpen(false)}
+          concept={selectedConcept}
+          topicColor={topic.color}
+        />
       </div>
     </div>
   );
