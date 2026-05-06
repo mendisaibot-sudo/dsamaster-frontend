@@ -57,7 +57,7 @@ export default function ForgotPassword() {
               <div className="auth-success" style={{ marginBottom: '1.5rem' }}>
                 If an account exists with this email, a password reset link has been sent.
               </div>
-              <a href="#/auth/login" className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+              <a href="/auth/login" className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
                 <FaArrowLeft size={14} />
                 Back to Sign In
               </a>
@@ -97,7 +97,7 @@ export default function ForgotPassword() {
 
           {!submitted && (
             <div className="auth-footer">
-              <a href="#/auth/login" className="auth-link" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <a href="/auth/login" className="auth-link" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                 <FaArrowLeft size={12} />
                 Back to Sign In
               </a>

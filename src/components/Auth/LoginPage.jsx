@@ -289,7 +289,7 @@ export default function LoginPage() {
             {/* Forgot Password link (login only) */}
             {!isRegister && (
               <div className="forgot-password-row">
-                <a href="#/auth/forgot-password" className="auth-link" style={{ fontSize: '0.85rem' }}>
+                <a href="/auth/forgot-password" className="auth-link" style={{ fontSize: '0.85rem' }}>
                   Forgot Password?
                 </a>
               </div>

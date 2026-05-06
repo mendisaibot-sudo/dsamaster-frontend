@@ -134,7 +134,7 @@ export default function ResetPassword() {
                 <FaCheckCircle size={16} style={{ marginRight: 6 }} />
                 Password updated successfully. You will be redirected to sign in shortly.
               </div>
-              <a href="#/auth/login" className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+              <a href="/auth/login" className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
                 <FaArrowLeft size={14} />
                 Go to Sign In
               </a>
@@ -209,7 +209,7 @@ export default function ResetPassword() {
 
           {!success && (
             <div className="auth-footer">
-              <a href="#/auth/login" className="auth-link" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <a href="/auth/login" className="auth-link" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                 <FaArrowLeft size={12} />
                 Back to Sign In
               </a>

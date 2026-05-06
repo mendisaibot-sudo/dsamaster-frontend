@@ -115,7 +115,7 @@ export default function VerificationPending() {
           </form>
 
           <div className="auth-footer">
-            <a href="#/auth/login" className="auth-link" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <a href="/auth/login" className="auth-link" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
               <FaArrowLeft size={12} />
               Back to Sign In
             </a>

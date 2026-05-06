@@ -86,7 +86,7 @@ export default function EmailVerified() {
           )}
 
           <a
-            href="#/"
+            href="/"
             className="btn btn-primary"
             style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}
           >
