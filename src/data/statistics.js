@@ -40,7 +40,31 @@ export const statisticsTopics = [
       { title: 'Medical Test Paradox', steps: ['Disease: 1%','Test: 95% true pos, 5% false pos','P(D|+)=0.95*0.01/(0.95*0.01+0.05*0.99)','P(D|+)=0.161'], result: 'Only 16.1% chance despite positive test!' }
     ],
     applications: ['Risk assessment','Medical diagnosis','ML classification','Game theory'],
-    visualType: 'venn'
+    visualType: 'venn',
+    codeExamples: [
+      {
+        language: 'python',
+        title: 'Bayes Theorem: Medical Test',
+        code: `import numpy as np
+
+# Bayes Theorem: Medical Test
+# Disease prevalence: 1%, Test accuracy: 95%
+
+P_disease = 0.01
+P_no_disease = 0.99
+P_pos_given_disease = 0.95
+P_pos_given_no_disease = 0.05
+
+# Total probability of positive test
+P_positive = (P_pos_given_disease * P_disease +
+              P_pos_given_no_disease * P_no_disease)
+
+# Posterior probability
+P_disease_given_positive = (P_pos_given_disease * P_disease) / P_positive
+print(f"P(Disease | Positive) = {P_disease_given_positive:.3f}")
+# Output: 0.161 (only 16.1% chance!)`
+      }
+    ]
   },
   {
     id: 'probability-distributions',
@@ -60,7 +84,28 @@ export const statisticsTopics = [
       { title: 'IQ Scores', steps: ['Mean=100, σ=15','P(85<X<115)=?','Z=(X-μ)/σ → Z=±1','P(-1<Z<1)≈68%'], result: '68% of people have IQ 85−115' }
     ],
     applications: ['Statistical inference','Quality control','Queueing','A/B testing'],
-    visualType: 'distribution'
+    visualType: 'distribution',
+    codeExamples: [
+      {
+        language: 'python',
+        title: 'Normal, Binomial, and Poisson',
+        code: `import numpy as np
+from scipy import stats
+
+# Normal Distribution: IQ Scores (μ=100, σ=15)
+mu, sigma = 100, 15
+prob_85_115 = stats.norm.cdf(115, mu, sigma) - stats.norm.cdf(85, mu, sigma)
+print(f"P(85 < IQ < 115) = {prob_85_115:.3f}")
+
+# Binomial: 10 coin flips, exactly 6 heads
+prob_binom = stats.binom.pmf(6, n=10, p=0.5)
+print(f"P(exactly 6 heads) = {prob_binom:.4f}")
+
+# Poisson: 3 emails per hour, P(5 in an hour)
+prob_poisson = stats.poisson.pmf(5, mu=3)
+print(f"P(5 emails) = {prob_poisson:.4f}")`
+      }
+    ]
   },
   {
     id: 'sampling-clt',
@@ -79,7 +124,30 @@ export const statisticsTopics = [
       { title: 'Election Poll', steps: ['Pop: 1M voters','95% conf, ±3%','Z=1.96, p=0.5','n=(1.96²*0.25)/0.03²=1067'], result: 'Only 1,067 people needed!' }
     ],
     applications: ['Polling','Market research','Clinical trials','Surveys'],
-    visualType: 'sampling'
+    visualType: 'sampling',
+    codeExamples: [
+      {
+        language: 'python',
+        title: 'Central Limit Theorem Demo',
+        code: `import numpy as np
+
+np.random.seed(42)
+population = np.random.exponential(scale=2, size=10000)
+
+sample_means = []
+n_samples = 1000
+sample_size = 30
+
+for _ in range(n_samples):
+    sample = np.random.choice(population, size=sample_size)
+    sample_means.append(np.mean(sample))
+
+print(f"Population mean: {np.mean(population):.2f}")
+print(f"Mean of sample means: {np.mean(sample_means):.2f}")
+print(f"Standard error: {np.std(sample_means):.3f}")
+# CLT: sample means are normally distributed regardless of population!`
+      }
+    ]
   },
   {
     id: 'confidence-intervals',
@@ -98,7 +166,29 @@ export const statisticsTopics = [
       { title: 'Coffee Shop Visit Time', steps: ['Sample mean=25 min, s=5, n=30','t* (29 df, 95%) = 2.045','ME = 2.045*(5/√30) = 1.87','CI: 25 ± 1.87 = [23.13, 26.87]'], result: 'We are 95% confident true mean is 23.13 to 26.87 min' }
     ],
     applications: ['Opinion polls','Medical studies','Quality assurance','Economic indicators'],
-    visualType: 'distribution'
+    visualType: 'distribution',
+    codeExamples: [
+      {
+        language: 'python',
+        title: 'Calculate Confidence Interval',
+        code: `import numpy as np
+from scipy import stats
+
+# Coffee shop visit times (minutes)
+data = [23, 25, 22, 28, 24, 26, 25, 27, 24, 26,
+        25, 23, 24, 26, 25, 27, 24, 25, 26, 25,
+        24, 26, 25, 27, 24, 25, 26, 25, 24, 26]
+
+n = len(data)
+mean = np.mean(data)
+std_err = stats.sem(data)
+
+# 95% confidence interval
+ci = stats.t.interval(0.95, df=n-1, loc=mean, scale=std_err)
+print(f"Sample mean: {mean:.2f} min")
+print(f"95% CI: [{ci[0]:.2f}, {ci[1]:.2f}]")`
+      }
+    ]
   },
   {
     id: 'hypothesis-testing',
@@ -117,7 +207,28 @@ export const statisticsTopics = [
       { title: 'New Drug', steps: ['H0: μ_new=μ_old','H1: μ_new>μ_old','Compute t-statistic','If p<0.05 reject H0'], result: 'Drug has statistically significant effect' }
     ],
     applications: ['Clinical trials','A/B testing','Quality assurance','Research'],
-    visualType: 'distribution'
+    visualType: 'distribution',
+    codeExamples: [
+      {
+        language: 'python',
+        title: 'Two-Sample t-Test',
+        code: `import numpy as np
+from scipy import stats
+
+# New drug vs placebo (blood pressure reduction)
+drug_group = np.array([15, 18, 12, 20, 16, 14, 19, 17, 15, 18])
+placebo_group = np.array([8, 5, 7, 6, 9, 7, 6, 8, 7, 5])
+
+t_stat, p_value = stats.ttest_ind(drug_group, placebo_group)
+print(f"t-statistic: {t_stat:.3f}")
+print(f"p-value: {p_value:.6f}")
+
+if p_value < 0.05:
+    print("Reject H0: Drug has significant effect!")
+else:
+    print("Fail to reject H0")`
+      }
+    ]
   },
   {
     id: 'correlation-regression',
@@ -137,7 +248,32 @@ export const statisticsTopics = [
       { title: 'Study vs Score', steps: ['Data: [(2,65),(3,72),(4,78),(5,85),(6,88)]','x̄=4, ȳ=77.6','Covariance and variance','b=5.8, a=54.4'], result: 'Score=54.4+5.8*Hours, r=0.98' }
     ],
     applications: ['Predictive modeling','Economics','Epidemiology','Finance'],
-    visualType: 'scatter'
+    visualType: 'scatter',
+    codeExamples: [
+      {
+        language: 'python',
+        title: 'Correlation and Linear Regression',
+        code: `import numpy as np
+from scipy import stats
+
+# Study hours vs exam scores
+hours = np.array([2, 3, 4, 5, 6, 3, 4, 5, 2, 6])
+scores = np.array([65, 72, 78, 85, 88, 70, 75, 82, 68, 90])
+
+# Pearson correlation
+r, p = stats.pearsonr(hours, scores)
+print(f"Correlation r = {r:.3f}")
+
+# Linear regression
+slope, intercept, r_value, p_value, std_err = stats.linregress(hours, scores)
+print(f"Regression line: y = {slope:.2f}x + {intercept:.2f}")
+print(f"R-squared = {r_value**2:.3f}")
+
+# Predict score for 7 hours
+predicted = slope * 7 + intercept
+print(f"Predicted score for 7 hours: {predicted:.1f}")`
+      }
+    ]
   },
   {
     id: 'covariance-matrix',
@@ -156,6 +292,27 @@ export const statisticsTopics = [
       { title: 'Stocks & Bonds', steps: ['Stock returns: [5%, -2%, 8%, 1%]','Bond returns: [3%, 2%, 4%, 2%]','Covariance is negative','Correlation ≈ −0.7'], result: 'Negative correlation means diversification benefit' }
     ],
     applications: ['Portfolio optimization','Multivariate analysis','PCA','Feature selection','Risk management'],
-    visualType: 'scatter'
+    visualType: 'scatter',
+    codeExamples: [
+      {
+        language: 'python',
+        title: 'Covariance and Correlation Matrix',
+        code: `import numpy as np
+
+# Stock returns data
+stocks = np.array([[5, -2, 8, 1],
+                   [3, 2, 4, 2],
+                   [4, 1, 6, 3]])
+
+cov_matrix = np.cov(stocks)
+print("Covariance Matrix:")
+print(cov_matrix)
+
+corr_matrix = np.corrcoef(stocks)
+print("Correlation Matrix:")
+print(corr_matrix)
+# Negative correlation means diversification benefit`
+      }
+    ]
   }
 ];
