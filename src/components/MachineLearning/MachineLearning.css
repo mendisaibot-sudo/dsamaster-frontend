@@ -115,3 +115,16 @@
     margin: 1.5rem 0;
   }
 }
+
+/* Code Blocks and Quiz Section Integration */
+.code-examples { display: flex; flex-direction: column; gap: 1.5rem; }
+.code-block { background: #1e1e2e; border-radius: 12px; overflow: hidden; border: 1px solid #313244; }
+.code-header { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; background: #181825; border-bottom: 1px solid #313244; }
+.code-lang { background: #585b70; color: #cdd6f4; font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; font-weight: 600; text-transform: uppercase; }
+.code-title { color: #cdd6f4; font-size: 0.9rem; font-weight: 500; flex: 1; }
+.code-copy { background: #45475a; color: #cdd6f4; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; transition: background 0.2s; }
+.code-copy:hover { background: #585b70; }
+.code-body { padding: 1rem; overflow-x: auto; }
+.code-body code { color: #cdd6f4; font-family: 'Fira Code', 'Consolas', monospace; font-size: 0.85rem; line-height: 1.5; white-space: pre; }
+.quiz-section-wrapper { margin-top: 3rem; padding-top: 2rem; border-top: 2px solid rgba(74, 144, 226, 0.2); }
+.quiz-section-wrapper h3 { color: var(--primary-blue); margin-bottom: 1.5rem; font-size: 1.5rem; text-align: center; }

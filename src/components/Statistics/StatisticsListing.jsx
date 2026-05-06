@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { statisticsTopics } from '../../data/statistics';
-import './Statistics.css';
+import { statisticsQuizQuestions } from '../../data/statisticsQuiz';
 import { RandomTestModal } from '../Quiz/RandomTestModal';
+import './Statistics.css';
 import { FaChartPie, FaDice, FaChartLine, FaFlask, FaSync, FaRandom, FaExpandAlt, FaTable, FaRocket } from 'react-icons/fa';
 
 const iconMap = {

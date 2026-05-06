@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { statisticsTopics } from '../../data/statistics';
 import { statisticsQuizQuestions } from '../../data/statisticsQuiz';
@@ -49,6 +49,7 @@ const StatisticsDetail = () => {
         <div className="detail-tabs">
           <button className={activeTab === 'overview' ? 'active' : ''} onClick={() => setActiveTab('overview')}>Overview</button>
           <button className={activeTab === 'formulas' ? 'active' : ''} onClick={() => setActiveTab('formulas')}>Formulas</button>
+          <button className={activeTab === 'code' ? 'active' : ''} onClick={() => setActiveTab('code')}>Code Examples</button>
           <button className={activeTab === 'examples' ? 'active' : ''} onClick={() => setActiveTab('examples')}>Examples</button>
           <button className={activeTab === 'applications' ? 'active' : ''} onClick={() => setActiveTab('applications')}>Real World</button>
         </div>
@@ -85,6 +86,23 @@ const StatisticsDetail = () => {
                   <div className="formula-name">{f.name}</div>
                   <div className="formula-code">{f.code}</div>
                   <div className="formula-text">{f.text}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'code' && topic.codeExamples && (
+          <div className="tab-content">
+            <div className="code-examples">
+              {topic.codeExamples.map((ex, i) => (
+                <div key={i} className="code-block">
+                  <div className="code-header">
+                    <span className="code-lang">{ex.language}</span>
+                    <span className="code-title">{ex.title}</span>
+                    <button className="code-copy" onClick={() => navigator.clipboard.writeText(ex.code)}>📋 Copy</button>
+                  </div>
+                  <pre className="code-body"><code>{ex.code}</code></pre>
                 </div>
               ))}
             </div>
@@ -137,23 +155,10 @@ const StatisticsDetail = () => {
           </div>
         )}
 
-        {/* Code Examples Section */}
-        {topic.codeExamples && topic.codeExamples.length > 0 && (
-          <div className="code-examples-section">
-            <h3>💻 Code Examples</h3>
-            {topic.codeExamples.map((ex, i) => (
-              <div key={i} className="code-example-item">
-                <p className="code-explanation">{ex.explanation}</p>
-                <CodeBlock code={ex.code} language={ex.language || 'python'} />
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Quiz Section */}
-        {statisticsQuizQuestions[topic.id] && statisticsQuizQuestions[topic.id].length > 0 && (
-          <QuizSection questions={statisticsQuizQuestions[topic.id]} topicName={topic.name} />
-        )}
+        <div className="quiz-section-wrapper">
+          <h3>🎯 Test Your Knowledge</h3>
+          <QuizSection questions={statisticsQuizQuestions[topicId] || []} topicName={topic.name} />
+        </div>
       </div>
     </div>
   );
