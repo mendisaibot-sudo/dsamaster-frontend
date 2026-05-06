@@ -68,6 +68,26 @@ export const mlQuizQuestions = {
     { q: "What does high bias indicate?", options: ["Overfitting", "Underfitting", "Perfect model", "High variance"], correct: 1, explanation: "High bias indicates underfitting: the model is too simple to capture the underlying pattern in the data, leading to poor performance on both training and test sets." },
     { q: "Early stopping prevents overfitting by:", options: ["Adding more data", "Stopping training when validation loss increases", "Reducing learning rate", "Using larger batches"], correct: 1, explanation: "Early stopping monitors validation performance and stops training when validation loss stops improving, preventing the model from overfitting to the training set." },
     { q: "The bias-variance tradeoff means:", options: ["Bias and variance are equal", "Decreasing one often increases the other", "Both should be maximized", "Only bias matters"], correct: 1, explanation: "The bias-variance tradeoff states that as model complexity increases, bias decreases but variance increases. The goal is to find the sweet spot that minimizes total error." }
+  ],
+  'ensemble-learning': [
+    { q: "Random Forest uses:", options: ["Single deep tree", "Bagging + random feature subsampling", "Boosting + weak learners", "Neural network ensemble"], correct: 1, explanation: "Random Forest combines bagging (bootstrapped training samples) with random feature subsampling at each split to reduce overfitting." },
+    { q: "XGBoost is an example of:", options: ["Bagging", "Boosting", "Stacking", "Voting"], correct: 1, explanation: "XGBoost (eXtreme Gradient Boosting) is a boosting algorithm that builds trees sequentially, correcting errors of previous trees." },
+    { q: "Advantage of ensemble methods:", options: ["Faster training", "Higher accuracy than single model", "Less memory", "Simpler interpretability"], correct: 1, explanation: "Ensembles combine multiple models to reduce variance (bagging) or bias (boosting), typically achieving higher accuracy than any single model." }
+  ],
+  'deep-learning': [
+    { q: "CNN stands for:", options: ["Combined Neural Network", "Convolutional Neural Network", "Classified Neural Network", "Compact Neural Network"], correct: 1, explanation: "CNN (Convolutional Neural Network) uses convolution operations to extract spatial features from images." },
+    { q: "LSTM solves:", options: ["Overfitting", "Vanishing gradient in long sequences", "High bias", "Slow training"], correct: 1, explanation: "LSTM (Long Short-Term Memory) networks use gate mechanisms (forget, input, output) to preserve gradient flow in long sequences." },
+    { q: "Transformer replaces RNN with:", options: ["Larger hidden layers", "Self-attention mechanism", "More parameters", "Deeper networks"], correct: 1, explanation: "Transformers use self-attention to directly relate positions in a sequence, parallelizing computation instead of sequential RNN steps." }
+  ],
+  'reinforcement-learning': [
+    { q: "Q-Learning targets:", options: ["Minimize loss function", "Maximize cumulative reward", "Reduce variance", "Prevent overfitting"], correct: 1, explanation: "Q-Learning learns action-value pairs to maximize the expected cumulative reward over time." },
+    { q: "Epsilon-greedy balances:", options: ["Bias and variance", "Exploration and exploitation", "Speed and accuracy", "Simple and complex models"], correct: 1, explanation: "With probability ε the agent explores random actions; with 1-ε it exploits the best-known action." },
+    { q: "MDP consists of:", options: ["Agent + Environment", "States, Actions, Transitions, Rewards", "Data + Model", "Input + Output"], correct: 1, explanation: "Markov Decision Process formalizes an RL problem with states S, actions A, transition probabilities P, and rewards R." }
+  ],
+  'nlp-transformers': [
+    { q: "BERT is trained using:", options: ["Autoregressive generation", "Masked language modeling", "Reinforcement learning", "Adversarial training"], correct: 1, explanation: "BERT uses masked language modeling: random tokens are masked and the model learns to predict them from context." },
+    { q: "Self-attention computes:", options: ["Sentence length", "Token importance relative to all others", "Word frequency", "Syntax tree"], correct: 1, explanation: "Self-attention calculates attention scores between every pair of tokens, weighting outputs by relevance." },
+    { q: "GPT is:", options: ["Encoder-only model", "Decoder-only model", "Encoder-decoder model", "Neural network"], correct: 1, explanation: "GPT (Generative Pre-trained Transformer) is a decoder-only autoregressive model that predicts the next token." }
   ]
 };
 

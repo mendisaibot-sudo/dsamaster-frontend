@@ -34,5 +34,16 @@ export const statisticsQuizQuestions = {
   ],
   'covariance-matrix': [
     { q: "Cov(X,Y) = 0 implies:", options: ["Independent", "No linear relation", "Identical", "ρ=1"], correct: 1, explanation: "Zero covariance means no linear relationship, but variables might still be dependent nonlinearly." }
+  ],
+  'bayesian-inference': [
+    { q: "Prior * Likelihood = ?", options: ["Marginal likelihood", "Posterior", "Predictive", "Evidence"], correct: 1, explanation: "Posterior = Likelihood × Prior / Evidence. The numerator alone is proportional to the posterior." },
+    { q: "MAP estimation finds:", options: ["Mean of posterior", "Mode of posterior", "Median of posterior", "Variance"], correct: 1, explanation: "Maximum A Posteriori (MAP) finds the mode (peak) of the posterior distribution." },
+    { q: "Beta distribution is conjugate prior for:", options: ["Normal likelihood", "Binomial likelihood", "Poisson likelihood", "Uniform likelihood"], correct: 1, explanation: "Beta conjugates with Binomial: if prior ~ Beta(α,β), posterior ~ Beta(α+k,β+n-k)." },
+    { q: "P(H|D) with prior=0.6, likelihood=0.8, evidence=0.72:", options: ["0.48", "0.72", "0.667", "0.60"], correct: 2, explanation: "P(H|D) = (0.8 × 0.6) / 0.72 = 0.48/0.72 = 0.667" }
+  ],
+  'anova-design': [
+    { q: "ANOVA tests differences in:", options: ["Variances between groups", "Means between groups", "Standard deviations", "Medians"], correct: 1, explanation: "ANOVA (Analysis of Variance) tests whether the means of 3+ groups differ significantly." },
+    { q: "F-statistic = MS_between / MS_within. Large F indicates:", options: ["Small group differences", "Large between-group variation vs within", "Equal variances", "Normal distribution"], correct: 1, explanation: "A large F means between-group variation exceeds within-group variation → groups differ." },
+    { q: "Post-hoc test purpose:", options: ["Replace ANOVA", "Find which specific groups differ", "Calculate F-value", "Check normality"], correct: 1, explanation: "Post-hoc tests (Tukey HSD, Bonferroni) identify which pairs differ after ANOVA rejects null." }
   ]
 };

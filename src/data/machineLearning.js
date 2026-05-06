@@ -444,6 +444,80 @@ print(f"Ridge coefficients: {ridge.coef_}")
 print(f"L2 penalty shrinks coefficients toward zero")`
       }
     ]
+  },
+  {
+    id: 'ensemble-learning',
+    name: 'Ensemble Learning',
+    icon: 'FaUsers',
+    color: 'linear-gradient(135deg, #10b981, #34d399)',
+    category: 'Advanced',
+    description: 'Combine multiple models to improve accuracy and robustness using Bagging and Boosting.',
+    details: 'Ensemble methods reduce error by averaging multiple weak learners. Bagging (e.g. Random Forest) trains models on random subsets and averages predictions. Boosting (e.g. AdaBoost, XGBoost) trains sequentially, focusing on previous errors. Stacking combines different model types.',
+    concepts: ['Bagging','Boosting','Random Forest','AdaBoost','XGBoost','Gradient Boosting','Stacking','Voting'],
+    formulas: [
+      { name: 'Random Forest', code: 'f_hat(x) = (1/B) Σ f_b(x)', text: 'Average B decision trees' },
+      { name: 'AdaBoost Weight', code: 'alpha_t = 1/2 ln((1-ε_t)/ε_t)', text: 'Classifier weight by error' }
+    ],
+    examples: [
+      { title: 'Spam Classifier', steps: ['Train 100 trees on bootstrapped data','Each tree votes','Aggregate by majority','Accuracy: 95% vs 88% single tree'], result: 'Random Forest outperforms single Decision Tree' }
+    ],
+    applications: ['Kaggle competitions','Finance risk','Medical diagnosis','Recommendations'],
+    visualType: 'tree'
+  },
+  {
+    id: 'deep-learning',
+    name: 'Deep Learning',
+    icon: 'FaLayerGroup',
+    color: 'linear-gradient(135deg, #f59e0b, #fbbf24)',
+    category: 'Advanced',
+    description: 'Deep neural networks for images (CNNs) and sequences (RNNs/LSTMs).',
+    details: 'CNNs use convolutional filters to detect features in images. RNNs process sequences with memory. LSTMs add gates to handle long-term dependencies. Transformers use attention for state-of-the-art NLP.',
+    concepts: ['Convolution','Pooling','Filter/Kernels','Feature Maps','LSTM Gates','Self-Attention','Transformer','Backpropagation'],
+    formulas: [
+      { name: 'Convolution', code: '(f * g)(i,j) = Σ_m Σ_n f(m,n)g(i-m,j-n)', text: 'Sliding kernel over image' }
+    ],
+    examples: [
+      { title: 'Image Classification', steps: ['Input 28x28 grayscale','Conv + ReLU → feature maps','MaxPool + Dropout','Flatten → Dense → softmax'], result: 'MNIST digit recognition > 98%' }
+    ],
+    applications: ['Object detection','Speech recognition','Translation','Medical imaging','Self-driving cars'],
+    visualType: 'neural-network'
+  },
+  {
+    id: 'reinforcement-learning',
+    name: 'Reinforcement Learning',
+    icon: 'FaGamepad',
+    color: 'linear-gradient(135deg, #6366f1, #818cf8)',
+    category: 'Advanced',
+    description: 'Agents learn optimal policies by interacting with environments and receiving rewards.',
+    details: 'RL uses an agent taking actions to maximize cumulative reward. MDP formalizes states, actions, transitions, and rewards. Q-Learning learns state-action values. Policy gradients optimize the policy directly.',
+    concepts: ['Agent','Environment','State','Action','Reward','Policy','Q-Value','Value Function','Exploration vs Exploitation'],
+    formulas: [
+      { name: 'Q-Learning', code: 'Q(s,a) = r + γ max_a Q(s_next,a)', text: 'Recursively learn Q-values' },
+      { name: 'Bellman Equation', code: 'V(s) = max_a Σ p(s_next,r|s,a)[r + γV(s_next)]', text: 'Best action value at state' }
+    ],
+    examples: [
+      { title: 'Maze Solving', steps: ['States: grid cells','Actions: up/down/left/right','Reward: +10 goal, -1 wall, -0.01 step','Q-values converge to optimal path'], result: 'Agent learns shortest path' }
+    ],
+    applications: ['Game AI','Robotics','Trading','Resource scheduling'],
+    visualType: 'grid'
+  },
+  {
+    id: 'nlp-transformers',
+    name: 'NLP & Transformers',
+    icon: 'FaRobot',
+    color: 'linear-gradient(135deg, #ec4899, #f472b6)',
+    category: 'Advanced',
+    description: 'Natural language processing with attention mechanisms: BERT, GPT, and transformers.',
+    details: 'Transformers use self-attention instead of recurrence. Attention scores allow each token to attend to all others. BERT uses masked language modeling. GPT uses autoregressive generation. Powers ChatGPT, translation, and sentiment analysis.',
+    concepts: ['Token','Embedding','Self-Attention','Multi-Head Attention','Position Encoding','BERT','GPT','Fine-tuning','Context Window'],
+    formulas: [
+      { name: 'Attention', code: 'Attention(Q,K,V) = softmax(QK^T / √d_k) V', text: 'Scale, normalize, weight values' }
+    ],
+    examples: [
+      { title: 'Sentiment Analysis', steps: ['Input: "Amazing service!"','Tokenize and embed','BERT encodes context','Classifier head: 94% positive'], result: 'BERT classifies sentiment' }
+    ],
+    applications: ['Chatbots','Translation','Search engines','Content generation','Code assistants'],
+    visualType: 'network'
   }
 ];
 

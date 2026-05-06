@@ -314,5 +314,43 @@ print(corr_matrix)
 # Negative correlation means diversification benefit`
       }
     ]
+  },
+  {
+    id: 'bayesian-inference',
+    name: 'Bayesian Inference',
+    icon: 'FaBrain',
+    color: 'linear-gradient(135deg, #ec4899, #f472b6)',
+    category: 'Advanced',
+    description: 'Update beliefs with evidence using Bayes theorem, prior and posterior distributions.',
+    details: 'Bayesian inference treats parameters as random variables with uncertainty. We start with a prior belief, observe data, and compute a posterior distribution. Posterior = Likelihood × Prior. Used for parameter estimation, model selection, and probabilistic machine learning.',
+    concepts: ['Prior Distribution','Likelihood','Posterior Distribution','MAP Estimation','Bayes Factor','Conjugate Prior','Credible Interval'],
+    formulas: [
+      { name: 'Bayes Theorem', code: 'P(theta|D) = P(D|theta) * P(theta) / P(D)', text: 'Posterior = Likelihood × Prior / Evidence' },
+      { name: 'MAP Estimation', code: 'theta_MAP = argmax P(theta|D)', text: 'Mode of posterior' }
+    ],
+    examples: [
+      { title: 'Coin Bias Estimation', steps: ['Observe 7 heads in 10 flips','Prior: Beta(2,2)','Posterior: Beta(9,5)','Peak shifts from 0.5 to 0.64'], result: 'Posterior mean: 0.643' }
+    ],
+    applications: ['Medical diagnosis','Spam filtering','A/B testing','ML uncertainty'],
+    visualType: 'density'
+  },
+  {
+    id: 'anova-design',
+    name: 'ANOVA & Experiments',
+    icon: 'FaFlask',
+    color: 'linear-gradient(135deg, #6366f1, #818cf8)',
+    category: 'Advanced',
+    description: 'Compare multiple group means and design statistically valid experiments.',
+    details: 'ANOVA tests whether group means differ significantly. One-way ANOVA compares one factor. Two-way handles interactions between factors. Factorial designs, blocking, and randomization eliminate confounding variables and reduce variance.',
+    concepts: ['F-statistic','Between-group Variance','Within-group Variance','Factorial Design','Blocking','Post-hoc Tests'],
+    formulas: [
+      { name: 'F-statistic', code: 'F = MS_between / MS_within', text: 'Between over within mean square' },
+      { name: 'SS Groups', code: 'SS_B = Σ n_i(x̄_i - x̄)²', text: 'Between-groups variation' }
+    ],
+    examples: [
+      { title: 'Drug Efficacy', steps: ['Groups: Placebo, A, B','ANOVA: F=5.2, p<0.05','Significant difference found','Post-hoc: A differs from Placebo'], result: 'Drug A shows significant improvement' }
+    ],
+    applications: ['Clinical trials','Agriculture','Manufacturing','Psychology'],
+    visualType: 'boxplot'
   }
 ];

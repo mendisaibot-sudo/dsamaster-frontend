@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { statisticsTopics } from '../../data/statistics';
-import { statisticsQuizQuestions } from '../../data/statisticsQuiz';
+import { statisticsQuizQuestions } from '../../data/statisticsQuizQuestions';
 import { QuizSection } from '../Quiz/QuizSection';
 import { CodeBlock } from '../CodeBlock/CodeBlock';
 import { useProgress } from '../../contexts/ProgressContext';
