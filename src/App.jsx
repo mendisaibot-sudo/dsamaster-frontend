@@ -15,6 +15,12 @@ import BlogPost from './components/Blog/BlogPost';
 import Footer from './components/Footer';
 import ProblemSolver from './components/Problems/ProblemSolver';
 
+// Statistics & Machine Learning
+import StatisticsListing from './components/Statistics/StatisticsListing';
+import StatisticsDetail from './components/Statistics/StatisticsDetail';
+import MachineLearning from './components/MachineLearning/MachineLearning';
+import MachineLearningDetail from './components/MachineLearning/MachineLearningDetail';
+
 import LoginPage from './components/Auth/LoginPage';
 import VerificationPending from './components/Auth/VerificationPending';
 import EmailVerified from './components/Auth/EmailVerified';
@@ -69,6 +75,12 @@ function App() {
                 <Route path="/problem/:problemId" element={<ProblemSolver />} />
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/blog/:slug" element={<BlogPost />} />
+                
+                {/* Statistics & Machine Learning */}
+                <Route path="/statistics" element={<StatisticsListing />} />
+                <Route path="/statistics/:topicId" element={<StatisticsDetail />} />
+                <Route path="/ml" element={<MachineLearning />} />
+                <Route path="/ml/:topicId" element={<MachineLearningDetail />} />
                 
                 <Route path="/auth/login" element={<LoginPage />} />
                 <Route path="/auth/verify-pending" element={<VerificationPending />} />
