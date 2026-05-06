@@ -150,18 +150,12 @@ const BlogEditor = () => {
       const endpoint = isEdit ? `/blogs/${slug}` : '/blogs';
       const method = isEdit ? 'PUT' : 'POST';
       const res = await authFetch(endpoint, { method, body: JSON.stringify(payload) });
-      if (res.ok) {
+      const data = await res.json();
+      if (data.success) {
         show(isEdit ? 'Post updated successfully' : 'Post created successfully', 'success');
         setTimeout(() => navigate('/admin/blog'), 800);
       } else {
-        let errorMsg = 'Failed to save post';
-        try {
-          const errData = await res.json();
-          errorMsg = errData.error || errData.message || `Error ${res.status}: ${res.statusText}`;
-        } catch {
-          errorMsg = `Error ${res.status}: ${res.statusText}`;
-        }
-        show(errorMsg, 'error');
+        show(data.error || `Error ${res.status}: ${res.statusText}`, 'error');
       }
     } catch {
       show('Network error. Please try again.', 'error');
