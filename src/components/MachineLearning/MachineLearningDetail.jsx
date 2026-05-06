@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { mlTopics } from '../../data/machineLearning';
+import { mlConceptDetails } from '../../data/mlConceptDetails';
 import { CodeBlock } from '../CodeBlock/CodeBlock';
 import ConceptModal from '../ConceptModal/ConceptModal';
 import { useProgress } from '../../contexts/ProgressContext';
@@ -25,7 +26,9 @@ const MachineLearningDetail = () => {
   }, [topicId, addTopic]);
 
   const openConcept = (conceptName) => {
-    const details = topic?.conceptDetails?.[conceptName] || { name: conceptName, explanation: `Learn more about ${conceptName}.` };
+    const details = topic?.conceptDetails?.[conceptName] 
+      || mlConceptDetails?.[topicId]?.[conceptName] 
+      || { name: conceptName, explanation: `Learn more about ${conceptName} in the resources below.` };
     setSelectedConcept(details);
     setModalOpen(true);
   };

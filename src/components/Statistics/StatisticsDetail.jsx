@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { statisticsTopics } from '../../data/statistics';
+import { statisticsConceptDetails } from '../../data/statisticsConceptDetails';
 import { CodeBlock } from '../CodeBlock/CodeBlock';
 import ConceptModal from '../ConceptModal/ConceptModal';
 import { useProgress } from '../../contexts/ProgressContext';
@@ -25,7 +26,9 @@ const StatisticsDetail = () => {
   }, [topicId, addTopic]);
 
   const openConcept = (conceptName) => {
-    const details = topic?.conceptDetails?.[conceptName] || { name: conceptName, explanation: `Learn more about ${conceptName}.` };
+    const details = topic?.conceptDetails?.[conceptName] 
+      || statisticsConceptDetails?.[topicId]?.[conceptName] 
+      || { name: conceptName, explanation: `Learn more about ${conceptName} in the resources below.` };
     setSelectedConcept(details);
     setModalOpen(true);
   };
