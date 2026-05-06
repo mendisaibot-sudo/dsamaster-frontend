@@ -1,122 +1,83 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { FaCheckCircle, FaTimesCircle, FaHome, FaSignInAlt } from 'react-icons/fa';
 import './Auth.css';
 
 export default function VerifyEmail() {
-  const [status, setStatus] = useState('verifying');
-  const [message, setMessage] = useState('');
+  const [status, setStatus] = useState({ type: 'verifying', message: '' });
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_URL || 'https://dsamaster.de';
   const { setUser } = useAuth();
+  const hasRun = useRef(false);
 
   useEffect(() => {
+    if (hasRun.current) return;
+    hasRun.current = true;
+
     const token = searchParams.get('token');
     if (!token) {
-      setStatus('error');
-      setMessage('Invalid verification link. No token found.');
+      setStatus({ type: 'error', message: 'Invalid verification link. No token found.' });
       return;
     }
 
     fetch(`${API_URL}/api/auth/verify-email?token=${token}`)
-      .then(res => res.json())
-      .then(data => {
+      .then(async (res) => {
+        const data = await res.json();
         if (data.success) {
-          setStatus('success');
-          setMessage(data.message || 'Email verified successfully!');
-          
-          // Store tokens and login user automatically
+          setStatus({ type: 'success', message: data.message || 'Email verified successfully!' });
           if (data.token && data.user) {
-            setUser(data.user);
             localStorage.setItem('access_token', data.token);
             localStorage.setItem('refresh_token', data.refresh_token);
+            setUser(data.user);
           }
-          
-          // Auto-redirect to homepage after 2 seconds
-          setTimeout(() => {
-            window.location.href = '/';
-          }, 2000);
+          setTimeout(() => navigate('/', { replace: true }), 2500);
         } else {
-          setStatus('error');
-          setMessage(data.message || data.detail || 'Verification failed');
+          setStatus({ type: 'error', message: data.message || data.detail || 'Verification failed' });
         }
       })
-      .catch(err => {
-        setStatus('error');
-        setMessage('Network error. Please try again.');
+      .catch(() => {
+        setStatus({ type: 'error', message: 'Network error. Please try again.' });
       });
-  }, [searchParams, navigate, API_URL]);
+  }, [searchParams, navigate, API_URL, setUser]);
 
   return (
-    <div className="auth-page section">
-      <div className="auth-container animate-fade-in">
-        <div className="auth-card card">
-          <div className="auth-header">
-            <h1 className="section-title" style={{ fontSize: '1.75rem' }}>
-              Email Verification
-            </h1>
-          </div>
+    <div className="auth-page section" style={{ minHeight: '70vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div className="auth-container animate-fade-in" style={{ maxWidth: 480, width: '100%' }}>
+        <div className="auth-card card" style={{ textAlign: 'center', padding: '3rem 2rem' }}>
 
-          {status === 'verifying' && (
-            <div className="auth-loading" style={{ textAlign: 'center', padding: '2rem' }}>
-              <div className="spinner" />
-              <p style={{ marginTop: '1rem', color: 'var(--text-secondary)' }}>
-                Verifying your email...
-              </p>
-            </div>
+          {status.type === 'verifying' && (
+            <>
+              <div className="spinner" style={{ width: 56, height: 56, borderWidth: 4, margin: '0 auto 1.5rem' }} />
+              <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem', color: 'var(--text-primary)' }}>Verifying your email...</h2>
+              <p style={{ color: 'var(--text-secondary)' }}>Hang tight while we confirm your account.</p>
+            </>
           )}
 
-          {status === 'success' && (
-            <div className="auth-success" style={{ textAlign: 'center', padding: '2rem' }}>
-              <div className="success-icon" style={{ 
-                fontSize: '3rem', 
-                color: '#22c55e',
-                marginBottom: '1rem'
-              }}>
-                ✓
-              </div>
-              <h3 style={{ color: '#22c55e', marginBottom: '0.5rem' }}>
-                Success!
-              </h3>
-              <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-                {message}
+          {status.type === 'success' && (
+            <>
+              <FaCheckCircle size={64} style={{ color: '#22c55e', marginBottom: '1.5rem' }} />
+              <h2 style={{ fontSize: '1.75rem', marginBottom: '0.5rem', color: '#22c55e' }}>You're all set!</h2>
+              <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', lineHeight: 1.6 }}>
+                {status.message}<br />
+                <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Redirecting to homepage...</span>
               </p>
-              <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-                Redirecting to homepage in a few seconds...
-              </p>
-              <button 
-                onClick={() => navigate('/')}
-                className="btn btn-primary"
-                style={{ marginTop: '1rem' }}
-              >
-                Go to Homepage
+              <button onClick={() => navigate('/')} className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                <FaHome /> Go to Homepage
               </button>
-            </div>
+            </>
           )}
 
-          {status === 'error' && (
-            <div className="auth-error" style={{ textAlign: 'center', padding: '2rem' }}>
-              <div className="error-icon" style={{ 
-                fontSize: '3rem', 
-                color: '#ef4444',
-                marginBottom: '1rem'
-              }}>
-                ✕
-              </div>
-              <h3 style={{ color: '#ef4444', marginBottom: '0.5rem' }}>
-                Verification Failed
-              </h3>
-              <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-                {message}
-              </p>
-              <button 
-                onClick={() => navigate('/auth/login')}
-                className="btn btn-primary"
-              >
-                Go to Login
+          {status.type === 'error' && (
+            <>
+              <FaTimesCircle size={64} style={{ color: '#ef4444', marginBottom: '1.5rem' }} />
+              <h2 style={{ fontSize: '1.75rem', marginBottom: '0.5rem', color: '#ef4444' }}>Verification Failed</h2>
+              <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', lineHeight: 1.6 }}>{status.message}</p>
+              <button onClick={() => navigate('/auth/login')} className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                <FaSignInAlt /> Go to Login
               </button>
-            </div>
+            </>
           )}
         </div>
       </div>
