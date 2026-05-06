@@ -17,7 +17,10 @@ export const statisticsTopics = [
       { title: 'Dataset: [12,15,18,20,23,25,28]', steps: ['n=7','Sum=141','Mean=141/7=20.14','Median=20','Variance=24.81'], result: 'Mean=20.14, Median=20, Std Dev=4.98' }
     ],
     applications: ['Data preprocessing','Business analytics','Quality control','Education'],
-    visualType: 'histogram'
+    visualType: 'histogram',
+    codeExamples: [
+      { language: 'python', title: 'Calculate Summary Statistics', code: `import numpy as np\n\ndata = [12, 15, 18, 20, 23, 25, 28]\n\nprint(f"Mean: {np.mean(data):.2f}")\nprint(f"Median: {np.median(data):.2f}")\nprint(f"Std Dev: {np.std(data, ddof=1):.2f}")\nprint(f"Variance: {np.var(data, ddof=1):.2f}")\n\n# Output:\n# Mean: 20.14\n# Median: 20.00\n# Std Dev: 4.98\n# Variance: 24.81` }
+    ]
   },
   {
     id: 'probability-theory',
