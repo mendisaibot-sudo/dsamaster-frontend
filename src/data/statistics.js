@@ -74,6 +74,26 @@ print(f"Variance: {np.var(data, ddof=1):.2f}")` }
           { q: "If variance = 25, standard deviation = ?", options: ["5", "25", "12.5", "625"], correct: 0, explanation: "sqrt(25) = 5. SD is the square root of variance." },
           { q: "Standard deviation is in what units?", options: ["Squared units", "Original units", "Log units", "Z units"], correct: 1, explanation: "Square root returns the original measurement units." }
         ]
+      },
+      'Percentiles': {
+        explanation: 'A percentile is a value below which a given percentage of observations fall. For example, the 90th percentile means 90% of data points are below this value.',
+        formula: 'P = (k/100) * (n+1)',
+        visualType: 'bar-chart',
+        visualData: { bars: [{label:'Min',value:10},{label:'25th',value:25},{label:'50th',value:50},{label:'75th',value:75},{label:'90th',value:90},{label:'Max',value:100}] },
+        quizQuestions: [
+          { q: '75th percentile represents:', options: ['75% below this value','25% below','Median','None'], correct: 0, explanation: 'The 75th percentile means 75% of values are below it.' },
+          { q: 'Percentiles divide data into:', options: ['100 equal parts','10 parts','4 parts','2 parts'], correct: 0, explanation: 'Percentiles divide data into 100 equal groups.' }
+        ]
+      },
+      'Quartiles': {
+        explanation: 'Quartiles divide data into 4 equal parts: Q1 (25th percentile), Q2 (median/50th), Q3 (75th percentile).',
+        formula: 'IQR = Q3 - Q1',
+        visualType: 'bar-chart',
+        visualData: { bars: [{label:'Q1',value:25},{label:'Q2/Median',value:50},{label:'Q3',value:75},{label:'IQR',value:50}] },
+        quizQuestions: [
+          { q: '2nd quartile equals:', options: ['Mean','Median','Mode','Range'], correct: 1, explanation: 'Q2 is the median, the 50th percentile.' },
+          { q: 'IQR = Q3 - Q1 measures:', options: ['Mean','Spread','Skewness','Mode'], correct: 1, explanation: 'IQR measures the spread of the middle 50% of data.' }
+        ]
       }
     }
   },
@@ -118,6 +138,8 @@ print(f"P(Disease | Positive) = {P_disease_given_positive:.3f}")` }
       },
       'Events': {
         explanation: 'A subset of the sample space. Mutually exclusive events cannot occur together.',
+                visualType: 'bar-chart',
+        visualData: {'bars': [{'label': 'Event A', 'value': 30}, {'label': 'Event B', 'value': 25}, {'label': 'A\u2229B', 'value': 10}]},
         quizQuestions: [
           { q: 'Mutually exclusive means P(A∩B) =', options: ['1','0.5','0','P(A)+P(B)'], correct: 2, explanation: 'No overlap → intersection has probability 0' },
           { q: 'Rolling even on a die:', options: ['{2,4,6}','{1,3,5}','{1,2,3}','{4,5,6}'], correct: 0, explanation: 'Even numbers = {2,4,6}' }
@@ -136,6 +158,8 @@ print(f"P(Disease | Positive) = {P_disease_given_positive:.3f}")` }
       'Bayes Theorem': {
         explanation: 'Updates belief about a hypothesis H given evidence E. Reverses the conditioning.',
         formula: 'P(H|E) = P(E|H)·P(H) / P(E)',
+                visualType: 'bar-chart',
+        visualData: {'bars': [{'label': 'Prior', 'value': 10}, {'label': 'Likelihood', 'value': 95}, {'label': 'Posterior', 'value': 16}]},
         quizQuestions: [
           { q: 'Bayes computes:', options: ['P(E|H) from P(H|E)','P(H|E) from P(E|H)','P(H)+P(E)','P(H∩E)'], correct: 1, explanation: 'Reverses the conditional probability' },
           { q: 'P(H) before seeing evidence is called:', options: ['Posterior','Prior','Likelihood','Evidence'], correct: 1, explanation: 'Prior = before evidence, posterior = after' }
@@ -144,6 +168,8 @@ print(f"P(Disease | Positive) = {P_disease_given_positive:.3f}")` }
       'Independence': {
         explanation: 'A and B are independent if knowing one gives no information about the other.',
         formula: 'P(A∩B) = P(A)·P(B)',
+                visualType: 'bar-chart',
+        visualData: {'bars': [{'label': 'P(A)', 'value': 50}, {'label': 'P(B)', 'value': 50}, {'label': 'P(A\u2229B)', 'value': 25}]},
         quizQuestions: [
           { q: 'P(A)=0.6, P(B)=0.5, independent → P(A∩B)=', options: ['1.1','0.3','0.11','0.8'], correct: 1, explanation: '0.6 × 0.5 = 0.3' },
           { q: 'Drawing with replacement makes draws:', options: ['Independent','Dependent','Identical','Complementary'], correct: 0, explanation: 'Replacement restores original state' }
@@ -181,6 +207,8 @@ print(f"P(5 emails) = {stats.poisson.pmf(5, mu=3):.4f}")` }
     conceptDetails: {
       'Discrete': {
         explanation: 'Distributions for countable outcomes: Binomial (success counts), Poisson (rare events), Geometric (trials until success).',
+                visualType: 'bar-chart',
+        visualData: {'bars': [{'label': '0', 'value': 10}, {'label': '1', 'value': 30}, {'label': '2', 'value': 30}, {'label': '3', 'value': 20}, {'label': '4', 'value': 10}]},
         quizQuestions: [
           { q: 'Binomial models:', options: ['Heights','Success counts','Time','Scores'], correct: 1, explanation: 'Fixed trials, count successes' },
           { q: 'Poisson is for:', options: ['Rare events','Normal data','Binary','Uniform'], correct: 0, explanation: 'Counts in fixed intervals' }
@@ -188,6 +216,8 @@ print(f"P(5 emails) = {stats.poisson.pmf(5, mu=3):.4f}")` }
       },
       'Continuous': {
         explanation: 'Variables that can take any value in a range. Probability at an exact point is always zero; probabilities are computed over intervals.',
+                visualType: 'distribution',
+        visualData: {'mean': 50, 'std': 15, 'shadedArea': [35, 65]},
         quizQuestions: [
           { q: 'For continuous, P(X=exact)=', options: ['1','0.5','0','Depends'], correct: 2, explanation: 'Probabilities are computed over intervals' },
           { q: 'Most common continuous distribution?', options: ['Uniform','Normal','Binomial','Poisson'], correct: 1, explanation: 'Normal/Gaussian is ubiquitous' }
@@ -215,6 +245,8 @@ print(f"P(5 emails) = {stats.poisson.pmf(5, mu=3):.4f}")` }
       },
       'PDF vs CDF': {
         explanation: 'PDF gives density at a point (not probability). CDF gives P(X≤x), accumulated probability from -∞ to x.',
+                visualType: 'bar-chart',
+        visualData: {'bars': [{'label': 'PDF at 0', 'value': 4}, {'label': 'PDF at 1', 'value': 24}, {'label': 'CDF at 0', 'value': 50}, {'label': 'CDF at 1', 'value': 84}]},
         quizQuestions: [
           { q: 'CDF at x gives:', options: ['Density','P(X=x)','P(X≤x)','P(X>x)'], correct: 2, explanation: 'CDF = cumulative probability' },
           { q: 'PDF height represents:', options: ['Probability','Density','Area','Volume'], correct: 1, explanation: 'PDF must integrate to 1; height is density' }
@@ -253,6 +285,8 @@ print(f"Pop mean: {np.mean(population):.2f}, Means mean: {np.mean(sample_means):
     conceptDetails: {
       'Random': {
         explanation: 'Every member of population has equal chance of being selected. Eliminates selection bias.',
+                visualType: 'bar-chart',
+        visualData: {'bars': [{'label': 'Simple', 'value': 30}, {'label': 'Systematic', 'value': 25}, {'label': 'Stratified', 'value': 25}, {'label': 'Cluster', 'value': 20}]},
         quizQuestions: [
           { q: 'Simple random sampling ensures:', options: ['Equal chance','Subgroup balance','Order preservation','Clustering'], correct: 0, explanation: 'Every member has equal probability' },
           { q: 'Without replacement means:', options: ['Same can be picked twice','Cannot pick same twice','Ordered selection','Stratified'], correct: 1, explanation: 'Once picked, removed from pool' }
@@ -260,6 +294,8 @@ print(f"Pop mean: {np.mean(population):.2f}, Means mean: {np.mean(sample_means):
       },
       'Stratified': {
         explanation: 'Population divided into subgroups (strata), samples taken from each stratum proportionally.',
+                visualType: 'bar-chart',
+        visualData: {'bars': [{'label': 'Stratum A', 'value': 20}, {'label': 'Stratum B', 'value': 30}, {'label': 'Stratum C', 'value': 25}, {'label': 'Stratum D', 'value': 25}]},
         quizQuestions: [
           { q: 'Stratified sampling preserves:', options: ['Randomness','Subgroup proportions','Cluster sizes','Bias'], correct: 1, explanation: 'Ensures representation across strata' },
           { q: 'Strata should be:', options: ['Identical','Mutually exclusive','Overlapping','Random'], correct: 1, explanation: 'Each member belongs to exactly one stratum' }
@@ -267,6 +303,8 @@ print(f"Pop mean: {np.mean(population):.2f}, Means mean: {np.mean(sample_means):
       },
       'Bootstrap': {
         explanation: 'Resample with replacement from observed data to estimate sampling distributions. Powerful non-parametric method.',
+                visualType: 'bar-chart',
+        visualData: {'bars': [{'label': 'Original Mean', 'value': 50}, {'label': 'Bootstrap 1', 'value': 48}, {'label': 'Bootstrap 2', 'value': 52}, {'label': 'Bootstrap 3', 'value': 49}]},
         quizQuestions: [
           { q: 'Bootstrap samples are drawn:', options: ['Without replacement','With replacement','Only once','From population'], correct: 1, explanation: 'With replacement creates sampling distribution' },
           { q: 'Bootstrap is especially useful when:', options: ['n is very large','Distribution is unknown','σ is known','Data is perfectly normal'], correct: 1, explanation: 'It does not assume any distribution shape' }
@@ -284,6 +322,8 @@ print(f"Pop mean: {np.mean(population):.2f}, Means mean: {np.mean(sample_means):
       },
       'Bias': {
         explanation: 'Systematic error that causes estimates to consistently deviate from true values. Types: selection, measurement, confirmation.',
+                visualType: 'bar-chart',
+        visualData: {'bars': [{'label': 'Selection', 'value': 40}, {'label': 'Information', 'value': 30}, {'label': 'Confounding', 'value': 30}]},
         quizQuestions: [
           { q: 'Bias leads to estimates that are:', options: ['Accurate but imprecise','Consistently wrong','Variable','Unbiased'], correct: 1, explanation: 'Bias = systematic deviation from truth' },
           { q: 'Convenience sampling causes:', options: ['Random error','Selection bias','Reduced variance','Higher precision'], correct: 1, explanation: 'Easy-to-reach samples rarely represent population' }
@@ -324,6 +364,8 @@ print(f"95% CI: [{ci[0]:.2f}, {ci[1]:.2f}]")` }
       'Margin of Error': {
         explanation: 'Half-width of confidence interval. ME = Z*(σ/√n). Larger ME → wider interval → more confidence but less precision.',
         formula: 'ME = Z*(σ/√n)',
+                visualType: 'distribution',
+        visualData: {'mean': 50, 'std': 5, 'shadedArea': [45, 55]},
         quizQuestions: [
           { q: 'To decrease margin of error:', options: ['Decrease n','Increase n','Increase α','Keep same n'], correct: 1, explanation: 'ME ∝ 1/√n → larger n = smaller ME' },
           { q: 'ME increases with confidence level because:', options: ['Z decreases','Z increases','σ shrinks','n shrinks'], correct: 1, explanation: 'Higher confidence needs larger Z multiplier' }
@@ -340,6 +382,8 @@ print(f"95% CI: [{ci[0]:.2f}, {ci[1]:.2f}]")` }
       },
       'Confidence Level': {
         explanation: 'Probability that the CI contains the true parameter. 95% confidence → if repeated 100 times, ~95 intervals will contain μ.',
+                visualType: 'distribution',
+        visualData: {'mean': 0, 'std': 1, 'shadedArea': [-1.96, 1.96]},
         quizQuestions: [
           { q: 'Higher confidence level gives:', options: ['Narrower interval','Wider interval','Same width','Smaller Z'], correct: 1, explanation: 'More confidence = more room = wider interval' },
           { q: 'A 95% CI means:', options: ['95% chance μ is in this interval','95% of repeated intervals contain μ','μ is 95% likely','95% of data is inside'], correct: 1, explanation: 'Frequentist interpretation: 95% of intervals capture μ' }
@@ -348,6 +392,8 @@ print(f"95% CI: [{ci[0]:.2f}, {ci[1]:.2f}]")` }
       'Z-Score': {
         explanation: 'Measures how many standard deviations a value is from the mean. Standardizes values to compare across distributions.',
         formula: 'Z = (X - μ) / σ',
+                visualType: 'distribution',
+        visualData: {'mean': 0, 'std': 1, 'shadedArea': [-2, 2]},
         quizQuestions: [
           { q: 'Z-score of mean is:', options: ['1','0','-1','Depends on σ'], correct: 1, explanation: '(μ - μ)/σ = 0' },
           { q: 'IQ=115 (μ=100,σ=15). Z=', options: ['0.5','1.0','1.5','2.0'], correct: 1, explanation: '(115-100)/15 = 15/15 = 1' }
@@ -389,6 +435,8 @@ else:
     conceptDetails: {
       'Null Hypothesis': {
         explanation: 'H₀ states no effect, no difference, or no relationship. Assumed true until evidence contradicts it.',
+                visualType: 'bar-chart',
+        visualData: {'bars': [{'label': 'H\u2080 true', 'value': 95}, {'label': 'H\u2080 false', 'value': 5}]},
         quizQuestions: [
           { q: 'The null hypothesis typically claims:', options: ['There is an effect','No effect exists','Effect is large','Effect is small'], correct: 1, explanation: 'H₀ always represents no effect/difference' },
           { q: 'We assume H₀ is true to:', options: ['Prove it','Calculate p-value under it','Reject the alternative','Simplify math'], correct: 1, explanation: 'We compute test statistic assuming H₀ is true' }
@@ -396,6 +444,8 @@ else:
       },
       'Alternative Hypothesis': {
         explanation: 'H₁ states the effect or difference we seek evidence for. Can be one-sided (directional) or two-sided.',
+                visualType: 'bar-chart',
+        visualData: {'bars': [{'label': 'One-tailed', 'value': 40}, {'label': 'Two-tailed', 'value': 60}]},
         quizQuestions: [
           { q: 'H₁: μ > 100 is:', options: ['Two-sided','One-sided','Null','Always true'], correct: 1, explanation: 'Directional (> or <) = one-sided' },
           { q: 'Two-sided test detects:', options: ['Only increase','Only decrease','Any difference','No difference'], correct: 2, explanation: '≠ detects deviations in either direction' }
@@ -404,6 +454,8 @@ else:
       'p-Value': {
         explanation: 'Probability of observing data as extreme as, or more extreme than, what was observed, assuming H₀ is true. Smaller p = stronger evidence against H₀.',
         formula: 'p = P(data | H₀ true)',
+                visualType: 'distribution',
+        visualData: {'mean': 0, 'std': 1, 'shadedArea': [1.96, 3]},
         quizQuestions: [
           { q: 'p-value of 0.03 means:', options: ['3% probability H₀ is true','3% chance of data if H₀ is true','97% power','Effect size is 0.03'], correct: 1, explanation: 'p = P(data|H₀), not P(H₀|data)' },
           { q: 'At α=0.05, p=0.02 means:', options: ['Fail to reject H₀','Reject H₀','Accept H₀','No conclusion'], correct: 1, explanation: 'p < α → reject null hypothesis' }
@@ -411,6 +463,8 @@ else:
       },
       'Type I Error': {
         explanation: 'Rejecting H₀ when it is actually true (false positive). Probability controlled by significance level α. α = 0.05 means 5% risk of false positive.',
+                visualType: 'bar-chart',
+        visualData: {'bars': [{'label': 'Reject H\u2080', 'value': 5}, {'label': 'Fail Reject', 'value': 95}]},
         quizQuestions: [
           { q: 'Type I error is also called:', options: ['False negative','False positive','True positive','True negative'], correct: 1, explanation: 'Rejecting true H₀ = false positive' },
           { q: 'P(Type I error) =', options: ['β','1-β','α','1-α'], correct: 2, explanation: 'α is the significance level = P(reject H₀ | H₀ true)' }
@@ -418,6 +472,8 @@ else:
       },
       'Type II Error': {
         explanation: 'Failing to reject H₀ when it is false (false negative). Probability = β. Power = 1-β = probability of correctly rejecting false H₀.',
+                visualType: 'bar-chart',
+        visualData: {'bars': [{'label': 'false Negative', 'value': 10}, {'label': 'true Positive', 'value': 90}]},
         quizQuestions: [
           { q: 'Type II error is also called:', options: ['False positive','False negative','True positive','True negative'], correct: 1, explanation: 'Failing to reject false H₀ = false negative' },
           { q: 'Power of a test equals:', options: ['α','β','1-β','1-α'], correct: 2, explanation: 'Power = probability of detecting an effect = 1-β' }
@@ -469,6 +525,8 @@ print(f"R-squared = {r_value**2:.3f}")` }
       'Regression Line': {
         explanation: 'Best-fit line minimizing sum of squared residuals. Used to predict y from x.',
         formula: 'ŷ = b₀ + b₁x',
+                visualType: 'scatter',
+        visualData: {'points': [{'x': 1, 'y': 2}, {'x': 2, 'y': 4}, {'x': 3, 'y': 6}, {'x': 4, 'y': 5}, {'x': 5, 'y': 8}], 'trendLine': true},
         quizQuestions: [
           { q: 'Slope b₁ represents:', options: ['Y-intercept','Change in y per x','Correlation','Error'], correct: 1, explanation: 'Slope = rise/run = change in y per unit x' },
           { q: 'OLS minimizes:', options: ['Sum of x','Sum of squared residuals','Sum of y','Product of errors'], correct: 1, explanation: 'Ordinary Least Squares minimizes Σ(residual)²' }
@@ -477,6 +535,8 @@ print(f"R-squared = {r_value**2:.3f}")` }
       'Residuals': {
         explanation: 'Difference between observed y and predicted ŷ. Small, random residuals = good fit. Patterns in residuals = model problems.',
         formula: 'e = y - ŷ',
+                visualType: 'scatter',
+        visualData: {'points': [{'x': 1, 'y': 2, 'label': 'r=0.3'}, {'x': 2, 'y': 4, 'label': 'r=-0.2'}, {'x': 3, 'y': 6, 'label': 'r=0.1'}], 'trendLine': true},
         quizQuestions: [
           { q: 'Residual = observed - predicted means:', options: ['Positive = under-predicted','Positive = over-predicted','Always zero','Always positive'], correct: 0, explanation: 'If predicted < observed, residual is positive' },
           { q: 'Patterns in residual plot suggest:', options: ['Good fit','Nonlinearity/missing terms','Perfect model','Outliers only'], correct: 1, explanation: 'Random scatter = good; patterns = problems' }
@@ -485,6 +545,8 @@ print(f"R-squared = {r_value**2:.3f}")` }
       'R²': {
         explanation: 'Coefficient of determination. Fraction of variance in y explained by x. R² = 0.85 means 85% of variance is explained.',
         formula: 'R² = SSR / SST = 1 - (SSE/SST)',
+                visualType: 'bar-chart',
+        visualData: {'bars': [{'label': 'Explained', 'value': 75}, {'label': 'Unexplained', 'value': 25}]},
         quizQuestions: [
           { q: 'R² = 0 means:', options: ['Perfect fit','No explanatory power','All variance explained','Negative correlation'], correct: 1, explanation: 'Model explains 0% of variance' },
           { q: 'R² = 0.81 means correlation |r| ≈', options: ['0.81','0.9','0.65','0.95'], correct: 1, explanation: 'R² = r², so |r| = √0.81 = 0.9' }
@@ -492,6 +554,8 @@ print(f"R-squared = {r_value**2:.3f}")` }
       },
       'Outliers': {
         explanation: 'Points far from the overall pattern. Can strongly influence correlation and regression. Always investigate before removing.',
+                visualType: 'scatter',
+        visualData: {'points': [{'x': 1, 'y': 2}, {'x': 2, 'y': 3}, {'x': 3, 'y': 4}, {'x': 4, 'y': 5}, {'x': 10, 'y': 20}], 'trendLine': true},
         quizQuestions: [
           { q: 'Outliers in regression:', options: ['Always removed','May strongly influence slope','Never affect results','Only affect R²'], correct: 1, explanation: 'Outliers can disproportionately shift the line' },
           { q: 'Leverage points have:', options: ['High residual','Extreme x values','Small influence','No effect'], correct: 1, explanation: 'High leverage = extreme x → can dominate fit' }
@@ -549,6 +613,8 @@ print(corr_matrix)` }
       },
       'Positive/Negative Correlation': {
         explanation: 'Positive: as one variable increases, the other tends to increase. Negative: as one increases, the other tends to decrease. Zero: no linear relationship.',
+                visualType: 'scatter',
+        visualData: {'points': [{'x': 1, 'y': 1}, {'x': 2, 'y': 2}, {'x': 3, 'y': 3}, {'x': 4, 'y': 4}, {'x': 5, 'y': 5}], 'trendLine': true},
         quizQuestions: [
           { q: 'Ice cream sales and temperature typically show:', options: ['Positive','Negative','Zero','Nonlinear'], correct: 0, explanation: 'Warmer weather → more ice cream sales' },
           { q: 'Car age and resale value typically show:', options: ['Positive','Negative','Zero','Nonlinear'], correct: 1, explanation: 'Older cars tend to sell for less' }
@@ -556,6 +622,8 @@ print(corr_matrix)` }
       },
       'Variance-Covariance': {
         explanation: 'A matrix where diagonals are variances of individual variables and off-diagonals are covariances between pairs. Symmetric and positive semi-definite.',
+                visualType: 'bar-chart',
+        visualData: {'bars': [{'label': 'Var(X)', 'value': 12}, {'label': 'Var(Y)', 'value': 12}, {'label': 'Cov(X,Y)', 'value': 5}]},
         quizQuestions: [
           { q: 'In a variance-covariance matrix, diagonals are:', options: ['Covariances','Variances','Correlations','Means'], correct: 1, explanation: 'Diagonal = Var(Xᵢ), off-diagonal = Cov(Xᵢ,Xⱼ)' },
           { q: 'A covariance matrix is always:', options: ['Asymmetric','Symmetric','Negative definite','None'], correct: 1, explanation: 'Cov(X,Y) = Cov(Y,X), hence symmetric' }
@@ -563,6 +631,8 @@ print(corr_matrix)` }
       },
       'Eigenvalues': {
         explanation: 'Eigenvalues of a covariance matrix indicate the amount of variance captured by each principal component. Larger eigenvalues = more variance explained.',
+                visualType: 'bar-chart',
+        visualData: {'bars': [{'label': '\u03bb\u2081', 'value': 18.5}, {'label': '\u03bb\u2082', 'value': 5.2}, {'label': '\u03bb\u2083', 'value': 1.3}]},
         quizQuestions: [
           { q: 'The largest eigenvalue corresponds to:', options: ['Least variance','Most variance','Zero variance','Mean'], correct: 1, explanation: 'PCA: first principal component = largest eigenvalue direction' },
           { q: 'Sum of eigenvalues equals:', options: ['Mean','Total variance','Standard deviation','Zero'], correct: 1, explanation: 'Trace of covariance matrix = total variance' }
@@ -604,6 +674,8 @@ print(f"95% Credible Interval: [{cri[0]:.3f}, {cri[1]:.3f}]")` }
     conceptDetails: {
       'Prior': {
         explanation: 'Belief about a parameter before seeing data. Can be informative (strong belief) or uninformative (vague).',
+                visualType: 'bar-chart',
+        visualData: {'bars': [{'label': 'P(H\u2081)', 'value': 20}, {'label': 'P(H\u2082)', 'value': 50}, {'label': 'P(H\u2083)', 'value': 30}]},
         quizQuestions: [
           { q: 'Prior represents:', options: ['Data likelihood','Initial belief','Posterior','Evidence'], correct: 1, explanation: 'Prior = before seeing data' },
           { q: 'Uninformative prior:', options: ['Strong belief','Vague/no preference','Based on data','Always wrong'], correct: 1, explanation: 'Lets data dominate the posterior' }
@@ -611,6 +683,8 @@ print(f"95% Credible Interval: [{cri[0]:.3f}, {cri[1]:.3f}]")` }
       },
       'Likelihood': {
         explanation: 'P(data | parameter). Measures how likely the observed data is for different parameter values.',
+                visualType: 'distribution',
+        visualData: {'mean': 100, 'std': 20, 'shadedArea': [80, 120]},
         quizQuestions: [
           { q: 'Likelihood is P(___|___):', options: ['parameter, data','data, parameter','prior, data','posterior, prior'], correct: 1, explanation: 'Likelihood = P(data|parameter)' },
           { q: 'Maximum Likelihood Estimation finds:', options: ['Prior','Parameter maximizing likelihood','Posterior mean','Bayes factor'], correct: 1, explanation: 'MLE finds parameter value most consistent with data' }
@@ -619,6 +693,8 @@ print(f"95% Credible Interval: [{cri[0]:.3f}, {cri[1]:.3f}]")` }
       'Posterior': {
         explanation: 'Updated belief about parameter after seeing data. Posterior ∝ Likelihood × Prior.',
         formula: 'Posterior ∝ Likelihood × Prior',
+                visualType: 'distribution',
+        visualData: {'mean': 110, 'std': 15, 'shadedArea': [95, 125]},
         quizQuestions: [
           { q: 'With more data, posterior becomes:', options: ['More like prior','More like likelihood','Unchanged','Less certain'], correct: 1, explanation: 'Data overwhelms prior with enough observations' },
           { q: 'Posterior combines:', options: ['Prior only','Likelihood only','Prior and likelihood','Data only'], correct: 2, explanation: 'Posterior = prior updated with data via likelihood' }
@@ -626,6 +702,8 @@ print(f"95% Credible Interval: [{cri[0]:.3f}, {cri[1]:.3f}]")` }
       },
       'MAP Estimation': {
         explanation: 'Maximum A Posteriori estimation finds the parameter value that maximizes the posterior distribution. It is the Bayesian counterpart to MLE but includes the prior.',
+                visualType: 'bar-chart',
+        visualData: {'bars': [{'label': 'MLE', 'value': 100}, {'label': 'MAP', 'value': 105}, {'label': 'Prior', 'value': 90}]},
         quizQuestions: [
           { q: 'MAP differs from MLE by including:', options: ['Likelihood only','Prior','Evidence','Data'], correct: 1, explanation: 'MAP = argmax P(data|θ)·P(θ); MLE = argmax P(data|θ)' },
           { q: 'With a uniform prior, MAP equals:', options: ['Posterior mean','MLE','Bayes factor','Evidence'], correct: 1, explanation: 'Uniform prior makes MAP equivalent to MLE' }
@@ -633,6 +711,8 @@ print(f"95% Credible Interval: [{cri[0]:.3f}, {cri[1]:.3f}]")` }
       },
       'Bayes Factor': {
         explanation: 'The ratio of marginal likelihoods for two competing models. BF > 1 favors the numerator model. Used for model comparison.',
+                visualType: 'bar-chart',
+        visualData: {'bars': [{'label': 'BF=0.5', 'value': 10}, {'label': 'BF=2', 'value': 20}, {'label': 'BF=10', 'value': 50}, {'label': 'BF=100', 'value': 80}]},
         quizQuestions: [
           { q: 'Bayes Factor K = 10 means:', options: ['Strong evidence for H0','Strong evidence for H1','Equal evidence','No evidence'], correct: 1, explanation: 'Jeffreys scale: K>10 = strong evidence for numerator model' },
           { q: 'Bayes Factor compares:', options: ['Priors','Likelihoods of models','Posterior means','Predictions'], correct: 1, explanation: 'Ratio of marginal likelihoods P(D|M1)/P(D|M0)' }
@@ -640,6 +720,8 @@ print(f"95% Credible Interval: [{cri[0]:.3f}, {cri[1]:.3f}]")` }
       },
       'Conjugate Prior': {
         explanation: 'A prior that yields a posterior in the same distribution family. E.g., Beta prior + Binomial likelihood → Beta posterior. Makes computation tractable.',
+                visualType: 'bar-chart',
+        visualData: {'bars': [{'label': 'Beta Prior', 'value': 30}, {'label': 'Likelihood', 'value': 40}, {'label': 'Beta Posterior', 'value': 35}]},
         quizQuestions: [
           { q: 'Beta is conjugate to:', options: ['Normal','Binomial','Poisson','Uniform'], correct: 1, explanation: 'Beta prior + Binomial likelihood = Beta posterior' },
           { q: 'Conjugate priors simplify:', options: ['Data collection','Posterior computation','Visualization','Sampling'], correct: 1, explanation: 'Closed-form posteriors avoid numerical integration' }
@@ -647,6 +729,8 @@ print(f"95% Credible Interval: [{cri[0]:.3f}, {cri[1]:.3f}]")` }
       },
       'Credible Interval': {
         explanation: 'Bayesian counterpart to confidence interval. E.g., 95% CrI means P(parameter ∈ interval | data) = 0.95.',
+                visualType: 'distribution',
+        visualData: {'mean': 100, 'std': 10, 'shadedArea': [85, 115]},
         quizQuestions: [
           { q: '95% CrI means:', options: ['95% of data inside','P(param in interval|data)=0.95','Interval contains 95% of samples','Confidence level'], correct: 1, explanation: 'Direct probability statement about parameter' },
           { q: 'CrI vs CI: which allows P(param in interval)?', options: ['CI','CrI','Both','Neither'], correct: 1, explanation: 'Bayesian CrI gives direct probability; frequentist CI does not' }
@@ -685,6 +769,8 @@ print(f"p-value: {p_value:.4f}")` }
     conceptDetails: {
       'F-statistic': {
         explanation: 'Ratio of model variance to error variance. F > critical value → reject null (at least one group differs).',
+                visualType: 'bar-chart',
+        visualData: {'bars': [{'label': 'Between-group', 'value': 125}, {'label': 'Within-group', 'value': 45}]},
         quizQuestions: [
           { q: 'F = 1 suggests:', options: ['Strong differences','No differences','Small sample','Large effect'], correct: 1, explanation: 'F≈1 means between ≈ within → no group differences' },
           { q: 'F-test assumes:', options: ['Normality, equal variance','Only normality','Only equal variance','No assumptions'], correct: 0, explanation: 'Both normality and homogeneity of variance' }
@@ -692,6 +778,8 @@ print(f"p-value: {p_value:.4f}")` }
       },
       'Between-group Variance': {
         explanation: 'Measures how much group means differ from the overall mean. Large between-group variance suggests the factor has an effect.',
+                visualType: 'bar-chart',
+        visualData: {'bars': [{'label': 'Group A', 'value': 85}, {'label': 'Group B', 'value': 78}, {'label': 'Group C', 'value': 92}]},
         quizQuestions: [
           { q: 'High between-group variance suggests:', options: ['Groups are the same','Groups differ','High random error','Low sample size'], correct: 1, explanation: 'Means deviate from overall mean → factor has effect' },
           { q: 'Between-group variance is in the:', options: ['Denominator','Numerator of F','Error term','Residual'], correct: 1, explanation: 'F = MS_between / MS_within' }
@@ -699,6 +787,8 @@ print(f"p-value: {p_value:.4f}")` }
       },
       'Within-group Variance': {
         explanation: 'Measures variability inside each group (error/residual). Represents random variation not explained by the factor.',
+                visualType: 'bar-chart',
+        visualData: {'bars': [{'label': 'Group A var', 'value': 12}, {'label': 'Group B var', 'value': 15}, {'label': 'Group C var', 'value': 10}]},
         quizQuestions: [
           { q: 'Within-group variance represents:', options: ['Treatment effect','Random error','Sample size','Mean difference'], correct: 1, explanation: 'Unexplained variation inside groups' },
           { q: 'Smaller within-group variance means:', options: ['Less precision','More precision','Larger effect','More groups'], correct: 1, explanation: 'Less noise → easier to detect between-group differences' }
@@ -706,6 +796,8 @@ print(f"p-value: {p_value:.4f}")` }
       },
       'Factorial Design': {
         explanation: 'Study multiple factors simultaneously with all combinations. Can detect main effects and interactions.',
+                visualType: 'bar-chart',
+        visualData: {'bars': [{'label': 'Factor A', 'value': 40}, {'label': 'Factor B', 'value': 35}, {'label': 'A\u00d7B', 'value': 25}]},
         quizQuestions: [
           { q: '2×2 factorial has how many groups?', options: ['2','4','6','8'], correct: 1, explanation: '2 levels × 2 factors = 4 combinations' },
           { q: 'Interaction effect means:', options: ['Effect of A depends on B','A and B independent','Only A matters','Only B matters'], correct: 0, explanation: 'The factors influence each other' }
@@ -713,6 +805,8 @@ print(f"p-value: {p_value:.4f}")` }
       },
       'Blocking': {
         explanation: 'Group similar experimental units together (blocks) to reduce nuisance variation. Improves precision.',
+                visualType: 'bar-chart',
+        visualData: {'bars': [{'label': 'Block 1', 'value': 30}, {'label': 'Block 2', 'value': 30}, {'label': 'Block 3', 'value': 40}]},
         quizQuestions: [
           { q: 'Blocking reduces:', options: ['Treatment effect','Nuisance variation','Sample size','Power'], correct: 1, explanation: 'Accounts for known sources of variability' },
           { q: 'Randomized block design assigns:', options: ['All treatments to each block','One treatment per block','No randomization','Only controls'], correct: 0, explanation: 'Each block gets all treatments in random order' }
@@ -720,6 +814,8 @@ print(f"p-value: {p_value:.4f}")` }
       },
       'Post-hoc Tests': {
         explanation: 'After significant ANOVA, determine which specific groups differ. Controls for multiple comparisons (alpha inflation).',
+                visualType: 'bar-chart',
+        visualData: {'bars': [{'label': 'Group A-B', 'value': 7}, {'label': 'Group A-C', 'value': 14}, {'label': 'Group B-C', 'value': 7}]},
         quizQuestions: [
           { q: 'Post-hoc is needed because:', options: ['ANOVA is not enough','Multiple comparison problem','Small sample','Large variance'], correct: 1, explanation: 'Multiple tests inflate Type I error rate' },
           { q: 'Tukey HSD controls:', options: ['Type II error','Family-wise error rate','Sample size','Effect size'], correct: 1, explanation: 'Tukey controls overall error across all pairwise tests' }
