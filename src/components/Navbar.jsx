@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useScrollspy } from '../hooks/useScrollspy';
-import { FaBars, FaTimes, FaMoon, FaSun, FaUser, FaSignOutAlt } from 'react-icons/fa';
+import { FaBars, FaTimes, FaMoon, FaSun, FaUser, FaSignOutAlt, FaCodeBranch } from 'react-icons/fa';
 import DSALogo from './DSALogo';
 import './Navbar.css';
 
