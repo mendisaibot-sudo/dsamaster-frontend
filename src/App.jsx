@@ -27,6 +27,7 @@ import EmailVerified from './components/Auth/EmailVerified';
 import ForgotPassword from './components/Auth/ForgotPassword';
 import ResetPassword from './components/Auth/ResetPassword';
 import VerifyEmail from './components/Auth/VerifyEmail';
+import OAuthCallback from './components/Auth/OAuthCallback';
 
 import SEO from './components/SEO/SEO';
 
@@ -88,6 +89,7 @@ function App() {
                 <Route path="/auth/forgot-password" element={<ForgotPassword />} />
                 <Route path="/auth/reset-password" element={<ResetPassword />} />
                 <Route path="/auth/verify-email" element={<VerifyEmail />} />
+                <Route path="/auth/callback" element={<OAuthCallback />} />
                 
                 {/* Admin routes */}
                 <Route path="/admin/login" element={<Login />} />
