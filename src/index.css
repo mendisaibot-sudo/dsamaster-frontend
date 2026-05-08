@@ -1,25 +1,25 @@
 /* CSS Variables for Theming */
 :root {
-  --primary: #f97316;
-  --primary-dark: #ea580c;
-  --secondary: #f59e0b;
-  --success: #84cc16;
-  --warning: #eab308;
+  --primary: #6366f1;
+  --primary-dark: #4f46e5;
+  --secondary: #06b6d4;
+  --success: #10b981;
+  --warning: #f59e0b;
   --danger: #ef4444;
   --info: #06b6d4;
 
-  --bg-primary: #fff7ed;
-  --bg-secondary: #ffedd5;
+  --bg-primary: #f0f4f8;
+  --bg-secondary: #e2e8f0;
   --bg-card: #ffffff;
-  --bg-hover: #fed7aa;
+  --bg-hover: #e2e8f0;
 
-  --text-primary: #7c2d12;
-  --text-secondary: #9a3412;
-  --text-muted: #c2410c;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
 
-  --border-color: #fdba74;
-  --shadow: 0 4px 6px -1px rgba(234, 88, 12, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(234, 88, 12, 0.15);
+  --border-color: #e2e8f0;
+  --shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(99, 102, 241, 0.15);
 
   --radius: 12px;
   --radius-sm: 8px;
@@ -27,24 +27,24 @@
 }
 
 [data-theme="dark"] {
-  --primary: #6366f1;
-  --primary-dark: #4f46e5;
-  --secondary: #8b5cf6;
-  --success: #22c55e;
-  --warning: #f59e0b;
-  --danger: #ef4444;
-  --info: #3b82f6;
+  --primary: #818cf8;
+  --primary-dark: #6366f1;
+  --secondary: #22d3ee;
+  --success: #34d399;
+  --warning: #fbbf24;
+  --danger: #f87171;
+  --info: #22d3ee;
 
-  --bg-primary: #0f0f1a;
-  --bg-secondary: #1a1a2e;
-  --bg-card: #16162a;
-  --bg-hover: #252545;
+  --bg-primary: #0a1628;
+  --bg-secondary: #111e36;
+  --bg-card: #111e36;
+  --bg-hover: #1e3a5f;
 
-  --text-primary: #f8fafc;
+  --text-primary: #f1f5f9;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
 
-  --border-color: #2d2d44;
+  --border-color: #1e3a5f;
   --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
 }
@@ -225,7 +225,7 @@ input, textarea, select {
 input:focus, textarea:focus, select:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
 }
 
 /* Badge Styles */
@@ -239,8 +239,8 @@ input:focus, textarea:focus, select:focus {
 }
 
 .badge-easy {
-  background: rgba(132, 204, 22, 0.15);
-  color: #65a30d;
+  background: rgba(16, 185, 129, 0.15);
+  color: #059669;
 }
 
 .badge-medium {

@@ -7,12 +7,12 @@
 .ml-content h4 { font-size: 1.15rem; font-weight: 700; margin-bottom: 0.5rem; }
 .ml-content p { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; text-align: justify; }
 .ml-meta { display: flex; gap: 0.75rem; margin-top: 0.25rem; }
-.ml-meta span { font-size: 0.8rem; padding: 4px 12px; border-radius: 20px; background: rgba(249,115,22,0.1); color: var(--primary); font-weight: 500; }
+.ml-meta span { font-size: 0.8rem; padding: 4px 12px; border-radius: 20px; background: rgba(99,102,241,0.1); color: var(--primary); font-weight: 500; }
 .ml-link { font-size: 0.85rem; color: var(--primary); font-weight: 500; margin-top: auto; }
 
 .detail-header { margin-bottom: 1.5rem; }
 .detail-tags { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
-.tag { font-size: 0.8rem; padding: 4px 12px; border-radius: 20px; background: rgba(249,115,22,0.1); color: var(--primary); font-weight: 500; }
+.tag { font-size: 0.8rem; padding: 4px 12px; border-radius: 20px; background: rgba(99,102,241,0.1); color: var(--primary); font-weight: 500; }
 .detail-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
 .detail-tabs button { padding: 0.625rem 1.25rem; border-radius: 10px; font-weight: 500; border: none; background: transparent; color: var(--text-secondary); cursor: pointer; font-size: 0.9rem; transition: all 0.2s; }
 .detail-tabs button.active { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; }
@@ -22,7 +22,7 @@
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
 .concepts-grid { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
-.concept-pill { padding: 5px 14px; border-radius: 20px; background: rgba(249,115,22,0.15); color: var(--primary); font-size: 0.85rem; font-weight: 500; }
+.concept-pill { padding: 5px 14px; border-radius: 20px; background: rgba(99,102,241,0.15); color: var(--primary); font-size: 0.85rem; font-weight: 500; }
 
 .ml-info-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
 .info-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 1.25rem; }
@@ -33,7 +33,7 @@
 .formula-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 1.25rem; transition: all 0.2s; }
 .formula-card:hover { border-color: var(--primary); }
 .formula-name { font-size: 0.85rem; font-weight: 600; color: var(--primary); margin-bottom: 0.5rem; }
-.formula-code { font-family: 'Fira Code',monospace; font-size: 1rem; background: rgba(249,115,22,0.08); padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 0.5rem; color: var(--text-primary); overflow-x: auto; }
+.formula-code { font-family: 'Fira Code',monospace; font-size: 1rem; background: rgba(99,102,241,0.08); padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 0.5rem; color: var(--text-primary); overflow-x: auto; }
 .formula-text { font-size: 0.8rem; color: var(--text-secondary); }
 
 .example-selector { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
@@ -45,7 +45,7 @@
 .step { display: flex; gap: 0.75rem; align-items: flex-start; }
 .step-num { width: 24px; height: 24px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; flex-shrink: 0; }
 .step-text { font-size: 0.9rem; line-height: 1.7; text-align: justify; color: var(--text-primary); padding-top: 2px; }
-.example-result { padding: 1rem; background: rgba(249,115,22,0.08); border-radius: 8px; border-left: 3px solid var(--primary); }
+.example-result { padding: 1rem; background: rgba(99,102,241,0.08); border-radius: 8px; border-left: 3px solid var(--primary); }
 
 .applications-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
 .app-card { display: flex; align-items: flex-start; gap: 0.75rem; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 1rem; }

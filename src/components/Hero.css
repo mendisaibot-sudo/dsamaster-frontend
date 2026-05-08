@@ -7,11 +7,56 @@
   gap: 4rem;
   max-width: 1400px;
   margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Animated gradient background blobs */
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  right: -10%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: blobMove1 12s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -15%;
+  left: -5%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.12) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: blobMove2 15s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes blobMove1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-30px, 20px) scale(1.1); }
+  66% { transform: translate(20px, -15px) scale(0.95); }
+}
+
+@keyframes blobMove2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(25px, -20px) scale(1.05); }
+  66% { transform: translate(-15px, 10px) scale(0.9); }
 }
 
 .hero-content {
   flex: 1;
   max-width: 600px;
+  position: relative;
+  z-index: 1;
 }
 
 .hero-content h1 {
@@ -63,6 +108,8 @@
   flex: 1;
   max-width: 500px;
   height: 400px;
+  position: relative;
+  z-index: 1;
 }
 
 .hero-visual canvas {
@@ -93,4 +140,13 @@
   .hero-visual {
     height: 300px;
   }
+}
+
+/* Dark mode blob adjustments */
+[data-theme="dark"] .hero::before {
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.2) 0%, transparent 70%);
+}
+
+[data-theme="dark"] .hero::after {
+  background: radial-gradient(circle, rgba(34, 211, 238, 0.15) 0%, transparent 70%);
 }
