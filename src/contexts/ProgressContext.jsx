@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { useAuth } from './AuthContext';
 
 const ProgressContext = createContext();
 
@@ -10,15 +11,79 @@ const defaultProgress = {
   activities: []
 };
 
+const LEGACY_KEY = 'dsaProgress';
+
+const getStorageKey = (userId) => userId ? `dsaProgress_${userId}` : LEGACY_KEY;
+
 export const ProgressProvider = ({ children }) => {
+  const { user, isLoggedIn } = useAuth();
+  const userId = user?.id || null;
+  const storageKey = getStorageKey(userId);
+
   const [progress, setProgress] = useState(() => {
-    const saved = localStorage.getItem('dsaProgress');
-    return saved ? JSON.parse(saved) : defaultProgress;
+    // Try user-specific key first, then legacy key
+    const saved = localStorage.getItem(storageKey) || localStorage.getItem(LEGACY_KEY);
+    return saved ? JSON.parse(saved) : { ...defaultProgress };
   });
 
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Load/save from localStorage
   useEffect(() => {
-    localStorage.setItem('dsaProgress', JSON.stringify(progress));
-  }, [progress]);
+    if (!userId) return;
+    const saved = localStorage.getItem(storageKey);
+    if (saved) {
+      setProgress(JSON.parse(saved));
+    } else {
+      // Migrate legacy data to user-specific key on first login
+      const legacy = localStorage.getItem(LEGACY_KEY);
+      if (legacy) {
+        setProgress(JSON.parse(legacy));
+      }
+    }
+  }, [userId, storageKey]);
+
+  // Save whenever progress changes
+  useEffect(() => {
+    localStorage.setItem(storageKey, JSON.stringify(progress));
+  }, [progress, storageKey]);
+
+  // Sync with backend when logged in
+  const syncWithBackend = useCallback(async () => {
+    if (!isLoggedIn || !userId) return;
+    const token = localStorage.getItem('access_token');
+    if (!token) return;
+
+    setIsLoading(true);
+    try {
+      const response = await fetch('https://dsamaster.de/api/progress/stats', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.data) {
+          const backendStats = data.data;
+          setProgress(prev => ({
+            ...prev,
+            problemsSolved: prev.problemsSolved, // Keep local additions
+            streak: backendStats.current_streak || prev.streak,
+            lastActive: backendStats.last_solved_at || prev.lastActive
+          }));
+        }
+      }
+    } catch (err) {
+      // Backend sync failed, continue with localStorage
+    } finally {
+      setIsLoading(false);
+    }
+  }, [isLoggedIn, userId]);
+
+  // Sync on login
+  useEffect(() => {
+    if (isLoggedIn && userId) {
+      syncWithBackend();
+    }
+  }, [isLoggedIn, userId, syncWithBackend]);
 
   const addTopic = (topic) => {
     setProgress(prev => {
@@ -78,7 +143,10 @@ export const ProgressProvider = ({ children }) => {
   };
 
   const resetProgress = () => {
-    setProgress(defaultProgress);
+    setProgress({ ...defaultProgress });
+    if (userId) {
+      localStorage.removeItem(storageKey);
+    }
   };
 
   const topicsCount = progress.topicsExplored.length;
@@ -97,7 +165,10 @@ export const ProgressProvider = ({ children }) => {
       addSolvedProblem,
       addActivity,
       updateStreak,
-      resetProgress
+      resetProgress,
+      isLoading,
+      syncWithBackend,
+      userId
     }}>
       {children}
     </ProgressContext.Provider>
