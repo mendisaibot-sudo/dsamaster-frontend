@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="bgLight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#06B6D4" />
+    </linearGradient>
+    <linearGradient id="bgDark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#818CF8" />
+      <stop offset="100%" stop-color="#22D3EE" />
+    </linearGradient>
+  </defs>
+  <circle cx="128" cy="128" r="120" fill="url(#bgLight)" />
+  <polygon points="128,52 168,100 168,156 128,180 88,156 88,100" fill="none" stroke="white" stroke-width="14" stroke-linejoin="round" />
+  <circle cx="128" cy="128" r="20" fill="white" />
+</svg>

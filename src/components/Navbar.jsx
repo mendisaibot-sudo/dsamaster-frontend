@@ -3,7 +3,8 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useScrollspy } from '../hooks/useScrollspy';
-import { FaCodeBranch, FaBars, FaTimes, FaMoon, FaSun, FaUser, FaSignOutAlt } from 'react-icons/fa';
+import { FaBars, FaTimes, FaMoon, FaSun, FaUser, FaSignOutAlt } from 'react-icons/fa';
+import DSALogo from './DSALogo';
 import './Navbar.css';
 
 const navLinks = [
@@ -47,7 +48,7 @@ const Navbar = () => {
     <nav className="navbar">
       <div className="navbar-container">
         <Link to="/" className="nav-brand" onClick={() => setMobileMenuOpen(false)}>
-          <FaCodeBranch className="brand-icon" />
+          <DSALogo size={36} />
           <span>DSA Master</span>
         </Link>
 
