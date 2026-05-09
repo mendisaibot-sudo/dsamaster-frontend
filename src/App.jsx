@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import LearnPage from './components/Learn/LearnPage';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { ContentProvider } from './contexts/ContentContext';
 import { ProgressProvider } from './contexts/ProgressContext';
 import { AuthProvider } from './contexts/AuthContext';
 import Navbar from './components/Navbar';
@@ -60,8 +62,9 @@ function App() {
     <ThemeProvider>
       <AuthProvider>
         <ProgressProvider>
-          <Router>
-          <div className="app">
+          <ContentProvider>
+            <Router>
+              <div className="app">
             <Navbar />
             <main className="main-content">
               <Routes>
@@ -76,6 +79,10 @@ function App() {
                 <Route path="/problem/:problemId" element={<ProblemSolver />} />
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/blog/:slug" element={<BlogPost />} />
+                
+                <Route path="/learn" element={<LearnPage />} />
+                <Route path="/learn/:categorySlug" element={<LearnPage />} />
+                <Route path="/learn/:categorySlug/:topicSlug" element={<LearnPage />} />
                 
                 {/* Statistics & Machine Learning */}
                 <Route path="/statistics" element={<StatisticsListing />} />
@@ -102,6 +109,7 @@ function App() {
             <Footer />
           </div>
         </Router>
+        </ContentProvider>
         </ProgressProvider>
       </AuthProvider>
     </ThemeProvider>

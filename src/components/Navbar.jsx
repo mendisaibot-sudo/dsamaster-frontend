@@ -9,6 +9,7 @@ import './Navbar.css';
 
 const navLinks = [
   { id: 'home', label: 'Home', path: '/', type: 'route' },
+  { id: 'learn', label: 'Learn', path: '/learn', type: 'route' },
   { id: 'datastructures', label: 'Data Structures', path: '/datastructures', type: 'route' },
   { id: 'algorithms', label: 'Algorithms', path: '/algorithms', type: 'route' },
   { id: 'statistics', label: 'Statistics', path: '/statistics', type: 'route' },

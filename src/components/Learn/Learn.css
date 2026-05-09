@@ -336,6 +336,184 @@
   margin-bottom: 0.75rem;
   color: var(--text-primary);
 }
-.exercise-options {
+.exercise-options { display: flex; flex-direction: column; gap: 0.5rem; }
+
+/* ===========================================
+   CATEGORY GRID (Homepage)
+   =========================================== */
+.learn-home {
+  display: block;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.learn-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+.learn-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.learn-header p {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+}
+
+/* Category Grid */
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+.category-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-left: 4px solid var(--cat-accent, var(--primary));
+  border-radius: var(--radius);
+  padding: 1.5rem;
   display: flex;
-  flex
+  align-items: flex-start;
+  gap: 1rem;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: var(--shadow);
+}
+.category-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--cat-accent, var(--primary));
+}
+.category-card-icon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+}
+.category-card-body { flex: 1; }
+.category-card-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+  color: var(--text-primary);
+}
+.category-card-desc {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
+}
+.category-card-meta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* Topic list */
+.topic-list {
+  display: grid;
+  gap: 1rem;
+}
+.topic-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: var(--shadow);
+}
+.topic-card:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+.topic-card h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+  color: var(--text-primary);
+}
+.topic-card p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+}
+.topic-card .difficulty {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  text-transform: capitalize;
+  margin-right: 0.75rem;
+}
+.topic-card .difficulty.beginner { background: #10b98126; color: #059669; }
+.topic-card .difficulty.intermediate { background: #f59e0b26; color: #d97706; }
+.topic-card .difficulty.advanced { background: #ef444426; color: #dc2626; }
+.topic-card .meta {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* Lesson list */
+.lesson-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.lesson-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.lesson-item:hover {
+  border-color: var(--primary);
+  background: var(--bg-hover);
+}
+.lesson-number {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary);
+  color: white;
+  font-weight: 600;
+  font-size: 0.85rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.lesson-item h4 {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 0.2rem;
+  color: var(--text-primary);
+}
+.lesson-item .meta {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* Loading & error */
+.learn-loading, .learn-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+}
+.learn-error { color: var(--danger); }
