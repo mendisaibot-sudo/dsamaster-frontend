@@ -31,7 +31,7 @@ export default function Sidebar({ categories }) {
     const cat = categories.find((c) => c.slug === categorySlug);
     if (!cat) return;
     setLoadingTopics(true);
-    loadCategoryWithTopics(cat.id).then((t) => {
+    loadCategoryWithTopics(cat.slug).then((t) => {
       setTopics(Array.isArray(t) ? t : t?.data || []);
       setLoadingTopics(false);
     });

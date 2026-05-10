@@ -35,19 +35,18 @@ export function ContentProvider({ children }) {
     }
   }, []);
 
-  const loadCategoryWithTopics = useCallback(async (categoryId) => {
+  const loadCategoryWithTopics = useCallback(async (categorySlug) => {
     setLoading(true);
     setError(null);
     try {
       const [catData, topicsData] = await Promise.all([
-        // No single category endpoint; derive from categories list
         (async () => {
           await loadCategories();
         })(),
-        fetchTopics(categoryId),
+        fetchTopics(categorySlug),
       ]);
       const cats = categories.length ? categories : [];
-      const cat = cats.find((c) => String(c.id) === String(categoryId));
+      const cat = cats.find((c) => String(c.slug) === String(categorySlug));
       setCurrentCategory(cat || null);
       return topicsData.data || topicsData || [];
     } catch (err) {
