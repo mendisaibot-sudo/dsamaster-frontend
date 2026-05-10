@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useAuth } from './AuthContext';
 
+const API_URL = import.meta.env.VITE_API_URL || 'https://dsamaster.de';
+
 const ProgressContext = createContext();
 
 const defaultProgress = {
@@ -58,24 +60,18 @@ export const ProgressProvider = ({ children }) => {
 
     setIsLoading(true);
     try {
-      const response = await fetch('https://dsamaster.de/api/progress/stats', {
+      const response = await fetch(`${API_URL}/api/progress/me`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) {
         const data = await response.json();
-        if (data.success && data.data) {
-          const backendStats = data.data;
-          setProgress(prev => ({
-            ...prev,
-            problemsSolved: prev.problemsSolved, // Keep local additions
-            streak: backendStats.current_streak || prev.streak,
-            lastActive: backendStats.last_solved_at || prev.lastActive
-          }));
-        }
+        const lessonIds = (data.lesson_progress || []).map(lp => lp.lesson_id || lp.lesson_slug).filter(Boolean);
+        setProgress(prev => ({
+          ...prev,
+          completedLessons: [...new Set([...(prev.completedLessons || []), ...lessonIds])]
+        }));
       }
-    } catch (err) {
-      // Backend sync failed, continue with localStorage
-    } finally {
+    } catch (e) { console.warn('Progress sync failed:', e); } finally {
       setIsLoading(false);
     }
   }, [isLoggedIn, userId]);
@@ -148,7 +144,7 @@ export const ProgressProvider = ({ children }) => {
     const token = localStorage.getItem('access_token');
     if (token) {
       try {
-        await fetch(`https://dsamaster.de/api/content/lessons/${lessonSlug}/progress`, {
+        await fetch(`${API_URL}/api/progress/lesson/${lessonSlug}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -156,7 +152,7 @@ export const ProgressProvider = ({ children }) => {
           },
           body: JSON.stringify({ status: 'completed' })
         });
-      } catch { /* non-fatal */ }
+      } catch (e) { console.warn('Could not sync lesson completion:', e); }
     }
     setProgress(prev => {
       if (prev.completedLessons?.includes(lessonSlug)) return prev;
@@ -175,15 +171,15 @@ export const ProgressProvider = ({ children }) => {
     const token = localStorage.getItem('access_token');
     if (token) {
       try {
-        await fetch(`https://dsamaster.de/api/content/lessons/${lessonSlug}/progress`, {
+        await fetch(`${API_URL}/api/progress/lesson/${lessonSlug}/exercises`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
           },
-          body: JSON.stringify({ exercise_id: exerciseId, answer })
+          body: JSON.stringify({ exercise_id: exerciseId, answer, correct: true })
         });
-      } catch { /* non-fatal */ }
+      } catch (e) { console.warn('Could not sync exercise submission:', e); }
     }
     setProgress(prev => {
       const key = `${lessonSlug}/${exerciseId}`;
@@ -207,6 +203,7 @@ export const ProgressProvider = ({ children }) => {
   const totalProblems = 30;
 
   return (
+    <ProgressContext.Provider
       value={{
         progress,
         topicsCount,
@@ -224,6 +221,7 @@ export const ProgressProvider = ({ children }) => {
         syncWithBackend,
         userId
       }}
+    >
       {children}
     </ProgressContext.Provider>
   );
