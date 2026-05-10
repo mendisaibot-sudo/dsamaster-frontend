@@ -1,17 +1,34 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { FaBookOpen, FaCode, FaLightbulb } from 'react-icons/fa';
 import CategoryGrid from './CategoryGrid';
 import Sidebar from './Sidebar';
+import LessonViewer from './LessonViewer';
+import LessonExercise from './LessonExercise';
+import CodeEditor from '../CodeEditor/CodeEditor';
+import { useContent } from '../../contexts/ContentContext';
+import { useProgress } from '../../contexts/ProgressContext';
 import { getCategories, getTopicsByCategory, getLessonsByTopic, getLesson } from '../../services/contentApi';
 import './Learn.css';
+import './LessonExercise.css';
+
+const TABS = [
+  { key: 'content', label: 'Content', icon: FaBookOpen },
+  { key: 'practice', label: 'Practice', icon: FaLightbulb },
+  { key: 'code', label: 'Code', icon: FaCode },
+];
 
 export default function LearnPage() {
   const { categorySlug, topicSlug } = useParams();
   const navigate = useNavigate();
+  const { markLessonComplete, isLessonCompleted } = useContent();
+  const { completeLesson, submitExercise } = useProgress();
   const [categories, setCategories] = useState([]);
   const [topics, setTopics] = useState([]);
   const [lessons, setLessons] = useState([]);
   const [selectedLesson, setSelectedLesson] = useState(null);
+  const [fullLesson, setFullLesson] = useState(null);
+  const [activeTab, setActiveTab] = useState('content');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -47,11 +64,22 @@ export default function LearnPage() {
     }
   }, [topicSlug]);
 
+  useEffect(() => {
+    if (selectedLesson) {
+      setFullLesson(null);
+      setActiveTab('content');
+      getLesson(selectedLesson.slug).then(data => setFullLesson(data));
+    }
+  }, [selectedLesson]);
+
   if (loading) return <div className="learn-loading">Loading courses...</div>;
   if (error) return <div className="learn-error">{error}</div>;
 
-  // Show lesson viewer
   if (selectedLesson) {
+    const lessonData = fullLesson || selectedLesson;
+    const completed = isLessonCompleted(lessonData.id);
+    const exerciseCount = lessonData.exercises?.length || 0;
+
     return (
       <div className="learn-page">
         <div className="learn-sidebar">
@@ -64,13 +92,75 @@ export default function LearnPage() {
           />
         </div>
         <div className="learn-content">
-          <LessonViewer lesson={selectedLesson} onBack={() => setSelectedLesson(null)} />
+          <button className="back-btn" onClick={() => {
+            setSelectedLesson(null);
+            setActiveTab('content');
+            setFullLesson(null);
+          }}>← Back</button>
+
+          <h1 className="lesson-title">{lessonData.title}</h1>
+
+          <div className="lesson-meta-row">
+            <span className="lesson-estimated-time">🕐 {lessonData.estimated_minutes || 10} min</span>
+            <span className={`difficulty ${lessonData.difficulty}`}>
+              {lessonData.difficulty}
+            </span>
+          </div>
+
+          <div className="lesson-tabs">
+            {TABS.map(tab => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.key}
+                  className={`lesson-tab ${activeTab === tab.key ? 'active' : ''}`}
+                  onClick={() => setActiveTab(tab.key)}
+                >
+                  <Icon size={14} />
+                  {tab.label}
+                  {tab.key === 'practice' && exerciseCount > 0 && (
+                    <span className="tab-badge">{exerciseCount}</span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="lesson-tab-panel">
+            {activeTab === 'content' && (
+              <LessonViewer
+                lesson={lessonData}
+                onComplete={() => {
+                  markLessonComplete(lessonData.id);
+                  completeLesson(lessonData.slug);
+                }}
+                isCompleted={completed}
+              />
+            )}
+
+            {activeTab === 'practice' && (
+              <LessonExercise
+                exercises={lessonData.exercises || []}
+                lessonSlug={lessonData.slug}
+                onSubmitExercise={submitExercise}
+              />
+            )}
+
+            {activeTab === 'code' && (
+              <div className="code-tab-content animate-fade-in">
+                <CodeEditor
+                  code={lessonData.code || lessonData.code_examples?.[0]?.code || '// Try some code here...'}
+                  language={lessonData.language || 'javascript'}
+                  onChange={() => {}}
+                />
+              </div>
+            )}
+          </div>
         </div>
       </div>
     );
   }
 
-  // Show lessons for a topic (MUST check before categorySlug)
   if (topicSlug && lessons.length > 0) {
     const topic = topics.find(t => t.slug === topicSlug);
     return (
@@ -102,7 +192,6 @@ export default function LearnPage() {
     );
   }
 
-  // Show topics for a category
   if (categorySlug && topics.length > 0) {
     const category = categories.find(c => c.slug === categorySlug);
     return (
@@ -132,7 +221,6 @@ export default function LearnPage() {
     );
   }
 
-  // Fallback when no topics/lessons match
   if (categorySlug) {
     const category = categories.find(c => c.slug === categorySlug);
     return (
@@ -155,7 +243,6 @@ export default function LearnPage() {
     );
   }
 
-  // Show categories grid
   return (
     <div className="learn-page learn-home">
       <div className="learn-header">
@@ -163,91 +250,6 @@ export default function LearnPage() {
         <p>Master Python, JavaScript, SQL, React, Node.js & System Design</p>
       </div>
       <CategoryGrid categories={categories} />
-    </div>
-  );
-}
-
-function LessonViewer({ lesson, onBack }) {
-  const [fullLesson, setFullLesson] = useState(null);
-
-  useEffect(() => {
-    getLesson(lesson.slug).then(data => setFullLesson(data));
-  }, [lesson.slug]);
-
-  const data = fullLesson || lesson;
-
-  return (
-    <div className="lesson-viewer">
-      <button className="back-btn" onClick={onBack}>← Back</button>
-      <h1>{data.title}</h1>
-
-      {data.content && (
-        typeof data.content === 'string' ? (
-          <div className="lesson-body">
-            <p>{data.content}</p>
-          </div>
-        ) : (
-          <div className="lesson-body">
-            {data.content.title && (
-              <div className="lesson-header">
-                <h2>{data.content.title}</h2>
-              </div>
-            )}
-            {Array.isArray(data.content.blocks) && data.content.blocks.map((block, idx) => (
-              <div key={idx} className={`content-block block-${block.type}`}>
-                {block.type === 'text' && <p>{block.content}</p>}
-                {block.type === 'heading' && <h2>{block.content}</h2>}
-                {block.type === 'code' && (
-                  <div className="code-example">
-                    <div className="code-header">
-                      <span className="code-lang">{block.language || 'code'}</span>
-                    </div>
-                    <pre><code>{block.content}</code></pre>
-                  </div>
-                )}
-                {block.type === 'list' && Array.isArray(block.content) && (
-                  <ul>
-                    {block.content.map((item, i) => (
-                      <li key={i}>{item}</li>
-                    ))}
-                  </ul>
-                )}
-                {block.type === 'tip' && (
-                  <div className="tip-box">
-                    <strong>💡 Tip:</strong> <span>{block.content}</span>
-                  </div>
-                )}
-                {block.type === 'exercise' && (
-                  <div className="exercise-box">
-                    <h4>🎯 Exercise</h4>
-                    <p>{block.content}</p>
-                  </div>
-                )}
-              </div>
-            ))}
-            {!data.content.blocks && Object.entries(data.content).map(([section, content]) => (
-              <section key={section}>
-                <h3>{section}</h3>
-                <p>{content}</p>
-              </section>
-            ))}
-          </div>
-        )
-      )}
-      {data.code_examples?.map(ex => (
-        <div key={ex.id} className="code-example">
-          <div className="code-header">
-            <span className="code-lang">{ex.language}</span>
-          </div>
-          <pre><code>{ex.code}</code></pre>
-          {ex.output && (
-            <div className="code-output">
-              <strong>Output:</strong>
-              <pre>{ex.output}</pre>
-            </div>
-          )}
-        </div>
-      ))}
     </div>
   );
 }

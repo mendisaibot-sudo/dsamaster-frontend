@@ -83,6 +83,7 @@ function App() {
                 <Route path="/learn" element={<LearnPage />} />
                 <Route path="/learn/:categorySlug" element={<LearnPage />} />
                 <Route path="/learn/:categorySlug/:topicSlug" element={<LearnPage />} />
+                <Route path="/learn/:categorySlug/:topicSlug/:lessonSlug" element={<LearnPage />} />
                 
                 {/* Statistics & Machine Learning */}
                 <Route path="/statistics" element={<StatisticsListing />} />

@@ -256,6 +256,24 @@
   border-top: 1px solid var(--border-color);
   flex-wrap: wrap;
 }
+
+.lesson-actions-spacer {
+  flex: 1;
+}
+
+/* Difficulty badge in lesson meta */
+.lesson-meta-row .difficulty {
+  font-size: 0.78rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  text-transform: capitalize;
+  background: var(--bg-secondary);
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+}
+.lesson-meta-row .difficulty.beginner { background: #10b98126; color: #059669; }
+.lesson-meta-row .difficulty.intermediate { background: #f59e0b26; color: #d97706; }
+.lesson-meta-row .difficulty.advanced { background: #ef444426; color: #dc2626; }
 .lesson-nav-btn {
   display: inline-flex;
   align-items: center;

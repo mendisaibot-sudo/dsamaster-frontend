@@ -6,6 +6,8 @@ const ProgressContext = createContext();
 const defaultProgress = {
   topicsExplored: [],
   problemsSolved: [],
+  completedLessons: [],
+  completedExercises: {},
   streak: 0,
   lastActive: null,
   activities: []
@@ -142,6 +144,56 @@ export const ProgressProvider = ({ children }) => {
     });
   };
 
+  const completeLesson = useCallback(async (lessonSlug) => {
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      try {
+        await fetch(`https://dsamaster.de/api/content/lessons/${lessonSlug}/progress`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ status: 'completed' })
+        });
+      } catch { /* non-fatal */ }
+    }
+    setProgress(prev => {
+      if (prev.completedLessons?.includes(lessonSlug)) return prev;
+      return {
+        ...prev,
+        completedLessons: [...(prev.completedLessons || []), lessonSlug],
+        activities: [
+          { description: `Completed lesson ${lessonSlug}`, timestamp: new Date().toISOString() },
+          ...prev.activities.slice(0, 9)
+        ]
+      };
+    });
+  }, []);
+
+  const submitExercise = useCallback(async (lessonSlug, exerciseId, answer) => {
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      try {
+        await fetch(`https://dsamaster.de/api/content/lessons/${lessonSlug}/progress`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ exercise_id: exerciseId, answer })
+        });
+      } catch { /* non-fatal */ }
+    }
+    setProgress(prev => {
+      const key = `${lessonSlug}/${exerciseId}`;
+      return {
+        ...prev,
+        completedExercises: { ...(prev.completedExercises || {}), [key]: { answer, submittedAt: new Date().toISOString() } }
+      };
+    });
+  }, []);
+
   const resetProgress = () => {
     setProgress({ ...defaultProgress });
     if (userId) {
@@ -155,21 +207,23 @@ export const ProgressProvider = ({ children }) => {
   const totalProblems = 30;
 
   return (
-    <ProgressContext.Provider value={{
-      progress,
-      topicsCount,
-      problemsCount,
-      totalTopics,
-      totalProblems,
-      addTopic,
-      addSolvedProblem,
-      addActivity,
-      updateStreak,
-      resetProgress,
-      isLoading,
-      syncWithBackend,
-      userId
-    }}>
+      value={{
+        progress,
+        topicsCount,
+        problemsCount,
+        totalTopics,
+        totalProblems,
+        addTopic,
+        addSolvedProblem,
+        addActivity,
+        updateStreak,
+        resetProgress,
+        completeLesson,
+        submitExercise,
+        isLoading,
+        syncWithBackend,
+        userId
+      }}
       {children}
     </ProgressContext.Provider>
   );
