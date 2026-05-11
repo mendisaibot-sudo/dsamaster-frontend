@@ -1,6 +1,62 @@
 import { useState } from 'react';
-import { FaCheckCircle, FaBookOpen } from 'react-icons/fa';
+import { FaCheckCircle, FaBookOpen, FaPlay, FaLightbulb, FaTerminal } from 'react-icons/fa';
 import './Learn.css';
+
+function CodeExample({ language, code, output, explanation }) {
+  const [isRunning, setIsRunning] = useState(false);
+  const [showOutput, setShowOutput] = useState(false);
+  const [hasRun, setHasRun] = useState(false);
+
+  const handleRun = () => {
+    setIsRunning(true);
+    setShowOutput(true);
+    setHasRun(true);
+    // Simulate execution delay
+    setTimeout(() => setIsRunning(false), 800);
+  };
+
+  return (
+    <div className="code-example-container">
+      <div className="code-example-header">
+        <span className="code-lang-badge">{language || 'code'}</span>
+        <span className="code-example-title">{explanation || 'Code Example'}</span>
+      </div>
+      <div className="code-example">
+        <pre><code>{code}</code></pre>
+      </div>
+      <div className="code-actions">
+        <button
+          className={`btn-run-code ${isRunning ? 'running' : ''}`}
+          onClick={handleRun}
+          disabled={isRunning}
+        >
+          {isRunning ? (
+            <><span className="spinner"></span> Running...</>
+          ) : (
+            <><FaPlay /> Run Code</>
+          )}
+        </button>
+        {hasRun && !isRunning && (
+          <span className="run-success"><FaCheckCircle /> Code executed successfully</span>
+        )}
+      </div>
+      {showOutput && (
+        <div className="code-output-container">
+          <div className="code-output-header">
+            <span><FaTerminal /> Output</span>
+            {output && <span className="expected-tag">Expected Result</span>}
+          </div>
+          <pre className="code-output-content">{output || '✅ Code executed (no output to display)'}</pre>
+        </div>
+      )}
+      {!showOutput && output && (
+        <div className="output-hint">
+          <FaLightbulb /> Click <strong>"Run Code"</strong> to see the expected output
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function LessonViewer({ lesson, onComplete, isCompleted }) {
   const [marking, setMarking] = useState(false);
@@ -33,18 +89,22 @@ export default function LessonViewer({ lesson, onComplete, isCompleted }) {
               )}
               {Array.isArray(data.content.blocks) && data.content.blocks.map((block, idx) => (
                 <div key={idx} className={`content-block block-${block.type}`}>
-                  {block.type === 'text' && <p>{block.content}</p>}
-                  {block.type === 'heading' && <h2>{block.content}</h2>}
-                  {block.type === 'code' && (
-                    <div className="code-example">
-                      <div className="code-header">
-                        <span className="code-lang">{block.language || 'code'}</span>
-                      </div>
-                      <pre><code>{block.content}</code></pre>
+                  {(block.type === 'text' || block.type === 'paragraph') && (
+                    <div className="lesson-paragraph">
+                      <p>{block.content}</p>
                     </div>
                   )}
+                  {block.type === 'heading' && <h3 className="lesson-heading">{block.content}</h3>}
+                  {block.type === 'code' && (
+                    <CodeExample
+                      language={block.language}
+                      code={block.content}
+                      output={block.output}
+                      explanation={block.explanation}
+                    />
+                  )}
                   {block.type === 'list' && Array.isArray(block.content) && (
-                    <ul>
+                    <ul className="lesson-list">
                       {block.content.map((item, i) => (
                         <li key={i}>{item}</li>
                       ))}
@@ -52,7 +112,7 @@ export default function LessonViewer({ lesson, onComplete, isCompleted }) {
                   )}
                   {block.type === 'tip' && (
                     <div className="tip-box">
-                      <strong>💡 Tip:</strong> <span>{block.content}</span>
+                      <FaLightbulb /> <strong>Tip:</strong> <span>{block.content}</span>
                     </div>
                   )}
                   {block.type === 'exercise' && (
@@ -64,7 +124,7 @@ export default function LessonViewer({ lesson, onComplete, isCompleted }) {
                 </div>
               ))}
               {!data.content.blocks && Object.entries(data.content).map(([section, content]) => (
-                <section key={section}>
+                <section key={section} className="lesson-section">
                   <h3>{section}</h3>
                   <p>{content}</p>
                 </section>
@@ -72,20 +132,20 @@ export default function LessonViewer({ lesson, onComplete, isCompleted }) {
             </>
           )
         )}
-        {data.code_examples?.map(ex => (
-          <div key={ex.id} className="code-example">
-            <div className="code-header">
-              <span className="code-lang">{ex.language}</span>
-            </div>
-            <pre><code>{ex.code}</code></pre>
-            {ex.output && (
-              <div className="code-output">
-                <strong>Output:</strong>
-                <pre>{ex.output}</pre>
-              </div>
-            )}
+        {data.code_examples && data.code_examples.length > 0 && (
+          <div className="lesson-code-examples">
+            <h3 className="section-title">💻 Code Examples</h3>
+            {data.code_examples.map((ex, idx) => (
+              <CodeExample
+                key={ex.id ?? idx}
+                language={ex.language}
+                code={ex.code}
+                output={ex.output}
+                explanation={ex.description}
+              />
+            ))}
           </div>
-        ))}
+        )}
       </div>
 
       {/* Complete Lesson Action */}
