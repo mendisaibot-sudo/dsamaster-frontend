@@ -91,7 +91,7 @@ export default function Sidebar({ categories }) {
                 <div className="sidebar-topics">
                   {loadingTopics && categorySlug === cat.slug ? (
                     <div className="sidebar-loading">Loading…</div>
-                  ) : (
+                  ) : categorySlug === cat.slug ? (
                     topics.map((topic) => {
                       const active = topicSlug === topic.slug;
                       return (
@@ -131,6 +131,8 @@ export default function Sidebar({ categories }) {
                         </div>
                       );
                     })
+                  ) : (
+                    <div className="sidebar-loading">Select to view topics</div>
                   )}
                 </div>
               )}
