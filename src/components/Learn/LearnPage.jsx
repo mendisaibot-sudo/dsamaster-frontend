@@ -34,6 +34,9 @@ export default function LearnPage() {
 
   const [editableCode, setEditableCode] = useState('');
 
+  // lessonData is always available when a lesson is selected
+  const lessonData = fullLesson || selectedLesson;
+
   useEffect(() => {
     getCategories()
       .then(data => {
@@ -94,7 +97,6 @@ export default function LearnPage() {
   if (error) return <div className="learn-error">{error}</div>;
 
   if (selectedLesson) {
-    const lessonData = fullLesson || selectedLesson;
     const completed = isLessonCompleted(lessonData.id);
     const exerciseCount = lessonData.exercises?.length || 0;
 
