@@ -19,7 +19,7 @@ const TABS = [
 ];
 
 export default function LearnPage() {
-  const { categorySlug, topicSlug } = useParams();
+  const { categorySlug, topicSlug, lessonSlug } = useParams();
   const navigate = useNavigate();
   const { markLessonComplete, isLessonCompleted } = useContent();
   const { completeLesson, submitExercise } = useProgress();
@@ -43,6 +43,14 @@ export default function LearnPage() {
         setLoading(false);
       });
   }, []);
+
+  // Auto-select lesson from URL
+  useEffect(() => {
+    if (lessonSlug && lessons.length > 0) {
+      const lesson = lessons.find(l => l.slug === lessonSlug);
+      if (lesson) setSelectedLesson(lesson);
+    }
+  }, [lessonSlug, lessons]);
 
   useEffect(() => {
     if (categorySlug) {
