@@ -32,6 +32,8 @@ export default function LearnPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [editableCode, setEditableCode] = useState('');
+
   useEffect(() => {
     getCategories()
       .then(data => {
@@ -79,6 +81,14 @@ export default function LearnPage() {
       getLesson(selectedLesson.slug).then(data => setFullLesson(data));
     }
   }, [selectedLesson]);
+
+  // When lesson changes, initialize editable code with lesson's code
+  useEffect(() => {
+    if (lessonData) {
+      const initialCode = lessonData.code || lessonData?.code_examples?.[0]?.code || '// Try some code here...';
+      setEditableCode(initialCode);
+    }
+  }, [lessonData?.slug]);
 
   if (loading) return <div className="learn-loading">Loading courses...</div>;
   if (error) return <div className="learn-error">{error}</div>;
@@ -157,9 +167,9 @@ export default function LearnPage() {
             {activeTab === 'code' && (
               <div className="code-tab-content animate-fade-in">
                 <CodeEditor
-                  code={lessonData.code || lessonData.code_examples?.[0]?.code || '// Try some code here...'}
+                  code={editableCode}
                   language={lessonData.language || 'javascript'}
-                  onChange={() => {}}
+                  onChange={(newCode) => setEditableCode(newCode)}
                 />
               </div>
             )}
